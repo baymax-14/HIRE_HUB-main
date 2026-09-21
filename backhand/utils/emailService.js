@@ -20,12 +20,18 @@ const createTransporter = async () => {
       ? {
           service: "gmail",
           auth: { user, pass },
+          connectionTimeout: 8000,
+          greetingTimeout: 6000,
+          socketTimeout: 10000,
         }
       : {
           host,
           port: parseInt(port) || 587,
           secure: parseInt(port) === 465,
           auth: { user, pass },
+          connectionTimeout: 8000,
+          greetingTimeout: 6000,
+          socketTimeout: 10000,
           tls: {
             rejectUnauthorized: false,
           },
@@ -69,6 +75,66 @@ const createTransporter = async () => {
   return transporter;
 };
 
+// ─── HTTP-based Email Providers (Port 443 HTTPS — 100% works on Render Free) ───
+
+// Send via Resend REST API (https://resend.com)
+const sendViaResend = async (to, subject, html) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+
+  const from = process.env.RESEND_FROM || "HireHub <onboarding@resend.dev>";
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey.trim()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject,
+      html,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`Resend API: ${data.message || JSON.stringify(data)}`);
+  }
+  console.log(`📧 Email delivered via Resend API (HTTPS) to ${to}: ${data.id}`);
+  return { provider: "resend", id: data.id };
+};
+
+// Send via Brevo REST API (https://brevo.com)
+const sendViaBrevo = async (to, subject, html) => {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) return null;
+
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER || "anand2005rathod@gmail.com";
+  const senderName = "HireHub";
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": apiKey.trim(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: senderName, email: senderEmail },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`Brevo API: ${data.message || JSON.stringify(data)}`);
+  }
+  console.log(`📧 Email delivered via Brevo API (HTTPS) to ${to}: ${data.messageId}`);
+  return { provider: "brevo", id: data.messageId };
+};
+
 // ─── Demo Redirect Configuration ───────────────────────────────────────────────
 const DEMO_REDIRECT_TARGET = process.env.DEMO_REDIRECT_EMAIL ? process.env.DEMO_REDIRECT_EMAIL.trim() : "anand2005rathod@gmail.com";
 const DEMO_EMAILS_TO_REDIRECT = [
@@ -93,35 +159,69 @@ export const isDemoEmail = (email) => {
 
 // ─── Core Send Function ───────────────────────────────────────────────────────
 const sendEmail = async (to, subject, html) => {
-  try {
-    // Check if recipient should be redirected to test target
-    let recipient = to;
-    let finalHtml = html;
-    const isDemo = isDemoEmail(to);
+  // Check if recipient should be redirected to test target
+  let recipient = to;
+  let finalHtml = html;
+  const isDemo = isDemoEmail(to);
 
-    if (isDemo && DEMO_REDIRECT_TARGET) {
-      recipient = DEMO_REDIRECT_TARGET;
-      console.log(`🔀 [Redirect] Diverting email originally for "${to}" → "${recipient}"`);
-      const demoBanner = `<div style="background:#e0f2fe;border:1px solid #bae6fd;color:#0369a1;padding:10px 14px;border-radius:8px;font-size:12px;margin:0 0 20px;font-family:sans-serif;">ℹ️ <strong>Demo Environment:</strong> This notification was generated for <code>${to}</code> and routed to your verified test inbox (<code>${recipient}</code>).</div>`;
-      if (finalHtml.includes('<td style="padding:40px;">')) {
-        finalHtml = finalHtml.replace('<td style="padding:40px;">', `<td style="padding:40px;">\n              ${demoBanner}`);
-      }
+  if (isDemo && DEMO_REDIRECT_TARGET) {
+    recipient = DEMO_REDIRECT_TARGET;
+    console.log(`🔀 [Redirect] Diverting email originally for "${to}" → "${recipient}"`);
+    const demoBanner = `<div style="background:#e0f2fe;border:1px solid #bae6fd;color:#0369a1;padding:10px 14px;border-radius:8px;font-size:12px;margin:0 0 20px;font-family:sans-serif;">ℹ️ <strong>Demo Environment:</strong> This notification was generated for <code>${to}</code> and routed to your verified test inbox (<code>${recipient}</code>).</div>`;
+    if (finalHtml.includes('<td style="padding:40px;">')) {
+      finalHtml = finalHtml.replace('<td style="padding:40px;">', `<td style="padding:40px;">\n              ${demoBanner}`);
     }
+  }
 
+  // 1. Primary choice for Render / cloud: HTTP REST API (HTTPS port 443 — NEVER blocked by Render)
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const res = await sendViaResend(recipient, subject, finalHtml);
+      return { success: true, provider: "Resend (HTTPS 443)", ...res };
+    } catch (err) {
+      console.error("Resend API attempt failed:", err.message);
+    }
+  }
+
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const res = await sendViaBrevo(recipient, subject, finalHtml);
+      return { success: true, provider: "Brevo (HTTPS 443)", ...res };
+    } catch (err) {
+      console.error("Brevo API attempt failed:", err.message);
+    }
+  }
+
+  // 2. Secondary choice: SMTP Transport (Works locally & on paid cloud instances)
+  try {
     const transport = await createTransporter();
     const from = process.env.SMTP_FROM || `"HireHub" <${process.env.SMTP_USER || "noreply@hirehub.com"}>`;
     const info = await transport.sendMail({ from, to: recipient, subject, html: finalHtml });
-    console.log(`📧 Email sent successfully to ${recipient} (original: ${to}): "${subject}"`);
+    console.log(`📧 Email sent successfully via SMTP to ${recipient} (original: ${to}): "${subject}"`);
     if (isEthereal && nodemailer.getTestMessageUrl) {
       const previewUrl = nodemailer.getTestMessageUrl(info);
       if (previewUrl) {
         console.log(`🔗 Preview email live in browser: ${previewUrl}`);
       }
     }
-    return true;
+    return { success: true, provider: "SMTP", messageId: info?.messageId };
   } catch (error) {
-    console.error(`📧 Email send failed to ${to}:`, error.message);
-    return false;
+    const isRender = !!process.env.RENDER || !!process.env.RENDER_EXTERNAL_URL;
+    const isTimeout = error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED' || error.message?.includes('timeout');
+    
+    console.error(`📧 Email send failed to ${recipient}:`, error.message);
+
+    let diagnostic = error.message;
+    if (isRender || isTimeout) {
+      diagnostic = "Render Free blocks outbound SMTP ports (465 & 587). To send emails reliably on Render, add RESEND_API_KEY (free at resend.com) to your Render Environment Variables to send over HTTPS.";
+      console.warn("⚠️ RENDER SMTP RESTRICTION DETECTED:", diagnostic);
+    }
+
+    return {
+      success: false,
+      error: diagnostic,
+      isRenderPortBlock: isRender || isTimeout,
+    };
   }
 };
 

@@ -106,6 +106,13 @@ app.listen(port,() =>{
     console.log(`   Frontend: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
     console.log(`   API Base: http://localhost:${port}/api/v1`);
     console.log(`   Gemini AI: ${process.env.GEMINI_API_KEY ? '✅ Configured' : '⚠️ Using Local NLP'}`);
-    console.log(`   Email:     ${process.env.SMTP_HOST ? '✅ SMTP Configured' : '📝 Dev Console Mode'}`);
+    const emailProvider = process.env.RESEND_API_KEY
+      ? "✅ Resend API (HTTPS 443 - Cloud Ready)"
+      : process.env.BREVO_API_KEY
+      ? "✅ Brevo API (HTTPS 443 - Cloud Ready)"
+      : process.env.SMTP_HOST
+      ? "✅ SMTP (" + process.env.SMTP_HOST + ")"
+      : "📝 Dev Console Mode";
+    console.log(`   Email:     ${emailProvider}`);
     console.log(`═══════════════════════════════════════════════\n`);
 })

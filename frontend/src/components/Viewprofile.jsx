@@ -146,7 +146,17 @@ export default function Viewprofile() {
       }
     } catch (err) {
       console.error("sendTestEmail error:", err)
-      toast.error(err?.response?.data?.message || "Failed to send test email. Please check server SMTP configuration.")
+      const serverMsg = err?.response?.data?.message
+      if (err?.response?.data?.isRenderPortBlock) {
+        toast.error(
+          "Render Free blocks SMTP ports (465/587). Please add RESEND_API_KEY in Render environment variables to send over HTTPS (port 443).",
+          { duration: 12000 }
+        )
+      } else {
+        toast.error(serverMsg || "Failed to send test email. Please check server configuration.", {
+          duration: 8000,
+        })
+      }
     } finally {
       setSendingTestEmail(false)
     }

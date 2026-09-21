@@ -437,17 +437,20 @@ export const sendTestNotificationEmail = async (req, res) => {
       });
     }
 
-    const emailSent = await sendTestEmail(user.email, user.fullname);
-    if (!emailSent) {
+    const emailResult = await sendTestEmail(user.email, user.fullname);
+    if (!emailResult || !emailResult.success) {
+      const errorMessage = emailResult?.error || "Failed to dispatch email via SMTP. Please check server SMTP configuration.";
       return res.status(500).json({
-        message: "Failed to dispatch email via SMTP. Please check server SMTP configuration.",
+        message: errorMessage,
+        isRenderPortBlock: emailResult?.isRenderPortBlock || false,
         success: false,
       });
     }
 
     return res.status(200).json({
-      message: `Test email dispatched to ${user.email}! Please check your Inbox and Spam/Promotions folder.`,
+      message: `Test email dispatched to ${user.email} (via ${emailResult.provider || "email service"})! Please check your Inbox and Spam/Promotions folder.`,
       recipient: user.email,
+      provider: emailResult.provider,
       success: true,
     });
   } catch (error) {
