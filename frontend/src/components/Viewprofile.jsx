@@ -18,6 +18,7 @@ import {
   IndianRupee,
   ShieldCheck,
   TrendingUp,
+  Camera,
 } from "lucide-react"
 import Navbar from "./shared/Navbar"
 import { Avatar, AvatarImage } from "./ui/avatar"
@@ -38,12 +39,14 @@ import useGetAllAppliedJobs from "@/hooks/useGetAllappliejobs"
 export default function Viewprofile() {
   const [open, setOpen] = useState(false)
   const [uploadingResume, setUploadingResume] = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [togglingNotifications, setTogglingNotifications] = useState(false)
   const [activeTab, setActiveTab] = useState("applied")
   const [savedJobsList, setSavedJobsList] = useState([])
   const [loadingSavedJobs, setLoadingSavedJobs] = useState(false)
   const [removingSavedId, setRemovingSavedId] = useState(null)
   const fileInputRef = useRef(null)
+  const photoInputRef = useRef(null)
 
   const { user } = useSelector((store) => store.auth)
   const { allappliedjobs } = useSelector((store) => store.job)
@@ -184,15 +187,77 @@ export default function Viewprofile() {
     }
   }
 
+  // Direct fast profile picture upload by clicking avatar
+  const handlePhotoFileChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file (PNG, JPG, WEBP)")
+      return
+    }
+
+    const formData = new FormData()
+    formData.append("profilePhoto", file)
+    formData.append("fileType", "profilephoto")
+
+    try {
+      setUploadingPhoto(true)
+      toast.info("Uploading profile picture...")
+      axios.defaults.withCredentials = true
+      const res = await axios.post(`${USER_API_END_POINT}/profile/update`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+
+      if (res.data.success) {
+        dispatch(setuser(res.data.user))
+        toast.success("Profile picture updated successfully!")
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(err.response?.data?.message || "Failed to upload profile picture")
+    } finally {
+      setUploadingPhoto(false)
+      if (photoInputRef.current) photoInputRef.current.value = ""
+    }
+  }
+
   return (
     <div>
       <Navbar />
       <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 lg:p-8 my-3 sm:my-5 mx-4 sm:mx-auto shadow-xs">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border shadow-xs">
-              <AvatarImage src={user?.profile?.profilephoto || "/placeholder.svg"} />
-            </Avatar>
+            {/* Interactive Profile Picture with Quick Upload */}
+            <div
+              className="relative group cursor-pointer"
+              onClick={() => photoInputRef.current?.click()}
+              title="Click to change profile picture"
+            >
+              <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border shadow-xs transition-transform group-hover:scale-105">
+                <AvatarImage src={user?.profile?.profilephoto || "/placeholder.svg"} className="object-cover" />
+              </Avatar>
+              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                {uploadingPhoto ? (
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                ) : (
+                  <Camera className="w-6 h-6 text-white" />
+                )}
+              </div>
+              <div
+                className="absolute -bottom-1 -right-1 p-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-md transition-colors sm:flex hidden"
+                title="Change photo"
+              >
+                <Camera className="w-3.5 h-3.5" />
+              </div>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/png, image/jpeg, image/jpg, image/webp"
+                className="hidden"
+                onChange={handlePhotoFileChange}
+              />
+            </div>
             <div className="text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-2">
                 <h1 className="font-bold text-lg sm:text-xl text-gray-900">{user?.fullname}</h1>

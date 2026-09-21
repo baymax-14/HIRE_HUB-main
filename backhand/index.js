@@ -1,10 +1,19 @@
 import express from "express";
 import path from "path";
+import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 const app = express();
 import cookieparser from "cookie-parser"
 import cors from "cors";
 import dotenv from 'dotenv'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables reliably from backhand/.env or current working directory
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+dotenv.config();
+
 import connectDb from "./utils/db.js";
 import userRoute from "./route/userroute.js";
 import companyRoutes from "./route/companyroute.js";
@@ -12,9 +21,6 @@ import jobRoute from "./route/jobroute.js";
 import applicationroute from "./route/applicationroute.js";
 import notificationRoute from "./route/notificationroute.js";
 import analyticsRoute from "./route/analyticsroute.js";
-
-// Load environment variables
-dotenv.config({});
 
 // Trust reverse proxy (essential for Render / Vercel HTTPS cookies)
 app.set("trust proxy", 1);
@@ -51,6 +57,7 @@ const corsoption = {
 app.use(cors(corsoption));
 
 // Serve local uploads statically
+app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
 const port = process.env.PORT || 8000

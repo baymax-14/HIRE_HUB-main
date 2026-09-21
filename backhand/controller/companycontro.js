@@ -3,6 +3,7 @@ import { Job } from "../models/jobmodel.js";
 import { Application } from "../models/applicationmodel.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDaturi from "../utils/datauri.js";
+import { saveUploadedImage } from "../utils/fileHandler.js";
 //thid is company resgistered controlller after registered the company then only you can post the job
 export const registerCompany = async (req,res) =>{
 
@@ -123,10 +124,9 @@ export const updatecompany = async (req,res) =>{
 
         let logo;
         if (file) {
-            const fileuri = getDaturi(file);
-            if (fileuri) {
-                const clouderesponse = await cloudinary.uploader.upload(fileuri.content);
-                logo = clouderesponse.secure_url;
+            const uploadedLogo = await saveUploadedImage(file, req, "logos");
+            if (uploadedLogo?.url) {
+                logo = uploadedLogo.url;
             }
         }
 

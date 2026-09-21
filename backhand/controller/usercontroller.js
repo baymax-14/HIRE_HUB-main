@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDaturi from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
-import { saveUploadedResume } from "../utils/fileHandler.js";
+import { saveUploadedResume, saveUploadedImage } from "../utils/fileHandler.js";
 import { sendWelcomeEmail } from "../utils/emailService.js";
 
 //sign up
@@ -66,20 +66,17 @@ export const register = async (req, res) => {
       });
     }
 
-    // optional file upload via cloudinary
+    // optional file upload via Cloudinary or local disk
     let profilephoto = "";
     const file = req.file;
     if (file) {
       try {
-        const fileuri = getDaturi(file);
-        if (fileuri && fileuri.content) {
-          const clouderesponse = await cloudinary.uploader.upload(fileuri.content);
-          if (clouderesponse) {
-            profilephoto = clouderesponse.secure_url;
-          }
+        const uploadedPhoto = await saveUploadedImage(file, req, "profiles");
+        if (uploadedPhoto?.url) {
+          profilephoto = uploadedPhoto.url;
         }
       } catch (cloudErr) {
-        console.log("Cloudinary upload skipped/failed:", cloudErr.message);
+        console.log("Profile photo upload skipped/failed:", cloudErr.message);
       }
     }
 
@@ -233,12 +230,44 @@ export const logout = async (req, res) => {
 // update profile
 export const updateProfile = async (req, res) => {
   try {
-    const { fullname, email, phoneNumber, bio, skills, emailNotifications } = req.body;
-    const file = req.file;
+    const { fullname, email, phoneNumber, bio, skills, emailNotifications, fileType } = req.body;
+    const userid = req.id;
+    let user = await User.findById(userid);
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found!",
+        success: false,
+      });
+    }
 
+    const files = req.files || (req.file ? [req.file] : []);
     let uploadedResume = null;
-    if (file) {
-      uploadedResume = await saveUploadedResume(file, req);
+    let uploadedPhoto = null;
+
+    for (const f of files) {
+      const isPhoto =
+        f.fieldname === "profilePhoto" ||
+        f.fieldname === "avatar" ||
+        (f.fieldname === "file" && fileType === "profilephoto") ||
+        (f.mimetype && f.mimetype.startsWith("image/"));
+
+      const isResume =
+        f.fieldname === "resume" ||
+        (f.fieldname === "file" && fileType === "resume") ||
+        (f.mimetype && (f.mimetype.includes("pdf") || f.mimetype.includes("word") || f.mimetype.includes("officedocument")));
+
+      if (isPhoto) {
+        uploadedPhoto = await saveUploadedImage(f, req, "profiles");
+      } else if (isResume) {
+        uploadedResume = await saveUploadedResume(f, req);
+      } else {
+        // Fallback by mimetype
+        if (f.mimetype && f.mimetype.startsWith("image/")) {
+          uploadedPhoto = await saveUploadedImage(f, req, "profiles");
+        } else {
+          uploadedResume = await saveUploadedResume(f, req);
+        }
+      }
     }
 
     let skillsArrya;
@@ -250,15 +279,6 @@ export const updateProfile = async (req, res) => {
       }
     }
 
-    const userid = req.id;
-    let user = await User.findById(userid);
-    if (!user) {
-      return res.status(400).json({
-        message: "User not found!",
-        success: false,
-      });
-    }
-
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
@@ -268,7 +288,10 @@ export const updateProfile = async (req, res) => {
       user.profile.emailNotifications = emailNotifications === true || emailNotifications === "true";
     }
 
-    if (uploadedResume) {
+    if (uploadedPhoto?.url) {
+      user.profile.profilephoto = uploadedPhoto.url;
+    }
+    if (uploadedResume?.url) {
       user.profile.resume = uploadedResume.url;
       user.profile.resumeOriginalName = uploadedResume.originalName;
     }

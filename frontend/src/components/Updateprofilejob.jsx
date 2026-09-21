@@ -2,13 +2,14 @@ import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Label } from "./ui/label"
 import { Button } from "./ui/button"
-import { Loader2, FileText } from "lucide-react"
+import { Loader2, FileText, Camera } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import axios from "axios"
 import { USER_API_END_POINT } from "@/util/const"
 import { setLoading, setuser } from "@/redux/authSlice"
 import { toast } from "sonner"
 import { Input } from "./ui/input"
+import { Avatar, AvatarImage } from "./ui/avatar"
 
 export default function Updateprofile({ open, setOpen }) {
   const { loading, user } = useSelector((store) => store.auth)
@@ -20,8 +21,10 @@ export default function Updateprofile({ open, setOpen }) {
     email: "",
     bio: "",
     skills: "",
+    profilePhoto: null,
     file: null,
   })
+  const [photoPreview, setPhotoPreview] = useState(null)
 
   // Sync with user data when opening or when user changes
   useEffect(() => {
@@ -32,8 +35,10 @@ export default function Updateprofile({ open, setOpen }) {
         email: user?.email || "",
         bio: user?.profile?.bio || "",
         skills: user?.profile?.skills?.join(", ") || "",
+        profilePhoto: null,
         file: null,
       })
+      setPhotoPreview(user?.profile?.profilephoto || null)
     }
   }, [user, open])
 
@@ -48,6 +53,18 @@ export default function Updateprofile({ open, setOpen }) {
     }
   }
 
+  const photoHandler = (e) => {
+    const selected = e.target.files?.[0]
+    if (selected) {
+      if (!selected.type.startsWith("image/")) {
+        toast.error("Please select a valid image file (PNG, JPG, WEBP)")
+        return
+      }
+      setInput({ ...input, profilePhoto: selected })
+      setPhotoPreview(URL.createObjectURL(selected))
+    }
+  }
+
   const submitHandler = async (e) => {
     e.preventDefault()
     const formData = new FormData()
@@ -57,6 +74,10 @@ export default function Updateprofile({ open, setOpen }) {
     formData.append("bio", input.bio)
     formData.append("skills", input.skills)
     
+    if (input.profilePhoto instanceof File) {
+      formData.append("profilePhoto", input.profilePhoto)
+    }
+
     if (input.file instanceof File) {
       formData.append("file", input.file)
     }
@@ -93,6 +114,27 @@ export default function Updateprofile({ open, setOpen }) {
         </DialogHeader>
         <form onSubmit={submitHandler}>
           <div className="grid gap-3 sm:gap-4 py-1">
+            {/* Profile Picture Upload Section */}
+            <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-xl border border-gray-100">
+              <Avatar className="h-16 w-16 border shadow-xs shrink-0">
+                <AvatarImage src={photoPreview || "/placeholder.svg"} className="object-cover" />
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <Label htmlFor="profilePhoto" className="text-xs sm:text-sm font-medium text-gray-700 block mb-1">
+                  Profile Picture
+                </Label>
+                <Input
+                  id="profilePhoto"
+                  name="profilePhoto"
+                  type="file"
+                  onChange={photoHandler}
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                  className="text-xs h-9 cursor-pointer file:text-xs"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, or WEBP (Max 10MB)</p>
+              </div>
+            </div>
+
             <div className="grid gap-1.5">
               <Label htmlFor="name" className="text-sm sm:text-base">
                 Full Name
