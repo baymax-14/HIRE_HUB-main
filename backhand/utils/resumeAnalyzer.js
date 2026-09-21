@@ -34,8 +34,22 @@ export const extractTextFromPdf = async (pdfUrl) => {
       buffer = Buffer.from(response.data);
     }
 
-    const pdfData = await pdf(buffer);
-    return pdfData.text || "";
+    // Support both pdf-parse v2 (PDFParse class) and v1 (function)
+    let extractedText = "";
+    const PDFParseClass = pdf?.PDFParse || (typeof pdf === "function" ? null : pdf?.default?.PDFParse);
+
+    if (PDFParseClass) {
+      const parser = new PDFParseClass({ data: buffer });
+      const parseResult = await parser.getText();
+      await parser.destroy?.();
+      extractedText = parseResult?.text || "";
+    } else if (typeof pdf === "function") {
+      const pdfData = await pdf(buffer);
+      extractedText = pdfData?.text || "";
+    }
+
+    console.log(`📄 PDF parsed successfully (${extractedText.length} characters extracted from resume)`);
+    return extractedText;
   } catch (error) {
     console.error("Error extracting text from PDF resume:", error.message);
     return "";
