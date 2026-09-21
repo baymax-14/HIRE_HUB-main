@@ -109,11 +109,11 @@ export const seedDefaultData = async () => {
       "gRPC",
       "Git"
     ],
-    "salary": 4800000,
+    "salary": 4200000,
     "location": "Bangalore, India (Hybrid)",
     "jobType": "Full-time",
     "position": 4,
-    "experiance": "3-5"
+    "experiance": "4-7"
   },
   {
     "title": "Machine Learning Engineer - Gemini AI & NLP",
@@ -127,11 +127,11 @@ export const seedDefaultData = async () => {
       "LLMs",
       "Distributed Training"
     ],
-    "salary": 5500000,
+    "salary": 4800000,
     "location": "Bangalore, India",
     "jobType": "Full-time",
     "position": 3,
-    "experiance": "2-5"
+    "experiance": "3-6"
   },
   {
     "title": "Cloud Solutions Architect - Google Cloud (GCP)",
@@ -144,7 +144,7 @@ export const seedDefaultData = async () => {
       "Docker",
       "CI/CD"
     ],
-    "salary": 4200000,
+    "salary": 3600000,
     "location": "Hyderabad, India (Hybrid)",
     "jobType": "Full-time",
     "position": 2,
@@ -162,7 +162,7 @@ export const seedDefaultData = async () => {
       "Vite",
       "a11y"
     ],
-    "salary": 3800000,
+    "salary": 1800000,
     "location": "Bangalore, India",
     "jobType": "Full-time",
     "position": 5,
@@ -180,11 +180,11 @@ export const seedDefaultData = async () => {
       "Incident Response",
       "Distributed Systems"
     ],
-    "salary": 4500000,
+    "salary": 1400000,
     "location": "Bangalore, India",
     "jobType": "Full-time",
     "position": 3,
-    "experiance": "3-6"
+    "experiance": "1-3"
   },
   {
     "title": "Software Engineering Intern - Summer 2026 (STEP)",
@@ -196,7 +196,7 @@ export const seedDefaultData = async () => {
       "Git",
       "Computer Science Fundamentals"
     ],
-    "salary": 1200000,
+    "salary": 600000,
     "location": "Bangalore, India",
     "jobType": "Internship",
     "position": 10,
@@ -213,7 +213,7 @@ export const seedDefaultData = async () => {
       "NLP / Computer Vision",
       "Research Mindset"
     ],
-    "salary": 1500000,
+    "salary": 800000,
     "location": "Bangalore, India",
     "jobType": "Internship",
     "position": 5,
@@ -229,7 +229,7 @@ export const seedDefaultData = async () => {
       "Presentation Skills",
       "Community Leadership"
     ],
-    "salary": 600000,
+    "salary": 240000,
     "location": "Bangalore, India (Remote-friendly)",
     "jobType": "Part-time",
     "position": 4,
@@ -279,7 +279,7 @@ export const seedDefaultData = async () => {
           "Azure",
           "Microservices"
         ],
-        "salary": 3600000,
+        "salary": 2800000,
         "location": "Hyderabad, India",
         "jobType": "Full-time",
         "position": 3,
@@ -295,11 +295,11 @@ export const seedDefaultData = async () => {
           "Cybersecurity",
           "Network Security"
         ],
-        "salary": 3100000,
+        "salary": 1800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Software Engineering Intern - Cloud & AI (Summer 2026)",
@@ -311,7 +311,7 @@ export const seedDefaultData = async () => {
           "Cloud Basics",
           "Git"
         ],
-        "salary": 1200000,
+        "salary": 550000,
         "location": "Hyderabad, India",
         "jobType": "Internship",
         "position": 8,
@@ -336,11 +336,11 @@ export const seedDefaultData = async () => {
           "RESTful APIs",
           "Docker"
         ],
-        "salary": 3500000,
+        "salary": 2600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 4,
-        "experiance": "2-5"
+        "experiance": "3-5"
       },
       {
         "title": "Frontend Engineer - Amazon Prime Video Web",
@@ -352,7 +352,7 @@ export const seedDefaultData = async () => {
           "CSS Modules",
           "Web Performance"
         ],
-        "salary": 2900000,
+        "salary": 1700000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -367,7 +367,7 @@ export const seedDefaultData = async () => {
           "OOP Principles",
           "Problem Solving"
         ],
-        "salary": 1000000,
+        "salary": 500000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 12,
@@ -393,11 +393,11 @@ export const seedDefaultData = async () => {
           "Interaction Design",
           "User Research"
         ],
-        "salary": 2800000,
+        "salary": 1500000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Data Engineer - Analytics & Experimentation",
@@ -410,11 +410,11 @@ export const seedDefaultData = async () => {
           "Data Modeling",
           "A/B Testing"
         ],
-        "salary": 3300000,
+        "salary": 2400000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "3-5"
       },
       {
         "title": "Product Design Intern - Reality Labs & Instagram Web",
@@ -425,7 +425,7 @@ export const seedDefaultData = async () => {
           "Design Thinking",
           "Portfolio / Case Studies"
         ],
-        "salary": 900000,
+        "salary": 450000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 4,
@@ -451,7 +451,7 @@ export const seedDefaultData = async () => {
           "Kafka",
           "AWS"
         ],
-        "salary": 4800000,
+        "salary": 4500000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 2,
@@ -467,7 +467,7 @@ export const seedDefaultData = async () => {
           "TypeScript",
           "Tailwind CSS"
         ],
-        "salary": 4000000,
+        "salary": 3500000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 2,
@@ -482,7 +482,7 @@ export const seedDefaultData = async () => {
           "Attention to Detail",
           "Quality Assurance"
         ],
-        "salary": 800000,
+        "salary": 550000,
         "location": "Mumbai, India (Flexible / Remote)",
         "jobType": "Part-time",
         "position": 3,
@@ -508,7 +508,7 @@ export const seedDefaultData = async () => {
           "Concurrency",
           "Algorithms"
         ],
-        "salary": 4000000,
+        "salary": 3200000,
         "location": "Hyderabad, India",
         "jobType": "Full-time",
         "position": 3,
@@ -525,7 +525,7 @@ export const seedDefaultData = async () => {
           "NLP",
           "Acoustic Modeling"
         ],
-        "salary": 4600000,
+        "salary": 3800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -541,7 +541,7 @@ export const seedDefaultData = async () => {
           "Git",
           "Computer Science Fundamentals"
         ],
-        "salary": 1400000,
+        "salary": 700000,
         "location": "Hyderabad, India",
         "jobType": "Internship",
         "position": 6,
@@ -566,7 +566,7 @@ export const seedDefaultData = async () => {
           "Computer Graphics",
           "Algorithms"
         ],
-        "salary": 3700000,
+        "salary": 2800000,
         "location": "Noida, India",
         "jobType": "Full-time",
         "position": 2,
@@ -583,11 +583,11 @@ export const seedDefaultData = async () => {
           "NVIDIA CUDA",
           "Prometheus"
         ],
-        "salary": 3500000,
+        "salary": 1900000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Research Intern - Creative Cloud & Generative AI",
@@ -599,7 +599,7 @@ export const seedDefaultData = async () => {
           "Deep Learning",
           "Linear Algebra"
         ],
-        "salary": 1100000,
+        "salary": 600000,
         "location": "Noida, India",
         "jobType": "Internship",
         "position": 4,
@@ -625,7 +625,7 @@ export const seedDefaultData = async () => {
           "Distributed Systems",
           "Geospatial Indexing"
         ],
-        "salary": 3800000,
+        "salary": 3000000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
@@ -641,7 +641,7 @@ export const seedDefaultData = async () => {
           "Spark",
           "Deep Learning"
         ],
-        "salary": 4800000,
+        "salary": 3800000,
         "location": "Hyderabad, India",
         "jobType": "Full-time",
         "position": 1,
@@ -657,7 +657,7 @@ export const seedDefaultData = async () => {
           "Probability & Statistics",
           "Data Visualization"
         ],
-        "salary": 1200000,
+        "salary": 700000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 5,
@@ -683,7 +683,7 @@ export const seedDefaultData = async () => {
           "BigQuery",
           "Recommendation Systems"
         ],
-        "salary": 4100000,
+        "salary": 2900000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 2,
@@ -699,11 +699,11 @@ export const seedDefaultData = async () => {
           "Service Workers",
           "Performance Profiling"
         ],
-        "salary": 3200000,
+        "salary": 1600000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Audio Engineering Intern - Web Player Experience",
@@ -715,7 +715,7 @@ export const seedDefaultData = async () => {
           "CSS",
           "Problem Solving"
         ],
-        "salary": 1000000,
+        "salary": 600000,
         "location": "Mumbai, India (Remote)",
         "jobType": "Internship",
         "position": 3,
@@ -741,7 +741,7 @@ export const seedDefaultData = async () => {
           "MySQL",
           "REST APIs"
         ],
-        "salary": 3900000,
+        "salary": 2800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -758,11 +758,11 @@ export const seedDefaultData = async () => {
           "Kafka",
           "Data Engineering"
         ],
-        "salary": 3600000,
+        "salary": 1800000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Community Support & Trust Specialist",
@@ -773,7 +773,7 @@ export const seedDefaultData = async () => {
           "Empathy",
           "Detail-Oriented"
         ],
-        "salary": 700000,
+        "salary": 500000,
         "location": "Gurgaon, India (Remote)",
         "jobType": "Part-time",
         "position": 4,
@@ -799,7 +799,7 @@ export const seedDefaultData = async () => {
           "Hadoop",
           "Distributed Systems"
         ],
-        "salary": 3700000,
+        "salary": 2700000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 4,
@@ -815,7 +815,7 @@ export const seedDefaultData = async () => {
           "CSS3",
           "Design Systems"
         ],
-        "salary": 3000000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
@@ -830,7 +830,7 @@ export const seedDefaultData = async () => {
           "Community Management",
           "Communication"
         ],
-        "salary": 600000,
+        "salary": 450000,
         "location": "Bangalore, India (Flexible)",
         "jobType": "Part-time",
         "position": 3,
@@ -855,7 +855,7 @@ export const seedDefaultData = async () => {
           "PostgreSQL",
           "Idempotency Patterns"
         ],
-        "salary": 5400000,
+        "salary": 4800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -872,7 +872,7 @@ export const seedDefaultData = async () => {
           "OpenAPI",
           "Developer Tooling"
         ],
-        "salary": 4200000,
+        "salary": 3000000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -888,7 +888,7 @@ export const seedDefaultData = async () => {
           "Git",
           "Problem Solving"
         ],
-        "salary": 1600000,
+        "salary": 800000,
         "location": "Bangalore, India (Remote)",
         "jobType": "Internship",
         "position": 4,
@@ -914,7 +914,7 @@ export const seedDefaultData = async () => {
           "AWS DynamoDB",
           "Jest"
         ],
-        "salary": 3500000,
+        "salary": 2600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
@@ -931,11 +931,11 @@ export const seedDefaultData = async () => {
           "Docker",
           "SRE"
         ],
-        "salary": 3100000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Software Engineering Intern - Jira Cloud Agility",
@@ -947,7 +947,7 @@ export const seedDefaultData = async () => {
           "Git",
           "Data Structures"
         ],
-        "salary": 1000000,
+        "salary": 600000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 5,
@@ -973,7 +973,7 @@ export const seedDefaultData = async () => {
           "Kubernetes",
           "Microservices"
         ],
-        "salary": 3600000,
+        "salary": 2800000,
         "location": "Hyderabad, India",
         "jobType": "Full-time",
         "position": 3,
@@ -989,7 +989,7 @@ export const seedDefaultData = async () => {
           "CSS3",
           "REST APIs"
         ],
-        "salary": 2900000,
+        "salary": 1500000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -1004,7 +1004,7 @@ export const seedDefaultData = async () => {
           "Technical Mentorship",
           "Communication"
         ],
-        "salary": 750000,
+        "salary": 500000,
         "location": "Hyderabad, India (Flexible)",
         "jobType": "Part-time",
         "position": 3,
@@ -1030,7 +1030,7 @@ export const seedDefaultData = async () => {
           "Distributed Storage",
           "Python"
         ],
-        "salary": 3800000,
+        "salary": 3000000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -1046,11 +1046,11 @@ export const seedDefaultData = async () => {
           "Linux",
           "Concurrency"
         ],
-        "salary": 3300000,
+        "salary": 1800000,
         "location": "Hyderabad, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-5"
+        "experiance": "2-5"
       },
       {
         "title": "Cloud Systems Intern - OCI Virtualization",
@@ -1061,7 +1061,7 @@ export const seedDefaultData = async () => {
           "Operating Systems",
           "Git"
         ],
-        "salary": 900000,
+        "salary": 650000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 4,
@@ -1087,11 +1087,11 @@ export const seedDefaultData = async () => {
           "Linux Networking",
           "Docker"
         ],
-        "salary": 3100000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Cybersecurity Analyst - Splunk Threat Intelligence",
@@ -1103,11 +1103,11 @@ export const seedDefaultData = async () => {
           "Threat Hunting",
           "MITRE ATT&CK"
         ],
-        "salary": 2700000,
+        "salary": 950000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Network Support Engineer & Lab Assistant",
@@ -1118,7 +1118,7 @@ export const seedDefaultData = async () => {
           "Cisco Packet Tracer",
           "Basic Hardware"
         ],
-        "salary": 550000,
+        "salary": 300000,
         "location": "Bangalore, India (Part-time)",
         "jobType": "Part-time",
         "position": 3,
@@ -1144,11 +1144,11 @@ export const seedDefaultData = async () => {
           "Aerospike / Redis",
           "Distributed Systems"
         ],
-        "salary": 3200000,
+        "salary": 1800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 4,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Frontend Architect - Flipkart Mobile Web",
@@ -1161,11 +1161,11 @@ export const seedDefaultData = async () => {
           "Web Performance",
           "Redux"
         ],
-        "salary": 2800000,
+        "salary": 1400000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Software Development Engineer (SDE) Intern - Supply Chain",
@@ -1177,7 +1177,7 @@ export const seedDefaultData = async () => {
           "SQL",
           "Git"
         ],
-        "salary": 800000,
+        "salary": 450000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 10,
@@ -1203,11 +1203,11 @@ export const seedDefaultData = async () => {
           "Redis",
           "Microservices"
         ],
-        "salary": 3400000,
+        "salary": 1500000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Mobile App Engineer - Android Core Team",
@@ -1219,11 +1219,11 @@ export const seedDefaultData = async () => {
           "Coroutines",
           "Google Maps API"
         ],
-        "salary": 2700000,
+        "salary": 750000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Backend Engineering Intern - Instamart Routing",
@@ -1235,7 +1235,7 @@ export const seedDefaultData = async () => {
           "Data Structures",
           "Git"
         ],
-        "salary": 700000,
+        "salary": 300000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 6,
@@ -1261,11 +1261,11 @@ export const seedDefaultData = async () => {
           "AWS",
           "REST APIs"
         ],
-        "salary": 2900000,
+        "salary": 800000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "iOS Engineer - Dining & Discovery Experience",
@@ -1277,11 +1277,11 @@ export const seedDefaultData = async () => {
           "Core Animation",
           "RESTful APIs"
         ],
-        "salary": 2600000,
+        "salary": 700000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Mobile Engineering Intern - iOS Dining & Discovery",
@@ -1292,7 +1292,7 @@ export const seedDefaultData = async () => {
           "AutoLayout / SwiftUI",
           "Problem Solving"
         ],
-        "salary": 650000,
+        "salary": 300000,
         "location": "Gurgaon, India",
         "jobType": "Internship",
         "position": 4,
@@ -1318,7 +1318,7 @@ export const seedDefaultData = async () => {
           "Kafka",
           "Distributed Systems"
         ],
-        "salary": 3600000,
+        "salary": 2500000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
@@ -1334,11 +1334,11 @@ export const seedDefaultData = async () => {
           "PostgreSQL",
           "Tailwind CSS"
         ],
-        "salary": 3000000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Fintech Engineering Intern - Payment Gateway Core",
@@ -1350,7 +1350,7 @@ export const seedDefaultData = async () => {
           "REST APIs",
           "Git"
         ],
-        "salary": 900000,
+        "salary": 480000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 6,
@@ -1376,11 +1376,11 @@ export const seedDefaultData = async () => {
           "Aerospike",
           "High Concurrency"
         ],
-        "salary": 3700000,
+        "salary": 1800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 4,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Site Reliability Engineer - High Volume Payments",
@@ -1393,11 +1393,11 @@ export const seedDefaultData = async () => {
           "Ceph / Storage",
           "SRE"
         ],
-        "salary": 3100000,
+        "salary": 1500000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Backend Engineering Intern - High-Concurrency UPI",
@@ -1409,7 +1409,7 @@ export const seedDefaultData = async () => {
           "Linux",
           "Git"
         ],
-        "salary": 850000,
+        "salary": 420000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 5,
@@ -1435,11 +1435,11 @@ export const seedDefaultData = async () => {
           "Framer Motion",
           "WebGL"
         ],
-        "salary": 3800000,
+        "salary": 2600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "3-5"
       },
       {
         "title": "Backend Engineer - CRED Pay & Peer Lending",
@@ -1452,11 +1452,11 @@ export const seedDefaultData = async () => {
           "Microservices",
           "Security Compliance"
         ],
-        "salary": 3500000,
+        "salary": 1900000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Frontend Design Engineering Intern - Visual Interactions",
@@ -1468,7 +1468,7 @@ export const seedDefaultData = async () => {
           "Creative Coding",
           "JavaScript"
         ],
-        "salary": 1200000,
+        "salary": 650000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 4,
@@ -1494,11 +1494,11 @@ export const seedDefaultData = async () => {
           "Linux",
           "Minimalist Architecture"
         ],
-        "salary": 3500000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Frontend Engineer - Kite Web & Charts",
@@ -1510,11 +1510,11 @@ export const seedDefaultData = async () => {
           "Data Visualization",
           "JavaScript"
         ],
-        "salary": 2800000,
+        "salary": 1200000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Systems Engineering Intern - Kite Trading Infrastructure",
@@ -1526,7 +1526,7 @@ export const seedDefaultData = async () => {
           "Network Sockets",
           "Git"
         ],
-        "salary": 800000,
+        "salary": 400000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 3,
@@ -1552,7 +1552,7 @@ export const seedDefaultData = async () => {
           "Geospatial Indexing",
           "Distributed Systems"
         ],
-        "salary": 3800000,
+        "salary": 2700000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
@@ -1568,11 +1568,11 @@ export const seedDefaultData = async () => {
           "Linux",
           "Battery Systems"
         ],
-        "salary": 3200000,
+        "salary": 1400000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Fleet Telemetry & Dispatch Operations Analyst",
@@ -1583,7 +1583,7 @@ export const seedDefaultData = async () => {
           "IoT Dashboard Monitoring",
           "Problem Solving"
         ],
-        "salary": 600000,
+        "salary": 300000,
         "location": "Bangalore, India (Flexible / Part-time)",
         "jobType": "Part-time",
         "position": 4,
@@ -1609,11 +1609,11 @@ export const seedDefaultData = async () => {
           "Microservices",
           "AWS"
         ],
-        "salary": 3400000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Data Platform Engineer - Feed Personalization & Catalog Ranking",
@@ -1626,11 +1626,11 @@ export const seedDefaultData = async () => {
           "Data Pipelines",
           "Recommendation Systems"
         ],
-        "salary": 3000000,
+        "salary": 850000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "1-3"
       },
       {
         "title": "Data Analytics Intern - Reseller Growth & Catalog",
@@ -1642,7 +1642,7 @@ export const seedDefaultData = async () => {
           "Data Analysis",
           "Curiosity"
         ],
-        "salary": 600000,
+        "salary": 240000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 4,
@@ -1668,11 +1668,11 @@ export const seedDefaultData = async () => {
           "Redis",
           "Financial Systems"
         ],
-        "salary": 3600000,
+        "salary": 1800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "3-6"
+        "experiance": "3-5"
       },
       {
         "title": "Mobile Engineer - High-Speed Trading Mobile App",
@@ -1684,11 +1684,11 @@ export const seedDefaultData = async () => {
           "Native iOS/Android Bridge",
           "Performance Tuning"
         ],
-        "salary": 2800000,
+        "salary": 1300000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Fintech Product Intern - Mutual Funds & Wealth Management",
@@ -1699,7 +1699,7 @@ export const seedDefaultData = async () => {
           "Financial Markets Interest",
           "Data Analysis"
         ],
-        "salary": 700000,
+        "salary": 360000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 3,
@@ -1725,11 +1725,11 @@ export const seedDefaultData = async () => {
           "Kafka",
           "Graph Algorithms"
         ],
-        "salary": 3200000,
+        "salary": 1500000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 4,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Frontend Engineer - Customer Checkout Web & PWA",
@@ -1741,11 +1741,11 @@ export const seedDefaultData = async () => {
           "Tailwind CSS",
           "Redux Toolkit"
         ],
-        "salary": 2600000,
+        "salary": 650000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Quick Commerce Logistics Intern - Dark Store Automation",
@@ -1756,7 +1756,7 @@ export const seedDefaultData = async () => {
           "Problem Solving",
           "Field Observations"
         ],
-        "salary": 600000,
+        "salary": 240000,
         "location": "Mumbai, India",
         "jobType": "Internship",
         "position": 5,
@@ -1782,7 +1782,7 @@ export const seedDefaultData = async () => {
           "Distributed Systems",
           "HTTP/2 & gRPC"
         ],
-        "salary": 4000000,
+        "salary": 2800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -1798,11 +1798,11 @@ export const seedDefaultData = async () => {
           "WebSockets",
           "Operational Transformation / CRDT"
         ],
-        "salary": 3200000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Developer Relations & API Engineering Intern",
@@ -1814,7 +1814,7 @@ export const seedDefaultData = async () => {
           "Postman App",
           "Public Speaking"
         ],
-        "salary": 900000,
+        "salary": 450000,
         "location": "Bangalore, India (Remote)",
         "jobType": "Internship",
         "position": 4,
@@ -1840,11 +1840,11 @@ export const seedDefaultData = async () => {
           "AWS SQS",
           "WebSockets"
         ],
-        "salary": 3000000,
+        "salary": 850000,
         "location": "Chennai, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "3-6"
+        "experiance": "1-3"
       },
       {
         "title": "Cloud DevOps Engineer - Multi-Tenant SaaS Infrastructure",
@@ -1857,11 +1857,11 @@ export const seedDefaultData = async () => {
           "ArgoCD",
           "Prometheus"
         ],
-        "salary": 2800000,
+        "salary": 900000,
         "location": "Chennai, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "1-3"
       },
       {
         "title": "Customer Support Associate - Freshdesk Chat",
@@ -1872,7 +1872,7 @@ export const seedDefaultData = async () => {
           "Patience",
           "Empathy"
         ],
-        "salary": 500000,
+        "salary": 280000,
         "location": "Chennai, India (Part-time / Remote)",
         "jobType": "Part-time",
         "position": 4,
@@ -1898,11 +1898,11 @@ export const seedDefaultData = async () => {
           "WebAssembly",
           "3D Computer Vision"
         ],
-        "salary": 3500000,
+        "salary": 1700000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-5"
       },
       {
         "title": "Backend Engineer - Global Supply Chain & Optical Lab ERP",
@@ -1915,11 +1915,11 @@ export const seedDefaultData = async () => {
           "Redis",
           "Microservices"
         ],
-        "salary": 2800000,
+        "salary": 1300000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Computer Vision Intern - 3D Virtual Try-On AR",
@@ -1930,7 +1930,7 @@ export const seedDefaultData = async () => {
           "Linear Algebra",
           "Computer Vision Fundamentals"
         ],
-        "salary": 750000,
+        "salary": 380000,
         "location": "Gurgaon, India",
         "jobType": "Internship",
         "position": 3,
@@ -1956,11 +1956,11 @@ export const seedDefaultData = async () => {
           "Redux",
           "Web Performance"
         ],
-        "salary": 2800000,
+        "salary": 700000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "1-3"
       },
       {
         "title": "Backend Engineer - High-Concurrency Flash Sale Architecture",
@@ -1973,11 +1973,11 @@ export const seedDefaultData = async () => {
           "Kafka",
           "AWS"
         ],
-        "salary": 3200000,
+        "salary": 1400000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-5"
+        "experiance": "2-4"
       },
       {
         "title": "Beauty & Lifestyle Catalog Quality Specialist",
@@ -1988,7 +1988,7 @@ export const seedDefaultData = async () => {
           "Attention to Detail",
           "CMS Management"
         ],
-        "salary": 450000,
+        "salary": 240000,
         "location": "Mumbai, India (Flexible)",
         "jobType": "Part-time",
         "position": 3,
@@ -2014,7 +2014,7 @@ export const seedDefaultData = async () => {
           "Cassandra",
           "Aerospike"
         ],
-        "salary": 4200000,
+        "salary": 3200000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
@@ -2030,11 +2030,11 @@ export const seedDefaultData = async () => {
           "Transformers",
           "Distributed Systems"
         ],
-        "salary": 3800000,
+        "salary": 1800000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Ad Campaign Optimization & QA Specialist",
@@ -2045,7 +2045,7 @@ export const seedDefaultData = async () => {
           "Analytical Thinking",
           "Attention to Detail"
         ],
-        "salary": 600000,
+        "salary": 420000,
         "location": "Bangalore, India (Flexible / Part-time)",
         "jobType": "Part-time",
         "position": 3,
@@ -2071,7 +2071,7 @@ export const seedDefaultData = async () => {
           "WebSockets",
           "Docker"
         ],
-        "salary": 4500000,
+        "salary": 3200000,
         "location": "Mumbai, India",
         "jobType": "Full-time",
         "position": 2,
@@ -2088,11 +2088,11 @@ export const seedDefaultData = async () => {
           "Golang",
           "Network Optimization"
         ],
-        "salary": 3600000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Cloud Infrastructure Intern - Real Device Farm",
@@ -2103,7 +2103,7 @@ export const seedDefaultData = async () => {
           "Android / iOS Basics",
           "Git"
         ],
-        "salary": 800000,
+        "salary": 420000,
         "location": "Mumbai, India",
         "jobType": "Internship",
         "position": 4,
@@ -2129,11 +2129,11 @@ export const seedDefaultData = async () => {
           "Redis",
           "System Design"
         ],
-        "salary": 3800000,
+        "salary": 1900000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "4-7"
+        "experiance": "3-5"
       },
       {
         "title": "Mobile Engineer - Urban Company Partner Super-App",
@@ -2145,11 +2145,11 @@ export const seedDefaultData = async () => {
           "Offline-first Architecture",
           "Android SDK"
         ],
-        "salary": 2900000,
+        "salary": 1300000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "2-4"
       },
       {
         "title": "Partner Onboarding & Technical Operations Lead",
@@ -2160,7 +2160,7 @@ export const seedDefaultData = async () => {
           "Problem Solving",
           "Basic Tech Proficiency"
         ],
-        "salary": 700000,
+        "salary": 480000,
         "location": "Gurgaon, India (Flexible)",
         "jobType": "Part-time",
         "position": 3,
@@ -2186,11 +2186,11 @@ export const seedDefaultData = async () => {
           "AWS S3",
           "Tailwind CSS"
         ],
-        "salary": 3000000,
+        "salary": 850000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "1-3"
       },
       {
         "title": "Backend Engineer - Auction Engine & Dealer Financing Services",
@@ -2203,11 +2203,11 @@ export const seedDefaultData = async () => {
           "MySQL",
           "Kafka"
         ],
-        "salary": 2700000,
+        "salary": 750000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Automotive Digital Catalog & Quality Analyst",
@@ -2218,7 +2218,7 @@ export const seedDefaultData = async () => {
           "Quality Checking",
           "Attention to Detail"
         ],
-        "salary": 500000,
+        "salary": 250000,
         "location": "Gurgaon, India (Part-time)",
         "jobType": "Part-time",
         "position": 3,
@@ -2243,11 +2243,11 @@ export const seedDefaultData = async () => {
           "Cryptographic HSM",
           "Java"
         ],
-        "salary": 3200000,
+        "salary": 1400000,
         "location": "Noida, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Cloud Payments Engineer - Buy-Now-Pay-Later (BNPL) Engine",
@@ -2259,11 +2259,11 @@ export const seedDefaultData = async () => {
           "Kafka",
           "REST APIs"
         ],
-        "salary": 2800000,
+        "salary": 800000,
         "location": "Noida, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "2-5"
+        "experiance": "1-3"
       },
       {
         "title": "Merchant Technical Helpdesk Engineer",
@@ -2274,7 +2274,7 @@ export const seedDefaultData = async () => {
           "Android OS",
           "Communication"
         ],
-        "salary": 550000,
+        "salary": 380000,
         "location": "Noida, India (Flexible)",
         "jobType": "Part-time",
         "position": 3,
@@ -2299,7 +2299,7 @@ export const seedDefaultData = async () => {
           "C++",
           "PostGIS"
         ],
-        "salary": 4200000,
+        "salary": 3000000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 2,
@@ -2315,11 +2315,11 @@ export const seedDefaultData = async () => {
           "TimescaleDB",
           "Microservices"
         ],
-        "salary": 3100000,
+        "salary": 750000,
         "location": "Gurgaon, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-5"
+        "experiance": "1-3"
       },
       {
         "title": "Warehouse Hub Systems Coordinator",
@@ -2330,7 +2330,7 @@ export const seedDefaultData = async () => {
           "Excel",
           "Problem Escalation"
         ],
-        "salary": 480000,
+        "salary": 260000,
         "location": "Gurgaon, India (Part-time / Shifts)",
         "jobType": "Part-time",
         "position": 4,
@@ -2357,11 +2357,11 @@ export const seedDefaultData = async () => {
           "Redis",
           "Distributed Systems"
         ],
-        "salary": 3600000,
+        "salary": 1600000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 2,
-        "experiance": "3-6"
+        "experiance": "2-4"
       },
       {
         "title": "Full Stack Engineer - Educator Studio & Interactive Quizzes",
@@ -2374,11 +2374,11 @@ export const seedDefaultData = async () => {
           "Canvas API",
           "Tailwind CSS"
         ],
-        "salary": 2800000,
+        "salary": 680000,
         "location": "Bangalore, India",
         "jobType": "Full-time",
         "position": 3,
-        "experiance": "2-4"
+        "experiance": "1-3"
       },
       {
         "title": "Live Video Engineering Intern - WebRTC Streaming",
@@ -2389,7 +2389,7 @@ export const seedDefaultData = async () => {
           "HTML5 Video / Audio",
           "Problem Solving"
         ],
-        "salary": 700000,
+        "salary": 360000,
         "location": "Bangalore, India",
         "jobType": "Internship",
         "position": 4,
