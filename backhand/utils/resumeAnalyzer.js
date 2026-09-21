@@ -14,15 +14,18 @@ export const extractTextFromPdf = async (pdfUrl) => {
   try {
     let buffer = null;
 
-    // Check if it's a local file URL or file path
-    if (pdfUrl.includes("/uploads/resumes/")) {
-      const fileName = pdfUrl.split("/uploads/resumes/").pop();
-      const localDiskPath = path.resolve(process.cwd(), "uploads", "resumes", fileName);
-      if (fs.existsSync(localDiskPath)) {
-        buffer = fs.readFileSync(localDiskPath);
-      }
-    } else if (fs.existsSync(pdfUrl)) {
+    // Check if it's an existing local file directly
+    if (fs.existsSync(pdfUrl)) {
       buffer = fs.readFileSync(pdfUrl);
+    } else if (pdfUrl.includes("/uploads/resumes/") || pdfUrl.includes("\\uploads\\resumes\\")) {
+      const fileName = path.basename(pdfUrl);
+      const directPath = path.resolve(process.cwd(), "uploads", "resumes", fileName);
+      const backhandPath = path.resolve(process.cwd(), "backhand", "uploads", "resumes", fileName);
+      if (fs.existsSync(directPath)) {
+        buffer = fs.readFileSync(directPath);
+      } else if (fs.existsSync(backhandPath)) {
+        buffer = fs.readFileSync(backhandPath);
+      }
     }
 
     // Fall back to HTTP download if not local
@@ -60,73 +63,65 @@ export const extractTextFromPdf = async (pdfUrl) => {
  * Common tech skills list for robust local NLP matching fallback
  */
 const COMMON_SKILLS = [
-  "javascript", "typescript", "react", "next.js", "nextjs", "vue", "angular",
-  "node", "node.js", "express", "express.js", "mongodb", "mongoose", "sql", "mysql",
-  "postgresql", "postgres", "redis", "python", "django", "flask", "fastapi",
-  "java", "spring", "springboot", "c", "c++", "c#", ".net", "php", "laravel",
-  "html", "html5", "css", "css3", "tailwind", "tailwindcss", "bootstrap",
-  "sass", "redux", "redux-toolkit", "graphql", "rest api", "restful", "docker",
-  "kubernetes", "aws", "azure", "gcp", "git", "github", "gitlab", "ci/cd",
-  "linux", "jest", "cypress", "unit testing", "microservices", "agile", "scrum"
+  "javascript", "typescript", "react", "react.js", "reactjs", "next.js", "nextjs",
+  "vue", "angular", "node", "node.js", "nodejs", "express", "express.js", "expressjs",
+  "python", "django", "flask", "fastapi", "java", "spring", "springboot",
+  "c++", "c#", ".net", "php", "laravel", "ruby", "rails", "golang", "go", "rust",
+  "mongodb", "sql", "mysql", "postgresql", "postgres", "redis", "firebase", "supabase",
+  "docker", "kubernetes", "aws", "azure", "gcp", "ci/cd", "git", "github",
+  "html", "html5", "css", "css3", "sass", "tailwind", "tailwindcss", "bootstrap",
+  "graphql", "rest", "rest api", "redux", "zustand", "jest", "cypress"
 ];
 
 /**
- * Local NLP & Skill-Matching Fallback Engine
+ * Local Rule-Based & NLP ATS Evaluator
+ * Runs entirely on server without requiring external API keys.
  */
 export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
-  const combinedResumeText = `${resumeText} ${(applicantSkills || []).join(" ")}`.toLowerCase();
-  const jobRequirements = job?.requirement || [];
-  const jobDescription = `${job?.title || ""} ${job?.description || ""}`.toLowerCase();
+  const normalize = (text) =>
+    (text || "")
+      .toLowerCase()
+      .replace(/[^\w\s\+\#\.\-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-  // Helper to test if skill is present with word boundary
-  const matchKeyword = (targetText, keyword) => {
-    if (!keyword) return false;
-    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(?:^|[^a-zA-Z0-9_+#.])${escaped}(?:$|[^a-zA-Z0-9_+#.])`, "i");
-    return regex.test(targetText);
+  const normalizedResume = normalize(resumeText);
+  const jobDescription = normalize(job?.description || "");
+  const combinedResumeText = `${resumeText} ${(applicantSkills || []).join(" ")}`;
+
+  // Precise keyword matching helper (avoids substring false positives)
+  const matchKeyword = (sourceText, keyword) => {
+    if (!sourceText || !keyword) return false;
+    const lower = keyword.toLowerCase().trim();
+    if (lower === "react" || lower === "react.js" || lower === "reactjs") {
+      return /\b(react|react\.js|reactjs)\b/i.test(sourceText);
+    }
+    if (lower === "node" || lower === "node.js" || lower === "nodejs") {
+      return /\b(node|node\.js|nodejs)\b/i.test(sourceText);
+    }
+    if (lower === "express" || lower === "express.js" || lower === "expressjs") {
+      return /\b(express|express\.js|expressjs)\b/i.test(sourceText);
+    }
+    if (lower === "mongo" || lower === "mongodb") {
+      return /\b(mongo|mongodb)\b/i.test(sourceText);
+    }
+    if (lower === "tailwind" || lower === "tailwindcss" || lower === "tailwind css") {
+      return /\b(tailwind|tailwindcss)\b/i.test(sourceText);
+    }
+    const escaped = lower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(^|[^a-zA-Z0-9])${escaped}([^a-zA-Z0-9]|$)`, "i").test(sourceText);
   };
 
-  // Extract skills expected by the job
-  const expectedSkills = new Set();
+  const jobReqs = Array.isArray(job?.requirement) ? job.requirement : [];
+  const allExpected = [...jobReqs];
 
-  jobRequirements.forEach((req) => {
-    if (!req) return;
-    const cleaned = req.toLowerCase().trim();
-    if (cleaned) {
-      // Split by commas, semicolons, pipes, slashes, or newlines
-      cleaned.split(/[,;|/\n]+/).forEach((s) => {
-        const trimmed = s.trim();
-        if (trimmed && trimmed.length <= 30) {
-          expectedSkills.add(trimmed);
-        } else if (trimmed) {
-          // If long blob, extract known tech skills from it
-          COMMON_SKILLS.forEach((cs) => {
-            if (matchKeyword(trimmed, cs)) {
-              expectedSkills.add(cs);
-            }
-          });
-        }
-      });
-    }
-  });
-
-  // Check common skills mentioned in job description
-  COMMON_SKILLS.forEach((skill) => {
-    if (matchKeyword(jobDescription, skill)) {
-      expectedSkills.add(skill);
-    }
-  });
-
-  const allExpected = Array.from(expectedSkills);
   const matchingSkills = [];
   const missingSkills = [];
 
   if (allExpected.length > 0) {
     allExpected.forEach((skill) => {
-      const inText = matchKeyword(combinedResumeText, skill);
-      const inSkills = applicantSkills.some(
-        (s) => s && s.toLowerCase().trim() === skill
-      );
+      const inText = matchKeyword(normalizedResume, skill);
+      const inSkills = applicantSkills.some((s) => matchKeyword(s, skill));
       if (inText || inSkills) {
         matchingSkills.push(skill);
       } else {
@@ -141,7 +136,7 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
     });
   }
 
-  // Calculate score
+  // Calculate skill match ratio (up to 70 points)
   let skillRatio = 0.5;
   if (allExpected.length > 0) {
     skillRatio = matchingSkills.length / allExpected.length;
@@ -149,16 +144,40 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
     skillRatio = Math.min(1, applicantSkills.length / 5);
   }
 
-  // Experience factor check
+  // Multi-Tiered Experience & Practical Evidence Scoring (up to 30 points)
   const reqExp = parseInt(job?.experiance || "0", 10);
-  let expBonus = 0.2;
-  const hasExpKeywords = /year|years|intern|experience|developed|built|worked/i.test(combinedResumeText);
-  if (hasExpKeywords) {
-    expBonus += 0.1;
+  let expPoints = 0;
+
+  // 1. Parsed resume verification (up to 5 points)
+  if (combinedResumeText.trim().length > 50) {
+    expPoints += 5;
   }
 
+  // 2. Real-world project implementation evidence (up to 12 points)
+  const hasProjects = /project|projects|developed|built|engineered|deployed|implemented|designed|created|fullstack|frontend|backend/i.test(combinedResumeText);
+  if (hasProjects) {
+    expPoints += 12;
+  }
+
+  // 3. Internship, Hackathon, or Industry Validation (up to 8 points)
+  const hasInternshipOrHackathon = /intern|internship|hackathon|competition|fellowship|bootcamp|certification|certified|contributor/i.test(combinedResumeText);
+  if (hasInternshipOrHackathon) {
+    expPoints += 8;
+  }
+
+  // 4. Tenure & Experience fit (up to 5 points)
+  if (reqExp <= 1) {
+    expPoints += 5; // Entry-level / fresher ideal fit
+  } else if (reqExp <= 3) {
+    expPoints += 3; // Junior to mid-level baseline
+  } else {
+    expPoints += 1; // Senior role tenure gap
+  }
+
+  const finalExpScore = Math.min(30, expPoints);
+
   // Base raw score (0-100)
-  let rawScore = Math.round(skillRatio * 70 + expBonus * 100 * 0.3);
+  let rawScore = Math.round(skillRatio * 70 + finalExpScore);
   if (rawScore > 100) rawScore = 100;
   if (rawScore < 15 && matchingSkills.length === 0) rawScore = Math.max(10, rawScore);
 
@@ -171,8 +190,11 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
   if (matchingSkills.length > 0) {
     strengths.push(`Matches ${matchingSkills.length} key required skill(s): ${matchingSkills.slice(0, 4).join(", ")}`);
   }
-  if (hasExpKeywords) {
-    strengths.push("Demonstrates hands-on project or development experience in resume");
+  if (hasProjects) {
+    strengths.push("Demonstrates hands-on engineering project development and deployment in resume");
+  }
+  if (hasInternshipOrHackathon) {
+    strengths.push("Proven real-world engagement (internship, hackathon, or certified coursework)");
   }
   if (applicantSkills.length >= 4) {
     strengths.push(`Strong broad profile with ${applicantSkills.length} listed technical competencies`);
@@ -182,14 +204,17 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
   if (missingSkills.length > 0) {
     concerns.push(`Missing key required skill(s): ${missingSkills.slice(0, 4).join(", ")}`);
   }
-  if (reqExp > 0 && !hasExpKeywords) {
-    concerns.push(`Job requires ${reqExp} year(s) of experience, which is not clearly evident in resume`);
+  if (reqExp > 2 && !/(\d+)\+?\s*(year|years|yr|yrs)\s*(of)?\s*(experience|exp)/i.test(combinedResumeText)) {
+    concerns.push(`Job seeks ${reqExp}+ years professional tenure; candidate demonstrates strong project competency over multi-year corporate tenure`);
   }
 
   const summary = `Candidate demonstrates a ${rawScore}% alignment with the ${job?.title || "role"}. ` +
     (matchingSkills.length > 0
       ? `Strong points include proficiency in ${matchingSkills.slice(0, 3).join(", ")}. `
       : "No direct requirement overlaps found. ") +
+    (hasProjects
+      ? "Backed by verifiable hands-on projects and practical engineering experience. "
+      : "") +
     (missingSkills.length > 0
       ? `Would benefit from hands-on knowledge of ${missingSkills.slice(0, 3).join(", ")}.`
       : "Possesses all core listed competencies.");
@@ -199,7 +224,7 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
     verdict,
     matchingSkills,
     missingSkills,
-    experienceFit: hasExpKeywords ? "Relevant project or work experience indicated" : "Limited verifiable experience found",
+    experienceFit: hasProjects || hasInternshipOrHackathon ? "Relevant project, hackathon or work experience indicated" : "Limited verifiable experience found",
     strengths: strengths.length > 0 ? strengths : ["Demonstrates interest in the domain"],
     concerns: concerns.length > 0 ? concerns : ["None identified"],
     summary,
