@@ -186,48 +186,49 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
     (ms) => !matchingSkills.some((matched) => isSkillMatch(ms, matched))
   );
 
-  // Unified skill match ratio (up to 60 points)
+  // 1. Skill Match Component (Max 70 Points)
   const totalRequirements = Math.max(allExpected.length, 1);
   const skillRatio = matchingSkills.length / totalRequirements;
-  const skillScore = Math.round(skillRatio * 60);
+  const skillScore = Math.round(skillRatio * 70);
 
-  // Resume & Practical Evidence (up to 40 points)
+  // 2. Experience & Practical Evidence Component (Max 30 Points)
   const reqExp = parseInt(job?.experiance || "0", 10);
   let expPoints = 0;
 
+  // Dimension 1: Resume Verification (5 pts)
   const hasResume = combinedResumeText.trim().length > 50 || !!resumeText;
   if (hasResume) {
-    expPoints += 20; // Resume verified
-  } else {
-    expPoints += 5; // Basic profile only
+    expPoints += 5;
   }
 
+  // Dimension 2: Engineering Projects (12 pts)
   const hasProjects = /project|projects|developed|built|engineered|deployed|implemented|designed|created|fullstack|frontend|backend/i.test(combinedResumeText);
-  if (hasProjects) {
-    expPoints += 10;
+  if (hasProjects || (applicantSkills || []).length >= 3) {
+    expPoints += 12;
   }
 
+  // Dimension 3: Real-World Validation (8 pts)
   const hasInternshipOrHackathon = /intern|internship|hackathon|competition|fellowship|bootcamp|certification|certified|contributor/i.test(combinedResumeText);
-  if (hasInternshipOrHackathon) {
-    expPoints += 5;
+  if (hasInternshipOrHackathon || (applicantSkills || []).length >= 4) {
+    expPoints += 8;
   }
 
+  // Dimension 4: Role Tenure Fit (5 pts / 3 pts / 1 pt)
   if (reqExp <= 1) {
-    expPoints += 5;
+    expPoints += 5; // Entry/Fresher (<= 1 yr)
   } else if (reqExp <= 3) {
-    expPoints += 3;
+    expPoints += 3; // Junior (<= 3 yrs)
   } else {
-    expPoints += 1;
+    expPoints += 1; // Senior tenure gap
   }
 
-  const finalExpScore = Math.min(40, expPoints);
+  const finalExpScore = Math.min(30, expPoints);
 
-  // Total Score (0-100)
-  let rawScore = skillScore + finalExpScore;
+  // Total ATS Score (100 pts) = Skill Score (70 pts) + Experience Score (30 pts)
+  let rawScore = Math.min(100, Math.max(10, Math.round(skillScore + finalExpScore)));
   if (matchingSkills.length === 0 && !hasResume) {
     rawScore = 15;
   }
-  rawScore = Math.min(100, Math.max(10, rawScore));
 
   let verdict = "Not Qualified";
   if (rawScore >= 80) verdict = "Highly Qualified";

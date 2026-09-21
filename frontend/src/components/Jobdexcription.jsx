@@ -173,36 +173,53 @@ export default function Jobdexcription() {
     (ms) => !matchedSkills.some((m) => isSkillMatch(m, ms))
   )
 
-  // Unified Pre-Check Match Score (consistent with backend weighting)
+  // 1. Skill Match Component (Max 70 Points)
   const totalFactors = Math.max(rawRequirements.length, 1)
   const skillRatio = matchedSkills.length / totalFactors
-  const skillScore = Math.round(skillRatio * 60)
+  const skillScore = Math.round(skillRatio * 70)
 
+  // 2. Experience & Practical Evidence Component (Max 30 Points)
   let expPoints = 0
+
+  // Dimension 1: Resume Verification (5 pts)
   if (hasResume) {
-    expPoints += 20
-  } else {
     expPoints += 5
   }
 
-  if (candidateSkills.length >= 3) {
-    expPoints += 10
+  // Dimension 2: Engineering Projects (12 pts)
+  const candidateBio = user?.profile?.bio || ""
+  const hasProjects =
+    candidateSkills.length >= 3 ||
+    /project|projects|developed|built|engineered|deployed|implemented|designed|created|fullstack|frontend|backend/i.test(candidateBio)
+  if (hasProjects) {
+    expPoints += 12
   }
 
+  // Dimension 3: Real-World Validation (8 pts)
+  const hasValidation =
+    candidateSkills.length >= 4 ||
+    /intern|internship|hackathon|competition|fellowship|bootcamp|certification|certified|contributor/i.test(candidateBio)
+  if (hasValidation) {
+    expPoints += 8
+  }
+
+  // Dimension 4: Role Tenure Fit (5 pts / 3 pts / 1 pt)
   const reqExp = parseInt(singlejob?.experiance || "0", 10)
   if (reqExp <= 1) {
-    expPoints += 5
+    expPoints += 5 // Entry/Fresher (<= 1 yr)
   } else if (reqExp <= 3) {
-    expPoints += 3
+    expPoints += 3 // Junior (<= 3 yrs)
   } else {
-    expPoints += 1
+    expPoints += 1 // Senior tenure gap
   }
 
-  let preCheckScore = skillScore + Math.min(40, expPoints)
+  const finalExpScore = Math.min(30, expPoints)
+
+  // Total ATS Score (100 pts) = Skill Score (70 pts) + Experience Score (30 pts)
+  let preCheckScore = Math.min(100, Math.max(10, Math.round(skillScore + finalExpScore)))
   if (matchedSkills.length === 0 && !hasResume) {
     preCheckScore = 15
   }
-  preCheckScore = Math.min(100, Math.max(10, preCheckScore))
 
   // Displayed Score & Data: Consistent between pre-check and submitted evaluation
   const displayedScore = isEvaluated ? officialEvaluation.score : preCheckScore
