@@ -262,3 +262,74 @@ export const toggleJobAlerts = async (req, res) => {
         });
     }
 }
+
+// update job details (recruiter only)
+export const updateJob = async (req, res) => {
+    try {
+        const jobId = req.params.id;
+        const userId = req.id;
+        const {
+            title,
+            description,
+            requirement,
+            salary,
+            location,
+            jobType,
+            experiance,
+            position,
+            companyId,
+            emailAlerts
+        } = req.body;
+
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({
+                message: "Job not found",
+                success: false
+            });
+        }
+
+        // Verify ownership
+        if (job.created_by.toString() !== userId) {
+            return res.status(403).json({
+                message: "You are not authorized to update this job",
+                success: false
+            });
+        }
+
+        let requirementsArray = job.requirement;
+        if (requirement !== undefined) {
+            if (Array.isArray(requirement)) {
+                requirementsArray = requirement.map(r => String(r).trim()).filter(Boolean);
+            } else if (typeof requirement === "string") {
+                requirementsArray = requirement.split(",").map(r => r.trim()).filter(Boolean);
+            }
+        }
+
+        if (title) job.title = title;
+        if (description) job.description = description;
+        if (requirement !== undefined) job.requirement = requirementsArray;
+        if (salary !== undefined) job.salary = Number(salary);
+        if (location) job.location = location;
+        if (jobType) job.jobType = jobType;
+        if (experiance !== undefined) job.experiance = experiance;
+        if (position !== undefined) job.position = Number(position);
+        if (companyId) job.company = companyId;
+        if (emailAlerts !== undefined) job.emailAlerts = emailAlerts === true || emailAlerts === "true";
+
+        await job.save();
+        const updatedJob = await Job.findById(jobId).populate("company");
+
+        return res.status(200).json({
+            message: "Job updated successfully",
+            job: updatedJob,
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: error.message || "Internal Server Error",
+            success: false
+        });
+    }
+};
