@@ -15,18 +15,25 @@ const createTransporter = async () => {
   const pass = rawPass ? rawPass.replace(/\s+/g, '') : null;
 
   if (host && user && pass) {
-    const isPort465 = parseInt(port) === 465;
-    transporter = nodemailer.createTransport({
-      host,
-      port: parseInt(port) || 465,
-      secure: isPort465,
-      auth: { user, pass },
-      tls: {
-        rejectUnauthorized: false // avoids SSL cert issues on cloud providers
-      }
-    });
+    const isGmail = host.toLowerCase().includes("gmail") || user.toLowerCase().endsWith("@gmail.com");
+    const transportConfig = isGmail
+      ? {
+          service: "gmail",
+          auth: { user, pass },
+        }
+      : {
+          host,
+          port: parseInt(port) || 587,
+          secure: parseInt(port) === 465,
+          auth: { user, pass },
+          tls: {
+            rejectUnauthorized: false,
+          },
+        };
+
+    transporter = nodemailer.createTransport(transportConfig);
     isEthereal = false;
-    console.log("📧 Email service configured with real SMTP:", host, "User:", user);
+    console.log("📧 Email service configured with real SMTP (Gmail mode:", isGmail, ") User:", user);
   } else {
     // Try creating an Ethereal test account for instant web preview
     try {
