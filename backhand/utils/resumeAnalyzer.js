@@ -239,7 +239,8 @@ Return a STRICT JSON response (do NOT use markdown backticks, return pure raw JS
 }
 `;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const model = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const response = await axios.post(
     url,
