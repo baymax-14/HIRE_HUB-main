@@ -282,8 +282,12 @@ export const reAnalyzeApplicant = async (req, res) => {
       });
     }
 
-    // Verify authorization: logged in user must be the recruiter who created the job
-    if (application.job && application.job.created_by.toString() !== req.id) {
+    // Verify authorization: logged in user must be either the recruiter or the applicant
+    const isRecruiter = application.job && application.job.created_by?.toString() === req.id;
+    const applicantId = application.applicant?._id ? application.applicant._id.toString() : application.applicant?.toString();
+    const isApplicant = applicantId === req.id;
+
+    if (!isRecruiter && !isApplicant) {
       return res.status(403).json({
         message: "You are not authorized to evaluate this applicant",
         success: false,

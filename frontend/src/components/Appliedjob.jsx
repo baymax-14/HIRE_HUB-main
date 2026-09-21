@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
+import { setallappliedjobs } from "@/redux/jobslice"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import {
@@ -23,13 +24,38 @@ import {
   Calendar,
   Check,
   Zap,
+  RotateCw,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { APPLICATION_API_END_POINT } from "@/util/const"
+import { toast } from "sonner"
 
 export default function Appliedjob() {
   const { allappliedjobs } = useSelector((store) => store.job)
   const [expandedAppId, setExpandedAppId] = useState(null)
+  const [reanalyzingId, setReanalyzingId] = useState(null)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const handleReanalyze = async (appId) => {
+    try {
+      setReanalyzingId(appId)
+      axios.defaults.withCredentials = true
+      const res = await axios.post(`${APPLICATION_API_END_POINT}/${appId}/reanalyze`)
+      if (res.data?.success) {
+        toast.success("Resume re-analyzed! ATS score updated.")
+        const updated = allappliedjobs.map((app) =>
+          app._id === appId ? { ...app, aiEvaluation: res.data.aiEvaluation } : app
+        )
+        dispatch(setallappliedjobs(updated))
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to re-analyze resume")
+    } finally {
+      setReanalyzingId(null)
+    }
+  }
 
   const toggleExpand = (id) => {
     setExpandedAppId((prev) => (prev === id ? null : id))
@@ -187,17 +213,29 @@ export default function Appliedjob() {
                                     Track each milestone from application intake to recruiter evaluation
                                   </p>
                                 </div>
-                                {applied.job?._id && (
+                                <div className="flex items-center gap-2 self-start sm:self-auto">
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate(`/description/${applied.job._id}`)}
-                                    className="text-xs gap-1.5 self-start sm:self-auto cursor-pointer"
+                                    disabled={reanalyzingId === applied._id}
+                                    onClick={() => handleReanalyze(applied._id)}
+                                    className="text-xs text-purple-700 border-purple-200 hover:bg-purple-50 cursor-pointer gap-1.5"
                                   >
-                                    View Job Details
-                                    <ExternalLink className="w-3.5 h-3.5" />
+                                    <RotateCw className={`w-3.5 h-3.5 ${reanalyzingId === applied._id ? "animate-spin" : ""}`} />
+                                    {reanalyzingId === applied._id ? "Evaluating..." : "Re-evaluate Score"}
                                   </Button>
-                                )}
+                                  {applied.job?._id && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => navigate(`/description/${applied.job._id}`)}
+                                      className="text-xs gap-1.5 cursor-pointer"
+                                    >
+                                      View Job Details
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
 
                               {/* 3-Stage Stepper */}
