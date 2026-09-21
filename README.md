@@ -203,8 +203,8 @@ HIRE_HUB/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/HIRE_HUB.git
-cd HIRE_HUB
+git clone https://github.com/baymax-14/HIRE_HUB-main.git
+cd HIRE_HUB-main
 ```
 
 ### 2. Setup Backend
@@ -273,13 +273,15 @@ Navigate to **http://localhost:5173** — you're all set! 🎉
 | `API_SECRET` | No | Cloudinary API secret |
 | `FRONTEND_URL` | No | Frontend URL for CORS (default: `http://localhost:5173`) |
 | `GEMINI_API_KEY` | No | Google Gemini API key for AI resume evaluation |
-| `SMTP_HOST` | No | SMTP server host for real email delivery |
-| `SMTP_PORT` | No | SMTP server port |
-| `SMTP_USER` | No | SMTP auth username |
-| `SMTP_PASS` | No | SMTP auth password |
-| `SMTP_FROM` | No | Sender email address |
+| `SMTP_HOST` | No | SMTP server host (e.g., `smtp.gmail.com`) |
+| `SMTP_PORT` | No | SMTP server port (e.g., `465` or `587`) |
+| `SMTP_USER` | No | SMTP email address (e.g. your Gmail) |
+| `SMTP_PASS` | No | SMTP App Password (for Gmail, generate a 16-character Google App Password) |
+| `SMTP_FROM` | No | Sender display email address |
 
-> **💡 Tip:** The app works fully without Cloudinary (uses local file storage), without Gemini (uses local NLP engine), and without SMTP (logs emails to console).
+> **💡 Tip:** 
+> - **Gmail Support**: When using a Gmail address (`@gmail.com`), HireHub automatically routes through Nodemailer's optimized `service: "gmail"` transport to prevent cloud host egress port blocks (such as Render's outbound 465 timeout).
+> - **Zero-Config Resilient**: The app functions gracefully without Cloudinary (stores files locally), without Gemini API key (falls back to local NLP rule engine), and without SMTP credentials (safely logs transactional emails to console).
 
 ### Frontend (`frontend/.env`)
 
@@ -324,6 +326,7 @@ Navigate to **http://localhost:5173** — you're all set! 🎉
 | `GET` | `/get` | Get user's applications |
 | `GET` | `/:id/applicants` | Get job applicants (recruiter) |
 | `POST` | `/status/:id/update` | Update application status |
+| `POST` | `/:id/reanalyze` | On-demand ATS re-evaluation (Applicant & Recruiter) |
 
 ### Notifications — `/api/v1/notifications`
 | Method | Endpoint | Description |
@@ -341,7 +344,7 @@ Navigate to **http://localhost:5173** — you're all set! 🎉
 
 ## 🤖 AI Resume Analyzer
 
-HireHub features a **dual-engine resume evaluation system** that runs automatically when a candidate applies:
+HireHub features a **dual-engine resume evaluation system** that runs automatically when a candidate applies and supports on-demand re-evaluation:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -350,41 +353,54 @@ HireHub features a **dual-engine resume evaluation system** that runs automatica
                        │
                        ▼
               ┌─────────────────┐
-              │ Extract PDF Text │  ◄── pdf-parse
+              │ Extract PDF Text │  ◄── pdf-parse v2 (PDFParse)
               └────────┬────────┘
                        │
                        ▼
-              ┌─────────────────┐     ╔═══════════════════╗
-              │  Gemini API Key  │────▶║  Google Gemini AI  ║
-              │  configured?     │ Yes ║  (Primary Engine)  ║
-              └────────┬────────┘     ╚═══════════════════╝
+              ┌─────────────────┐     ╔═════════════════════════════╗
+              │  Gemini API Key  │────▶║  Google Gemini AI           ║
+              │  configured?     │ Yes ║  (Primary Model: 3.6-flash) ║
+              └────────┬────────┘     ╚═════════════════════════════╝
                        │ No / Fails
                        ▼
-              ╔═══════════════════╗
-              ║  Local NLP Engine  ║
-              ║  (Smart Fallback)  ║
-              ╚═══════════════════╝
+              ╔═════════════════════════════╗
+              ║  Local Rule-Based & NLP     ║
+              ║  (Offline Resilient Engine) ║
+              ╚═════════════════════════════╝
                        │
                        ▼
-              ┌─────────────────┐
-              │   ATS Result     │
-              │  • Score (0-100) │
-              │  • Verdict       │
-              │  • Matching Skills│
-              │  • Missing Skills │
-              │  • Strengths     │
-              │  • Concerns      │
-              └─────────────────┘
+              ┌──────────────────────────────────────────────┐
+              │                 ATS Result                   │
+              │  • Standardized Score (0 - 100)              │
+              │  • Verdict (Highly Qualified / Qualified...) │
+              │  • Matching Skills vs Missing Skills         │
+              │  • Evidence-Backed Strengths & Concerns      │
+              │  • Candidate Improvement Summary             │
+              └──────────────────────────────────────────────┘
 ```
+
+### 📊 Standardized 100-Point Evaluation Rubric
+
+HireHub uses the modern industry-standard ATS scoring framework (modeled after tools like Jobscan and Resume Worded) combining skill alignment with practical engineering proof:
+
+$$\text{ATS Score (100 pts)} = \text{Technical Skill Overlap (70 pts)} + \text{Practical Experience \& Evidence (30 pts)}$$
+
+| Component | Weight | Criteria Checked in Resume & Profile |
+|---|:---:|---|
+| **1. Technical Skills Overlap** | **70 pts** | Exact & semantic match against job requirements (e.g., React, Node.js, Express, MongoDB, Tailwind CSS, Git) |
+| **2. Verified Resume Content** | **5 pts** | Text extracted from uploaded PDF resume ($>50$ characters) |
+| **3. Engineering Projects** | **12 pts** | Production delivery verbs & architectures (`developed`, `built`, `engineered`, `deployed`, `fullstack`, `frontend`, `backend`) |
+| **4. Real-World Validation** | **8 pts** | Hackathons (e.g., Adobe India Hackathon), internships, technical competitions, or professional certifications |
+| **5. Role Tenure Fit** | **5 pts** | Alignment with job's target experience level (Fresher/Junior: $\le 1$ yr = +5, Mid: $\le 3$ yrs = +3, Senior = +1) |
 
 ### Verdict Scale
 
-| Score | Verdict |
-|---|---|
-| 80 – 100 | ✅ Highly Qualified |
-| 60 – 79 | 🟢 Qualified |
-| 40 – 59 | 🟡 Partially Qualified |
-| 0 – 39 | 🔴 Not Qualified |
+| Score | Verdict | Recommendation |
+|---|---|---|
+| 80 – 100 | ✅ Highly Qualified | Top candidate — strong skills & verifiable project delivery |
+| 60 – 79 | 🟢 Qualified | Solid match — meets core requirements, minor gaps |
+| 40 – 59 | 🟡 Partially Qualified | Foundation skills present — needs additional project proof |
+| 0 – 39 | 🔴 Not Qualified | Significant skill mismatch for this role |
 
 ---
 
