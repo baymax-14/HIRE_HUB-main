@@ -1,7 +1,7 @@
 "use client";
 
 import { Edit2, MoreHorizontal, Trash2, Loader2, AlertCircle } from "lucide-react";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
@@ -90,8 +90,11 @@ export default function CompanisTable() {
             filtercompany?.map((company) => (
               <TableRow key={company._id} className="hover:bg-gray-50/60 transition-colors">
                 <TableCell className="px-3 sm:px-4 py-3">
-                  <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border shadow-2xs">
+                  <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border border-gray-100 shadow-2xs bg-white">
                     <AvatarImage src={company.logo || "/placeholder.svg"} className="object-contain p-1" />
+                    <AvatarFallback className="bg-purple-100 text-purple-700 font-bold text-xs">
+                      {company.name?.charAt(0) || "C"}
+                    </AvatarFallback>
                   </Avatar>
                 </TableCell>
                 <TableCell className="text-xs sm:text-sm font-semibold text-gray-900 px-3 sm:px-4 py-3">

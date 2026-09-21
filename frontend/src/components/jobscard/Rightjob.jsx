@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Bookmark, Loader2 } from "lucide-react"
 import { Button } from "../ui/button"
-import { Avatar, AvatarImage } from "../ui/avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"
 import { Badge } from "../ui/badge"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
@@ -85,8 +85,11 @@ export default function Rightjob({ job }) {
         </div>
 
         <div className="flex items-center gap-3 my-3">
-          <Avatar className="w-10 h-10 rounded-xl border border-gray-100 shadow-2xs">
+          <Avatar className="w-10 h-10 rounded-xl border border-gray-100 shadow-2xs bg-white">
             <AvatarImage src={job?.company?.logo || "/placeholder.svg"} className="object-contain p-0.5" />
+            <AvatarFallback className="bg-purple-100 text-purple-700 font-bold text-xs">
+              {job?.company?.name?.charAt(0) || "C"}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-sm sm:text-base font-semibold text-gray-900 leading-tight">

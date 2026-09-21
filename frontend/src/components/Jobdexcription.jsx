@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT, USER_API_END_POINT, formatSalary } from "@/util/const"
@@ -247,21 +248,30 @@ export default function Jobdexcription() {
 
         {/* Top Header Card */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 bg-white p-5 sm:p-7 rounded-2xl border border-gray-200/90 shadow-xs">
-          <div className="flex-1">
-            <h1 className="font-bold text-xl sm:text-2xl lg:text-3xl mb-2.5 text-gray-900">{singlejob?.title}</h1>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Badge className="text-blue-700 bg-blue-50 border-blue-200 font-bold text-xs sm:text-sm" variant="outline">
-                {singlejob?.position} Positions
-              </Badge>
-              <Badge className="text-[#F83002] bg-orange-50 border-orange-200 text-xs sm:text-sm" variant="outline">
-                {singlejob?.jobType}
-              </Badge>
-              <Badge className="text-[#7209b7] bg-purple-50 border-purple-200 text-xs sm:text-sm font-semibold" variant="outline">
-                {formatSalary(singlejob?.salary)}
-              </Badge>
-              <Badge variant="outline" className="text-gray-600 bg-gray-50 border-gray-200 text-xs sm:text-sm">
-                {singlejob?.location}
-              </Badge>
+          <div className="flex items-start gap-4">
+            <Avatar className="w-14 h-14 rounded-2xl border border-gray-100 shadow-2xs bg-white shrink-0">
+              <AvatarImage src={singlejob?.company?.logo || "/placeholder.svg"} className="object-contain p-1.5" />
+              <AvatarFallback className="bg-purple-100 text-purple-700 font-bold text-lg">
+                {singlejob?.company?.name?.charAt(0) || "C"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-gray-500 mb-0.5">{singlejob?.company?.name}</div>
+              <h1 className="font-bold text-xl sm:text-2xl lg:text-3xl mb-2.5 text-gray-900">{singlejob?.title}</h1>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <Badge className="text-blue-700 bg-blue-50 border-blue-200 font-bold text-xs sm:text-sm" variant="outline">
+                  {singlejob?.position} Positions
+                </Badge>
+                <Badge className="text-[#F83002] bg-orange-50 border-orange-200 text-xs sm:text-sm" variant="outline">
+                  {singlejob?.jobType}
+                </Badge>
+                <Badge className="text-[#7209b7] bg-purple-50 border-purple-200 text-xs sm:text-sm font-semibold" variant="outline">
+                  {formatSalary(singlejob?.salary)}
+                </Badge>
+                <Badge variant="outline" className="text-gray-600 bg-gray-50 border-gray-200 text-xs sm:text-sm">
+                  {singlejob?.location}
+                </Badge>
+              </div>
             </div>
           </div>
 
