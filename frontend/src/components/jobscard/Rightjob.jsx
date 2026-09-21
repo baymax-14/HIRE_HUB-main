@@ -8,7 +8,7 @@ import { Badge } from "../ui/badge"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import axios from "axios"
-import { USER_API_END_POINT } from "@/util/const"
+import { USER_API_END_POINT, formatSalary } from "@/util/const"
 import { updateUserSavedJobs } from "@/redux/authSlice"
 import { toast } from "sonner"
 
@@ -109,7 +109,7 @@ export default function Rightjob({ job }) {
             {job?.jobType}
           </Badge>
           <Badge className="text-purple-700 bg-purple-50 border-purple-100 font-bold text-xs" variant="secondary">
-            {job?.salary} LPA
+            {formatSalary(job?.salary)}
           </Badge>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { MapPin, Briefcase, IndianRupee, ArrowUpRight, Bookmark, Loader2 } from 
 import { useSelector, useDispatch } from "react-redux"
 import { useState } from "react"
 import axios from "axios"
-import { USER_API_END_POINT } from "@/util/const"
+import { USER_API_END_POINT, formatSalary } from "@/util/const"
 import { updateUserSavedJobs } from "@/redux/authSlice"
 import { toast } from "sonner"
 
@@ -147,10 +147,10 @@ export default function Latestjobcard({ job }) {
 
         <Badge
           variant="secondary"
-          className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-none text-[11px] font-bold px-2 py-0.5 ml-auto"
+          className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-none text-[11px] font-bold px-2 py-0.5 ml-auto flex items-center"
         >
           <IndianRupee className="w-3 h-3 mr-0.5 inline-block" />
-          {job?.salary} LPA
+          {formatSalary(job?.salary)}
         </Badge>
       </div>
     </div>

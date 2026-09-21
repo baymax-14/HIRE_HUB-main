@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import axios from "axios"
-import { USER_API_END_POINT } from "@/util/const"
+import { USER_API_END_POINT, formatSalary } from "@/util/const"
 import { setuser, updateUserSavedJobs } from "@/redux/authSlice"
 import useGetAllAppliedJobs from "@/hooks/useGetAllappliejobs"
 
@@ -650,7 +650,7 @@ export default function Viewprofile() {
 
                       <div className="flex flex-wrap gap-1.5 my-2">
                         <Badge variant="outline" className="text-xs font-semibold text-purple-700 bg-purple-50 border-purple-100">
-                          {job?.salary} LPA
+                          {formatSalary(job?.salary)}
                         </Badge>
                         <Badge variant="outline" className="text-xs text-blue-700 bg-blue-50 border-blue-100">
                           {job?.position} Openings

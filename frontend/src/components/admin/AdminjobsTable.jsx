@@ -108,7 +108,7 @@ export default function AdminjobsTable() {
             title: job.title || "",
             description: job.description || "",
             requirement: Array.isArray(job.requirement) ? job.requirement.join(", ") : (job.requirement || ""),
-            salary: job.salary || "",
+            salary: job.salary ? (Number(job.salary) >= 100000 ? Number(job.salary) / 100000 : job.salary) : "",
             location: job.location || "",
             jobType: job.jobType || "Full-time",
             experiance: job.experiance || "1-3",
@@ -361,11 +361,12 @@ export default function AdminjobsTable() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="grid gap-1.5">
                                 <Label htmlFor="edit-salary" className="text-xs sm:text-sm font-medium text-gray-700">
-                                    Annual Salary (INR) <span className="text-red-500">*</span>
+                                    Annual Salary (in LPA) <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                     id="edit-salary"
                                     type="number"
+                                    placeholder="e.g. 45"
                                     value={editForm.salary}
                                     onChange={(e) => setEditForm({ ...editForm, salary: e.target.value })}
                                     required

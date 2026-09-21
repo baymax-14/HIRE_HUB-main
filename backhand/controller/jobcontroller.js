@@ -30,11 +30,14 @@ export const postjob = async (req,res) => {
             });
         }
 
+        const rawSalary = Number(salary);
+        const normalizedSalary = rawSalary > 0 && rawSalary < 1000 ? rawSalary * 100000 : rawSalary;
+
         const job = await Job.create({
             title,
             description,
             requirement: Array.isArray(requirement) ? requirement : requirement.split(","),
-            salary: Number(salary),
+            salary: normalizedSalary,
             location,
             jobType,
             position,
@@ -309,7 +312,10 @@ export const updateJob = async (req, res) => {
         if (title) job.title = title;
         if (description) job.description = description;
         if (requirement !== undefined) job.requirement = requirementsArray;
-        if (salary !== undefined) job.salary = Number(salary);
+        if (salary !== undefined) {
+            const rawSalary = Number(salary);
+            job.salary = rawSalary > 0 && rawSalary < 1000 ? rawSalary * 100000 : rawSalary;
+        }
         if (location) job.location = location;
         if (jobType) job.jobType = jobType;
         if (experiance !== undefined) job.experiance = experiance;

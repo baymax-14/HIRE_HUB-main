@@ -3,7 +3,7 @@ import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
-import { APPLICATION_API_END_POINT, JOB_API_END_POINT, USER_API_END_POINT } from "@/util/const"
+import { APPLICATION_API_END_POINT, JOB_API_END_POINT, USER_API_END_POINT, formatSalary } from "@/util/const"
 import { useDispatch, useSelector } from "react-redux"
 import { setsinglejob } from "@/redux/jobslice"
 import { setuser, updateUserSavedJobs } from "@/redux/authSlice"
@@ -257,7 +257,7 @@ export default function Jobdexcription() {
                 {singlejob?.jobType}
               </Badge>
               <Badge className="text-[#7209b7] bg-purple-50 border-purple-200 text-xs sm:text-sm font-semibold" variant="outline">
-                {singlejob?.salary} LPA
+                {formatSalary(singlejob?.salary)}
               </Badge>
               <Badge variant="outline" className="text-gray-600 bg-gray-50 border-gray-200 text-xs sm:text-sm">
                 {singlejob?.location}
@@ -495,7 +495,7 @@ export default function Jobdexcription() {
           <div className="flex flex-col sm:flex-row sm:items-start">
             <h1 className="font-bold text-sm sm:text-base min-w-[120px] sm:min-w-[140px]">Salary:</h1>
             <span className="font-normal text-gray-800 text-sm sm:text-base mt-1 sm:mt-0 sm:pl-4">
-              {singlejob?.salary} LPA
+              {formatSalary(singlejob?.salary)}
             </span>
           </div>
 
