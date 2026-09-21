@@ -182,13 +182,14 @@ export const login = async (req, res) => {
       savedJobs: user.savedJobs || [],
     };
 
+    const isProduction = process.env.NODE_ENV === "production";
     return res
       .status(200)
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
       })
       .json({
         message: `Welcome back, ${user.fullname}`,
@@ -207,10 +208,19 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-      message: "Log out successfully",
-      success: true,
-    });
+    const isProduction = process.env.NODE_ENV === "production";
+    return res
+      .status(200)
+      .cookie("token", "", {
+        maxAge: 0,
+        httpOnly: true,
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
+      })
+      .json({
+        message: "Log out successfully",
+        success: true,
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).json({

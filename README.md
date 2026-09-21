@@ -24,6 +24,7 @@
 - [Environment Variables](#-environment-variables)
 - [API Endpoints](#-api-endpoints)
 - [AI Resume Analyzer](#-ai-resume-analyzer)
+- [Deployment Guide](#-deployment-guide-render--vercel)
 - [Screenshots](#-screenshots)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -384,6 +385,118 @@ HireHub features a **dual-engine resume evaluation system** that runs automatica
 | 60 – 79 | 🟢 Qualified |
 | 40 – 59 | 🟡 Partially Qualified |
 | 0 – 39 | 🔴 Not Qualified |
+
+---
+
+## 🚢 Deployment Guide (Render & Vercel)
+
+### Architecture Overview
+
+```
+┌────────────────────────────────┐         Cross-Origin Requests (CORS + Cookies)        ┌────────────────────────────────┐
+│         Vercel (Frontend)      │ ─────────────────────────────────────────────────────▶ │         Render (Backend)       │
+│  https://your-app.vercel.app   │ ◀───────────────────────────────────────────────────── │ https://your-app.onrender.com  │
+└────────────────────────────────┘                                                        └───────────────┬────────────────┘
+                                                                                                          │
+                                                                                                          ▼
+                                                                                           ┌──────────────────────────────┐
+                                                                                           │        MongoDB Atlas         │
+                                                                                           │   mongodb+srv://...          │
+                                                                                           └──────────────────────────────┘
+```
+
+---
+
+### Step 1: Prepare Database (MongoDB Atlas)
+
+Render is a cloud server and cannot connect to `127.0.0.1`. You need a cloud MongoDB instance:
+
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. Create a new free cluster (Shared M0).
+3. Under **Database Access**, create a database user (e.g., `admin`) and set a secure password.
+4. Under **Network Access**, click **Add IP Address** and select **Allow Access from Anywhere** (`0.0.0.0/0`).
+5. Go to **Clusters** → **Connect** → **Drivers** and copy your connection string:
+   ```text
+   mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/hirehub?retryWrites=true&w=majority
+   ```
+
+---
+
+### Step 2: Deploy Backend to Render
+
+1. Push your repository to **GitHub**.
+2. Log in to [Render](https://dashboard.render.com).
+3. Click **New +** → **Web Service**.
+4. Connect your GitHub repository (`HIRE_HUB`).
+5. Configure the service settings:
+   - **Name**: `hirehub-backend` (or your preferred name)
+   - **Region**: Choose the region closest to you
+   - **Root Directory**: `backhand`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Instance Type**: Free
+
+6. Add **Environment Variables** under the **Environment** section:
+
+   | Key | Value | Notes |
+   |---|---|---|
+   | `NODE_ENV` | `production` | **Required** (enables cross-domain secure cookies) |
+   | `MONOGOURL` | `mongodb+srv://...` | **Required** (your MongoDB Atlas connection string) |
+   | `SECRET_KEY` | `your_long_random_jwt_secret_key` | **Required** |
+   | `FRONTEND_URL` | `https://your-frontend.vercel.app` | Set initially or update after deploying to Vercel |
+   | `CLOUD_NAME` | `your_cloudinary_name` | Optional (if using Cloudinary) |
+   | `API_KEY` | `your_cloudinary_key` | Optional |
+   | `API_SECRET` | `your_cloudinary_secret` | Optional |
+   | `GEMINI_API_KEY` | `your_gemini_key` | Optional (uses local NLP engine if omitted) |
+
+7. Click **Create Web Service**.
+8. Once deployment finishes, copy your Render backend URL (e.g., `https://hirehub-backend.onrender.com`).
+
+---
+
+### Step 3: Deploy Frontend to Vercel
+
+1. Log in to [Vercel](https://vercel.com).
+2. Click **Add New...** → **Project**.
+3. Import your GitHub repository (`HIRE_HUB`).
+4. In the project configuration screen:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `./` (leave default, our root `vercel.json` and `package.json` handle everything automatically)
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `frontend/dist`
+5. Expand the **Environment Variables** section and add:
+
+   | Key | Value |
+   |---|---|
+   | `VITE_API_BASE_URL` | `https://your-backend.onrender.com/api/v1` |
+
+   *(Replace with your actual Render URL from Step 2)*
+
+6. Click **Deploy**.
+7. Once deployed, copy your production Vercel URL (e.g., `https://hirehub-app.vercel.app`).
+
+---
+
+### Step 4: Link Frontend URL to Backend
+
+1. Return to your [Render Dashboard](https://dashboard.render.com).
+2. Select your `hirehub-backend` service.
+3. Go to **Environment**.
+4. Set or update the `FRONTEND_URL` variable to your Vercel URL:
+   ```text
+   FRONTEND_URL=https://your-app.vercel.app
+   ```
+5. Click **Save Changes** (Render will automatically redeploy with the updated CORS origin).
+
+---
+
+### 🛡️ Why Everything Works Seamlessly
+
+- **No 404 on Refresh**: `vercel.json` rewrites all client-side routes to `/index.html`, ensuring React Router deep links work everywhere.
+- **Cross-Domain JWT Cookies**: With `NODE_ENV=production`, cookies are configured with `sameSite: "none"` and `secure: true`.
+- **Reverse Proxy Trust**: `app.set("trust proxy", 1)` informs Express that requests behind Render's HTTPS reverse proxy are secure.
+- **CORS Support**: The backend dynamically matches your configured Vercel production domain and preview deployments (`*.vercel.app`).
 
 ---
 

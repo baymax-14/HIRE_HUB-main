@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: hirehub-backend
+    runtime: node
+    rootDir: backhand
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONOGOURL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: CLOUD_NAME
+        sync: false
+      - key: API_KEY
+        sync: false
+      - key: API_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false

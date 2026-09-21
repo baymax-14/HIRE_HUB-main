@@ -16,16 +16,37 @@ import analyticsRoute from "./route/analyticsroute.js";
 // Load environment variables
 dotenv.config({});
 
+// Trust reverse proxy (essential for Render / Vercel HTTPS cookies)
+app.set("trust proxy", 1);
+
 //middleware
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-app.use(cookieparser())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieparser());
+
+// Support multiple comma-separated frontend origins & Vercel preview domains
+const configuredOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+  .split(",")
+  .map((url) => url.trim().replace(/\/$/, ""));
 
 const corsoption = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, "");
+    if (
+      configuredOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith(".vercel.app") ||
+      cleanOrigin.includes("localhost") ||
+      cleanOrigin.includes("127.0.0.1")
+    ) {
+      return callback(null, true);
+    }
+    // Reflect origin in production to support preview deployments
+    return callback(null, true);
+  },
   credentials: true,
 };
-
 
 app.use(cors(corsoption));
 
