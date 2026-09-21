@@ -11,17 +11,22 @@ const createTransporter = async () => {
   const host = process.env.SMTP_HOST;
   const port = process.env.SMTP_PORT;
   const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const rawPass = process.env.SMTP_PASS;
+  const pass = rawPass ? rawPass.replace(/\s+/g, '') : null;
 
   if (host && user && pass) {
+    const isPort465 = parseInt(port) === 465;
     transporter = nodemailer.createTransport({
       host,
-      port: parseInt(port) || 587,
-      secure: parseInt(port) === 465,
+      port: parseInt(port) || 465,
+      secure: isPort465,
       auth: { user, pass },
+      tls: {
+        rejectUnauthorized: false // avoids SSL cert issues on cloud providers
+      }
     });
     isEthereal = false;
-    console.log("📧 Email service configured with real SMTP:", host);
+    console.log("📧 Email service configured with real SMTP:", host, "User:", user);
   } else {
     // Try creating an Ethereal test account for instant web preview
     try {
