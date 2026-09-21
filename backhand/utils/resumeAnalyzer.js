@@ -74,6 +74,69 @@ const COMMON_SKILLS = [
 ];
 
 /**
+ * Intelligent Skill Matcher with Synonym & Alias Awareness
+ */
+export const isSkillMatch = (candidateSkill, requiredSkill) => {
+  if (!candidateSkill || !requiredSkill) return false;
+  const a = candidateSkill.toLowerCase().trim();
+  const b = requiredSkill.toLowerCase().trim();
+
+  if (a === b) return true;
+
+  // Well-known synonym groups
+  const SYNONYMS = [
+    ["go", "golang"],
+    ["react", "react.js", "reactjs"],
+    ["node", "node.js", "nodejs"],
+    ["express", "express.js", "expressjs"],
+    ["mongo", "mongodb"],
+    ["k8s", "kubernetes"],
+    ["postgres", "postgresql"],
+    ["aws", "amazon web services"],
+    ["gcp", "google cloud", "google cloud platform"],
+    ["js", "javascript"],
+    ["ts", "typescript"],
+    ["py", "python"],
+    ["tailwind", "tailwindcss", "tailwind css"],
+    ["next", "next.js", "nextjs"],
+    ["vue", "vue.js", "vuejs"],
+    ["angular", "angularjs"],
+    ["docker", "containerization", "containers"],
+    ["ci/cd", "cicd", "continuous integration", "continuous delivery"],
+    ["c++", "cpp"],
+    ["c#", "csharp", ".net", "dotnet"],
+    ["rest", "rest api", "restful api", "restful apis"],
+    ["html", "html5"],
+    ["css", "css3"],
+    ["prometheus", "grafana", "monitoring"],
+    ["sre", "site reliability engineering", "devops"],
+  ];
+
+  for (const group of SYNONYMS) {
+    const hasA = group.some((item) => a === item);
+    const hasB = group.some((item) => b === item);
+    if (hasA && hasB) return true;
+  }
+
+  // Exact word boundary regex check
+  const escapedA = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedB = b.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  if (new RegExp(`(^|[^a-zA-Z0-9])${escapedA}([^a-zA-Z0-9]|$)`, "i").test(b)) return true;
+  if (new RegExp(`(^|[^a-zA-Z0-9])${escapedB}([^a-zA-Z0-9]|$)`, "i").test(a)) return true;
+
+  // Multi-word phrase matching (e.g. "Distributed Systems", "Incident Response")
+  const wordsA = a.split(/\s+/).filter((w) => w.length > 2);
+  const wordsB = b.split(/\s+/).filter((w) => w.length > 2);
+  if (wordsA.length > 1 && wordsB.length > 1) {
+    const common = wordsA.filter((w) => wordsB.includes(w));
+    if (common.length >= Math.min(wordsA.length, wordsB.length)) return true;
+  }
+
+  return false;
+};
+
+/**
  * Local Rule-Based & NLP ATS Evaluator
  * Runs entirely on server without requiring external API keys.
  */
@@ -89,97 +152,82 @@ export const analyzeResumeWithNLP = (resumeText, applicantSkills = [], job) => {
   const jobDescription = normalize(job?.description || "");
   const combinedResumeText = `${resumeText} ${(applicantSkills || []).join(" ")}`;
 
-  // Precise keyword matching helper (avoids substring false positives)
-  const matchKeyword = (sourceText, keyword) => {
-    if (!sourceText || !keyword) return false;
-    const lower = keyword.toLowerCase().trim();
-    if (lower === "react" || lower === "react.js" || lower === "reactjs") {
-      return /\b(react|react\.js|reactjs)\b/i.test(sourceText);
-    }
-    if (lower === "node" || lower === "node.js" || lower === "nodejs") {
-      return /\b(node|node\.js|nodejs)\b/i.test(sourceText);
-    }
-    if (lower === "express" || lower === "express.js" || lower === "expressjs") {
-      return /\b(express|express\.js|expressjs)\b/i.test(sourceText);
-    }
-    if (lower === "mongo" || lower === "mongodb") {
-      return /\b(mongo|mongodb)\b/i.test(sourceText);
-    }
-    if (lower === "tailwind" || lower === "tailwindcss" || lower === "tailwind css") {
-      return /\b(tailwind|tailwindcss)\b/i.test(sourceText);
-    }
-    const escaped = lower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return new RegExp(`(^|[^a-zA-Z0-9])${escaped}([^a-zA-Z0-9]|$)`, "i").test(sourceText);
-  };
+  // Robust requirement parsing (splits by comma/slash/semicolon/newline)
+  const allExpected = Array.isArray(job?.requirement)
+    ? job.requirement.flatMap((r) => String(r).split(/[,;|/\n]+/)).map((r) => r.trim()).filter(Boolean)
+    : typeof job?.requirement === "string"
+    ? job.requirement.split(/[,;|/\n]+/).map((r) => r.trim()).filter(Boolean)
+    : [];
 
-  const jobReqs = Array.isArray(job?.requirement) ? job.requirement : [];
-  const allExpected = [...jobReqs];
-
-  const matchingSkills = [];
-  const missingSkills = [];
+  const rawMatchingSkills = [];
+  const rawMissingSkills = [];
 
   if (allExpected.length > 0) {
     allExpected.forEach((skill) => {
-      const inText = matchKeyword(normalizedResume, skill);
-      const inSkills = applicantSkills.some((s) => matchKeyword(s, skill));
+      const inText = isSkillMatch(skill, normalizedResume);
+      const inSkills = (applicantSkills || []).some((s) => isSkillMatch(s, skill));
       if (inText || inSkills) {
-        matchingSkills.push(skill);
+        if (!rawMatchingSkills.includes(skill)) rawMatchingSkills.push(skill);
       } else {
-        missingSkills.push(skill);
+        if (!rawMissingSkills.includes(skill)) rawMissingSkills.push(skill);
       }
     });
   } else {
     (applicantSkills || []).forEach((skill) => {
-      if (skill && matchKeyword(jobDescription, skill.toLowerCase())) {
-        matchingSkills.push(skill);
+      if (skill && isSkillMatch(skill, jobDescription)) {
+        if (!rawMatchingSkills.includes(skill)) rawMatchingSkills.push(skill);
       }
     });
   }
 
-  // Calculate skill match ratio (up to 70 points)
-  let skillRatio = 0.5;
-  if (allExpected.length > 0) {
-    skillRatio = matchingSkills.length / allExpected.length;
-  } else if (applicantSkills.length > 0) {
-    skillRatio = Math.min(1, applicantSkills.length / 5);
-  }
+  // Guarantee strict exclusion: a matched skill NEVER appears in missing skills
+  const matchingSkills = rawMatchingSkills;
+  const missingSkills = rawMissingSkills.filter(
+    (ms) => !matchingSkills.some((matched) => isSkillMatch(ms, matched))
+  );
 
-  // Multi-Tiered Experience & Practical Evidence Scoring (up to 30 points)
+  // Unified skill match ratio (up to 60 points)
+  const totalRequirements = Math.max(allExpected.length, 1);
+  const skillRatio = matchingSkills.length / totalRequirements;
+  const skillScore = Math.round(skillRatio * 60);
+
+  // Resume & Practical Evidence (up to 40 points)
   const reqExp = parseInt(job?.experiance || "0", 10);
   let expPoints = 0;
 
-  // 1. Parsed resume verification (up to 5 points)
-  if (combinedResumeText.trim().length > 50) {
+  const hasResume = combinedResumeText.trim().length > 50 || !!resumeText;
+  if (hasResume) {
+    expPoints += 20; // Resume verified
+  } else {
+    expPoints += 5; // Basic profile only
+  }
+
+  const hasProjects = /project|projects|developed|built|engineered|deployed|implemented|designed|created|fullstack|frontend|backend/i.test(combinedResumeText);
+  if (hasProjects) {
+    expPoints += 10;
+  }
+
+  const hasInternshipOrHackathon = /intern|internship|hackathon|competition|fellowship|bootcamp|certification|certified|contributor/i.test(combinedResumeText);
+  if (hasInternshipOrHackathon) {
     expPoints += 5;
   }
 
-  // 2. Real-world project implementation evidence (up to 12 points)
-  const hasProjects = /project|projects|developed|built|engineered|deployed|implemented|designed|created|fullstack|frontend|backend/i.test(combinedResumeText);
-  if (hasProjects) {
-    expPoints += 12;
-  }
-
-  // 3. Internship, Hackathon, or Industry Validation (up to 8 points)
-  const hasInternshipOrHackathon = /intern|internship|hackathon|competition|fellowship|bootcamp|certification|certified|contributor/i.test(combinedResumeText);
-  if (hasInternshipOrHackathon) {
-    expPoints += 8;
-  }
-
-  // 4. Tenure & Experience fit (up to 5 points)
   if (reqExp <= 1) {
-    expPoints += 5; // Entry-level / fresher ideal fit
+    expPoints += 5;
   } else if (reqExp <= 3) {
-    expPoints += 3; // Junior to mid-level baseline
+    expPoints += 3;
   } else {
-    expPoints += 1; // Senior role tenure gap
+    expPoints += 1;
   }
 
-  const finalExpScore = Math.min(30, expPoints);
+  const finalExpScore = Math.min(40, expPoints);
 
-  // Base raw score (0-100)
-  let rawScore = Math.round(skillRatio * 70 + finalExpScore);
-  if (rawScore > 100) rawScore = 100;
-  if (rawScore < 15 && matchingSkills.length === 0) rawScore = Math.max(10, rawScore);
+  // Total Score (0-100)
+  let rawScore = skillScore + finalExpScore;
+  if (matchingSkills.length === 0 && !hasResume) {
+    rawScore = 15;
+  }
+  rawScore = Math.min(100, Math.max(10, rawScore));
 
   let verdict = "Not Qualified";
   if (rawScore >= 80) verdict = "Highly Qualified";

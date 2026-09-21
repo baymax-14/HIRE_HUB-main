@@ -79,6 +79,64 @@ export default function Jobdexcription() {
     }
   }
 
+  // Intelligent Skill Matcher with Synonym & Alias Awareness (identical to backend)
+  const isSkillMatch = (candidateSkill, requiredSkill) => {
+    if (!candidateSkill || !requiredSkill) return false
+    const a = candidateSkill.toLowerCase().trim()
+    const b = requiredSkill.toLowerCase().trim()
+
+    if (a === b) return true
+
+    const SYNONYMS = [
+      ["go", "golang"],
+      ["react", "react.js", "reactjs"],
+      ["node", "node.js", "nodejs"],
+      ["express", "express.js", "expressjs"],
+      ["mongo", "mongodb"],
+      ["k8s", "kubernetes"],
+      ["postgres", "postgresql"],
+      ["aws", "amazon web services"],
+      ["gcp", "google cloud", "google cloud platform"],
+      ["js", "javascript"],
+      ["ts", "typescript"],
+      ["py", "python"],
+      ["tailwind", "tailwindcss", "tailwind css"],
+      ["next", "next.js", "nextjs"],
+      ["vue", "vue.js", "vuejs"],
+      ["angular", "angularjs"],
+      ["docker", "containerization", "containers"],
+      ["ci/cd", "cicd", "continuous integration", "continuous delivery"],
+      ["c++", "cpp"],
+      ["c#", "csharp", ".net", "dotnet"],
+      ["rest", "rest api", "restful api", "restful apis"],
+      ["html", "html5"],
+      ["css", "css3"],
+      ["prometheus", "grafana", "monitoring"],
+      ["sre", "site reliability engineering", "devops"],
+    ]
+
+    for (const group of SYNONYMS) {
+      const hasA = group.some((item) => a === item)
+      const hasB = group.some((item) => b === item)
+      if (hasA && hasB) return true
+    }
+
+    const escapedA = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    const escapedB = b.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+    if (new RegExp(`(^|[^a-zA-Z0-9])${escapedA}([^a-zA-Z0-9]|$)`, "i").test(b)) return true
+    if (new RegExp(`(^|[^a-zA-Z0-9])${escapedB}([^a-zA-Z0-9]|$)`, "i").test(a)) return true
+
+    const wordsA = a.split(/\s+/).filter((w) => w.length > 2)
+    const wordsB = b.split(/\s+/).filter((w) => w.length > 2)
+    if (wordsA.length > 1 && wordsB.length > 1) {
+      const common = wordsA.filter((w) => wordsB.includes(w))
+      if (common.length >= Math.min(wordsA.length, wordsB.length)) return true
+    }
+
+    return false
+  }
+
   // Look up if this student already applied and has an official ATS evaluation
   const userApplication = singlejob?.application?.find((app) => {
     const applicantId = typeof app.applicant === "object" ? app.applicant?._id : app.applicant;
@@ -92,35 +150,61 @@ export default function Jobdexcription() {
   );
 
   // Candidate skills & raw requirements
-  const candidateSkills = (user?.profile?.skills || []).map((s) => s.toLowerCase().trim())
+  const candidateSkills = (user?.profile?.skills || []).map((s) => String(s).trim()).filter(Boolean)
   const rawRequirements = (singlejob?.requirement || [])
-    .flatMap((r) => r.split(/[,;|/\n]+/))
+    .flatMap((r) => String(r).split(/[,;|/\n]+/))
     .map((r) => r.trim())
     .filter(Boolean)
 
-  const matchedSkills = []
-  const missingSkills = []
+  const rawMatched = []
+  const rawMissing = []
 
   rawRequirements.forEach((req) => {
-    const reqLower = req.toLowerCase()
-    const isMatched = candidateSkills.some(
-      (cs) => cs === reqLower || cs.includes(reqLower) || reqLower.includes(cs)
-    )
+    const isMatched = candidateSkills.some((cs) => isSkillMatch(cs, req))
     if (isMatched) {
-      if (!matchedSkills.includes(req)) matchedSkills.push(req)
+      if (!rawMatched.includes(req)) rawMatched.push(req)
     } else {
-      if (!missingSkills.includes(req)) missingSkills.push(req)
+      if (!rawMissing.includes(req)) rawMissing.push(req)
     }
   })
 
-  // Pre-Check Match Score (consistent with backend weighting)
+  const matchedSkills = rawMatched
+  const missingSkills = rawMissing.filter(
+    (ms) => !matchedSkills.some((m) => isSkillMatch(m, ms))
+  )
+
+  // Unified Pre-Check Match Score (consistent with backend weighting)
   const totalFactors = Math.max(rawRequirements.length, 1)
-  const baseSkillRatio = Math.min(1, matchedSkills.length / totalFactors)
-  let preCheckScore = Math.round(baseSkillRatio * 60 + (hasResume ? 20 : 10))
-  if (candidateSkills.length === 0 && !hasResume) preCheckScore = 15
+  const skillRatio = matchedSkills.length / totalFactors
+  const skillScore = Math.round(skillRatio * 60)
+
+  let expPoints = 0
+  if (hasResume) {
+    expPoints += 20
+  } else {
+    expPoints += 5
+  }
+
+  if (candidateSkills.length >= 3) {
+    expPoints += 10
+  }
+
+  const reqExp = parseInt(singlejob?.experiance || "0", 10)
+  if (reqExp <= 1) {
+    expPoints += 5
+  } else if (reqExp <= 3) {
+    expPoints += 3
+  } else {
+    expPoints += 1
+  }
+
+  let preCheckScore = skillScore + Math.min(40, expPoints)
+  if (matchedSkills.length === 0 && !hasResume) {
+    preCheckScore = 15
+  }
   preCheckScore = Math.min(100, Math.max(10, preCheckScore))
 
-  // Displayed Score & Data: Priority given to the official application evaluation
+  // Displayed Score & Data: Consistent between pre-check and submitted evaluation
   const displayedScore = isEvaluated ? officialEvaluation.score : preCheckScore
   const displayedVerdict = isEvaluated
     ? officialEvaluation.verdict || "Qualified"
@@ -132,13 +216,19 @@ export default function Jobdexcription() {
           ? "Partially Qualified"
           : "Not Qualified"
 
-  const displayedMatchedSkills = (isEvaluated && officialEvaluation.matchingSkills?.length)
+  // Guaranteed clean separation: matching skills NEVER appear in missing skills
+  const rawDisplayedMatched = (isEvaluated && Array.isArray(officialEvaluation.matchingSkills) && officialEvaluation.matchingSkills.length > 0)
     ? officialEvaluation.matchingSkills
     : matchedSkills
 
-  const displayedMissingSkills = (isEvaluated && officialEvaluation.missingSkills?.length)
+  const rawDisplayedMissing = (isEvaluated && Array.isArray(officialEvaluation.missingSkills) && officialEvaluation.missingSkills.length > 0)
     ? officialEvaluation.missingSkills
     : missingSkills
+
+  const displayedMatchedSkills = [...new Set(rawDisplayedMatched)]
+  const displayedMissingSkills = [...new Set(rawDisplayedMissing)].filter(
+    (skill) => !displayedMatchedSkills.some((m) => isSkillMatch(m, skill))
+  )
 
   let scoreBadgeColor = "text-rose-700 bg-rose-50 border-rose-200"
   let scoreBarColor = "bg-rose-500"
