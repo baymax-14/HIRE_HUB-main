@@ -78,7 +78,19 @@ export default function Jobdexcription() {
     }
   }
 
-  // AI Match Pre-Check calculation
+  // Look up if this student already applied and has an official ATS evaluation
+  const userApplication = singlejob?.application?.find((app) => {
+    const applicantId = typeof app.applicant === "object" ? app.applicant?._id : app.applicant;
+    return applicantId?.toString() === user?._id?.toString();
+  });
+  const officialEvaluation = userApplication?.aiEvaluation;
+  const isEvaluated = Boolean(
+    officialEvaluation &&
+    typeof officialEvaluation.score === "number" &&
+    officialEvaluation.score > 0
+  );
+
+  // Candidate skills & raw requirements
   const candidateSkills = (user?.profile?.skills || []).map((s) => s.toLowerCase().trim())
   const rawRequirements = (singlejob?.requirement || [])
     .flatMap((r) => r.split(/[,;|/\n]+/))
@@ -100,37 +112,45 @@ export default function Jobdexcription() {
     }
   })
 
-  // Additional match check from job description text
-  const descLower = (singlejob?.description || "").toLowerCase()
-  candidateSkills.forEach((cs) => {
-    if (cs && descLower.includes(cs) && !matchedSkills.some((m) => m.toLowerCase() === cs)) {
-      matchedSkills.push(cs.toUpperCase())
-    }
-  })
-
-  // Pre-Check Match Score
+  // Pre-Check Match Score (consistent with backend weighting)
   const totalFactors = Math.max(rawRequirements.length, 1)
-  const baseSkillRatio = matchedSkills.length / totalFactors
-  let preCheckScore = Math.round(baseSkillRatio * 75 + (hasResume ? 20 : 5))
+  const baseSkillRatio = Math.min(1, matchedSkills.length / totalFactors)
+  let preCheckScore = Math.round(baseSkillRatio * 60 + (hasResume ? 20 : 10))
   if (candidateSkills.length === 0 && !hasResume) preCheckScore = 15
   preCheckScore = Math.min(100, Math.max(10, preCheckScore))
 
-  let scoreBadgeColor = "text-amber-700 bg-amber-50 border-amber-200"
-  let scoreBarColor = "bg-amber-500"
-  let matchVerdict = "Partial Match"
+  // Displayed Score & Data: Priority given to the official application evaluation
+  const displayedScore = isEvaluated ? officialEvaluation.score : preCheckScore
+  const displayedVerdict = isEvaluated
+    ? officialEvaluation.verdict || "Qualified"
+    : displayedScore >= 80
+      ? "Highly Qualified"
+      : displayedScore >= 60
+        ? "Qualified"
+        : displayedScore >= 40
+          ? "Partially Qualified"
+          : "Not Qualified"
 
-  if (preCheckScore >= 75) {
+  const displayedMatchedSkills = (isEvaluated && officialEvaluation.matchingSkills?.length)
+    ? officialEvaluation.matchingSkills
+    : matchedSkills
+
+  const displayedMissingSkills = (isEvaluated && officialEvaluation.missingSkills?.length)
+    ? officialEvaluation.missingSkills
+    : missingSkills
+
+  let scoreBadgeColor = "text-rose-700 bg-rose-50 border-rose-200"
+  let scoreBarColor = "bg-rose-500"
+
+  if (displayedScore >= 80) {
     scoreBadgeColor = "text-emerald-700 bg-emerald-50 border-emerald-200"
     scoreBarColor = "bg-emerald-500"
-    matchVerdict = "Strong Match"
-  } else if (preCheckScore >= 50) {
+  } else if (displayedScore >= 60) {
     scoreBadgeColor = "text-indigo-700 bg-indigo-50 border-indigo-200"
     scoreBarColor = "bg-indigo-600"
-    matchVerdict = "Good Match"
-  } else {
-    scoreBadgeColor = "text-rose-700 bg-rose-50 border-rose-200"
-    scoreBarColor = "bg-rose-500"
-    matchVerdict = "Skill Gaps Identified"
+  } else if (displayedScore >= 40) {
+    scoreBadgeColor = "text-amber-700 bg-amber-50 border-amber-200"
+    scoreBarColor = "bg-amber-500"
   }
 
   const handleApplyClick = () => {
@@ -164,12 +184,6 @@ export default function Jobdexcription() {
 
       if (res.data.success) {
         setIsapplied(true)
-        const updatesinglejob = {
-          ...singlejob,
-          application: [...(singlejob?.application || []), { applicant: user?._id }],
-        }
-        dispatch(setsinglejob(updatesinglejob))
-
         if (selectedResumeFile) {
           dispatch(
             setuser({
@@ -182,7 +196,17 @@ export default function Jobdexcription() {
           )
         }
 
-        toast.success(res.data.message || "Application submitted successfully! Your resume is being analyzed.")
+        // Fetch fresh job to immediately load official ATS evaluation from backend
+        try {
+          const freshJobRes = await axios.get(`${JOB_API_END_POINT}/get/${jobid}`, { withCredentials: true })
+          if (freshJobRes.data?.success) {
+            dispatch(setsinglejob(freshJobRes.data.job))
+          }
+        } catch (fetchErr) {
+          console.error("Error fetching fresh job evaluation:", fetchErr)
+        }
+
+        toast.success(res.data.message || "Application submitted successfully! Your resume has been evaluated.")
         setApplyModalOpen(false)
       }
     } catch (error) {
@@ -199,7 +223,11 @@ export default function Jobdexcription() {
         const res = await axios.get(`${JOB_API_END_POINT}/get/${jobid}`, { withCredentials: true })
         if (res.data.success) {
           dispatch(setsinglejob(res.data.job))
-          setIsapplied(res.data.job.application?.some((application) => application.applicant === user?._id))
+          const applied = res.data.job.application?.some((application) => {
+            const applicantId = typeof application.applicant === "object" ? application.applicant?._id : application.applicant;
+            return applicantId?.toString() === user?._id?.toString();
+          })
+          setIsapplied(Boolean(applied))
         }
       } catch (error) {
         console.error(error)
@@ -283,14 +311,16 @@ export default function Jobdexcription() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="font-bold text-base sm:text-lg text-gray-900">
-                      AI Match Pre-Check & Gap Analysis
+                      {isEvaluated ? "Official AI ATS Evaluation" : "AI Match Pre-Check & Gap Analysis"}
                     </h2>
                     <Badge variant="outline" className={`text-xs font-bold border ${scoreBadgeColor}`}>
-                      {matchVerdict}
+                      {displayedVerdict}
                     </Badge>
                   </div>
                   <p className="text-xs text-gray-500">
-                    Pre-assessed against your listed profile competencies and resume
+                    {isEvaluated
+                      ? "Official ATS score evaluated and submitted to the recruiter for your application"
+                      : "Pre-assessed against your listed profile competencies and resume"}
                   </p>
                 </div>
               </div>
@@ -299,16 +329,16 @@ export default function Jobdexcription() {
               <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-purple-100 shadow-2xs">
                 <div className="text-right">
                   <span className="text-[11px] font-semibold uppercase text-gray-400 block tracking-wider">
-                    ATS Match Score
+                    {isEvaluated ? "Application ATS Score" : "ATS Match Score"}
                   </span>
                   <span className="text-xl sm:text-2xl font-black text-gray-900">
-                    {preCheckScore}%
+                    {displayedScore}%
                   </span>
                 </div>
                 <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${scoreBarColor} transition-all duration-500 rounded-full`}
-                    style={{ width: `${preCheckScore}%` }}
+                    style={{ width: `${displayedScore}%` }}
                   />
                 </div>
               </div>
@@ -321,12 +351,12 @@ export default function Jobdexcription() {
                 <div className="flex items-center gap-2 mb-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span className="font-semibold text-xs sm:text-sm text-gray-900">
-                    Matching Skills in Your Profile ({matchedSkills.length})
+                    Matching Skills in Your Profile ({displayedMatchedSkills.length})
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1.5 min-h-[32px] items-center">
-                  {matchedSkills.length > 0 ? (
-                    matchedSkills.map((skill, idx) => (
+                  {displayedMatchedSkills.length > 0 ? (
+                    displayedMatchedSkills.map((skill, idx) => (
                       <Badge
                         key={idx}
                         className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium"
@@ -349,12 +379,12 @@ export default function Jobdexcription() {
                 <div className="flex items-center gap-2 mb-2.5">
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                   <span className="font-semibold text-xs sm:text-sm text-gray-900">
-                    Recommended Job Requirements ({missingSkills.length})
+                    Recommended Job Requirements ({displayedMissingSkills.length})
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1.5 min-h-[32px] items-center">
-                  {missingSkills.length > 0 ? (
-                    missingSkills.map((skill, idx) => (
+                  {displayedMissingSkills.length > 0 ? (
+                    displayedMissingSkills.map((skill, idx) => (
                       <Badge
                         key={idx}
                         className="bg-amber-50 text-amber-800 border-amber-200 text-xs font-medium"
@@ -378,8 +408,8 @@ export default function Jobdexcription() {
               <div className="flex items-center gap-2 text-gray-600">
                 <Target className="w-4 h-4 text-purple-600 shrink-0" />
                 <span>
-                  {missingSkills.length > 0
-                    ? `Pro Tip: Highlighting ${missingSkills.slice(0, 3).join(", ")} in your resume can boost your ATS qualification.`
+                  {displayedMissingSkills.length > 0
+                    ? `Pro Tip: Highlighting ${displayedMissingSkills.slice(0, 3).join(", ")} in your resume can boost your ATS qualification.`
                     : "Your profile strongly matches this position's listed qualifications."}
                 </span>
               </div>
