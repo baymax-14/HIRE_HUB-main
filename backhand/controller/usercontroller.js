@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import getDaturi from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import { saveUploadedResume, saveUploadedImage } from "../utils/fileHandler.js";
-import { sendWelcomeEmail } from "../utils/emailService.js";
+import { sendWelcomeEmail, sendTestEmail } from "../utils/emailService.js";
 
 //sign up
 export const register = async (req, res) => {
@@ -420,6 +420,40 @@ export const getSavedJobs = async (req, res) => {
     console.error("getSavedJobs error:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+// Send an immediate test notification email to the authenticated user
+export const sendTestNotificationEmail = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    const emailSent = await sendTestEmail(user.email, user.fullname);
+    if (!emailSent) {
+      return res.status(500).json({
+        message: "Failed to dispatch email via SMTP. Please check server SMTP configuration.",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: `Test email dispatched to ${user.email}! Please check your Inbox and Spam/Promotions folder.`,
+      recipient: user.email,
+      success: true,
+    });
+  } catch (error) {
+    console.error("sendTestNotificationEmail error:", error);
+    return res.status(500).json({
+      message: error.message || "Failed to send test email",
       success: false,
     });
   }

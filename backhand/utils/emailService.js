@@ -70,27 +70,48 @@ const createTransporter = async () => {
 };
 
 // ─── Demo Redirect Configuration ───────────────────────────────────────────────
-const DEMO_REDIRECT_TARGET = process.env.DEMO_REDIRECT_EMAIL || "anand2005rathod@gmail.com";
+const DEMO_REDIRECT_TARGET = process.env.DEMO_REDIRECT_EMAIL ? process.env.DEMO_REDIRECT_EMAIL.trim() : "anand2005rathod@gmail.com";
 const DEMO_EMAILS_TO_REDIRECT = [
   "anand@test.com",
   "recruiter@gmail.com",
+  "demo.recruiter@hirehub.com",
 ];
+
+export const isDemoEmail = (email) => {
+  if (!email) return false;
+  const e = email.trim().toLowerCase();
+  if (e === DEMO_REDIRECT_TARGET?.toLowerCase()) return false;
+  return (
+    DEMO_EMAILS_TO_REDIRECT.includes(e) ||
+    e.endsWith("@test.com") ||
+    e.endsWith("@hirehub.com") ||
+    e.endsWith("@example.com") ||
+    e.includes("demo.recruiter") ||
+    e === "recruiter@gmail.com"
+  );
+};
 
 // ─── Core Send Function ───────────────────────────────────────────────────────
 const sendEmail = async (to, subject, html) => {
   try {
-    // Check if recipient should be redirected
+    // Check if recipient should be redirected to test target
     let recipient = to;
-    const isDemo = DEMO_EMAILS_TO_REDIRECT.includes(to?.trim()?.toLowerCase());
+    let finalHtml = html;
+    const isDemo = isDemoEmail(to);
+
     if (isDemo && DEMO_REDIRECT_TARGET) {
       recipient = DEMO_REDIRECT_TARGET;
       console.log(`🔀 [Redirect] Diverting email originally for "${to}" → "${recipient}"`);
+      const demoBanner = `<div style="background:#e0f2fe;border:1px solid #bae6fd;color:#0369a1;padding:10px 14px;border-radius:8px;font-size:12px;margin:0 0 20px;font-family:sans-serif;">ℹ️ <strong>Demo Environment:</strong> This notification was generated for <code>${to}</code> and routed to your verified test inbox (<code>${recipient}</code>).</div>`;
+      if (finalHtml.includes('<td style="padding:40px;">')) {
+        finalHtml = finalHtml.replace('<td style="padding:40px;">', `<td style="padding:40px;">\n              ${demoBanner}`);
+      }
     }
 
     const transport = await createTransporter();
-    const from = process.env.SMTP_FROM || '"HireHub" <noreply@hirehub.com>';
-    const info = await transport.sendMail({ from, to: recipient, subject, html });
-    console.log(`📧 Email sent to ${recipient} (original: ${to}): "${subject}"`);
+    const from = process.env.SMTP_FROM || `"HireHub" <${process.env.SMTP_USER || "noreply@hirehub.com"}>`;
+    const info = await transport.sendMail({ from, to: recipient, subject, html: finalHtml });
+    console.log(`📧 Email sent successfully to ${recipient} (original: ${to}): "${subject}"`);
     if (isEthereal && nodemailer.getTestMessageUrl) {
       const previewUrl = nodemailer.getTestMessageUrl(info);
       if (previewUrl) {
@@ -284,4 +305,40 @@ export const sendStatusUpdateEmail = async (applicant, job, companyName, newStat
   );
 };
 
-export default { sendWelcomeEmail, sendApplicationReceivedEmail, sendNewApplicantEmail, sendStatusUpdateEmail };
+/**
+ * Send an immediate test notification to verify SMTP delivery
+ */
+export const sendTestEmail = async (to, name = "HireHub User") => {
+  const html = wrapInTemplate(`
+    <h2 style="margin:0 0 16px;color:#1f2937;font-size:22px;">
+      Email Notification Test 🚀
+    </h2>
+    <p style="color:#4b5563;font-size:15px;line-height:1.6;margin:0 0 16px;">
+      Hi <strong>${name}</strong>,
+    </p>
+    <p style="color:#4b5563;font-size:15px;line-height:1.6;margin:0 0 24px;">
+      Great news! This test email confirms that your <strong>HireHub</strong> email delivery service is fully operational and configured with your real SMTP transport.
+    </p>
+    <div style="background:#f0fdf4;border-left:4px solid #22c55e;border-radius:8px;padding:20px;margin:0 0 24px;">
+      <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:#166534;">
+        ✅ Real-Time Notifications Active
+      </p>
+      <ul style="margin:8px 0 0;padding-left:20px;color:#15803d;font-size:14px;line-height:1.7;">
+        <li>Welcome emails upon registration</li>
+        <li>Instant student application submission confirmations</li>
+        <li>Instant recruiter alerts when candidates apply</li>
+        <li>Application accepted/rejected status updates</li>
+      </ul>
+    </div>
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" 
+         style="display:inline-block;background:linear-gradient(135deg,#6A38C2,#8B5CF6);color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-weight:600;font-size:15px;">
+        Open HireHub →
+      </a>
+    </div>
+  `, "Test email notification from HireHub");
+
+  return sendEmail(to, "HireHub: Email Notification Test ✅", html);
+};
+
+export default { sendWelcomeEmail, sendApplicationReceivedEmail, sendNewApplicantEmail, sendStatusUpdateEmail, sendTestEmail };

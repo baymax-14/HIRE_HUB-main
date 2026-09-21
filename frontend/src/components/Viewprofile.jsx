@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   TrendingUp,
   Camera,
+  Send,
 } from "lucide-react"
 import Navbar from "./shared/Navbar"
 import { Avatar, AvatarImage } from "./ui/avatar"
@@ -41,6 +42,7 @@ export default function Viewprofile() {
   const [uploadingResume, setUploadingResume] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [togglingNotifications, setTogglingNotifications] = useState(false)
+  const [sendingTestEmail, setSendingTestEmail] = useState(false)
   const [activeTab, setActiveTab] = useState("applied")
   const [savedJobsList, setSavedJobsList] = useState([])
   const [loadingSavedJobs, setLoadingSavedJobs] = useState(false)
@@ -129,6 +131,24 @@ export default function Viewprofile() {
       toast.error("Failed to update notification setting")
     } finally {
       setTogglingNotifications(false)
+    }
+  }
+
+  const sendTestEmailHandler = async () => {
+    try {
+      setSendingTestEmail(true)
+      axios.defaults.withCredentials = true
+      const res = await axios.post(`${USER_API_END_POINT}/send-test-email`)
+      if (res.data.success) {
+        toast.success(res.data.message || "Test email dispatched! Please check your Inbox and Spam/Promotions tab.", {
+          duration: 7000,
+        })
+      }
+    } catch (err) {
+      console.error("sendTestEmail error:", err)
+      toast.error(err?.response?.data?.message || "Failed to send test email. Please check server SMTP configuration.")
+    } finally {
+      setSendingTestEmail(false)
     }
   }
 
@@ -387,34 +407,57 @@ export default function Viewprofile() {
           </div>
         </div>
 
-        {/* Recruiter Email Alert Notification Settings */}
-        {user?.role === "recruiter" && (
-          <div className="mt-6 border-t pt-4">
-            <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-800 flex items-center gap-2">
+        {/* Email Notification Settings & Live Test */}
+        <div className="mt-6 border-t pt-4">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
               <Bell className="w-4 h-4 text-purple-600" />
-              <span>Notification Preferences</span>
+              <span>Notification Preferences & Delivery</span>
             </h2>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-purple-50/50 border border-purple-100 gap-3">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-gray-900">
-                    Applicant Email Notifications
-                  </span>
-                  {user?.profile?.emailNotifications !== false ? (
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 text-[10px]">
-                      Active
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="bg-gray-200 text-gray-600 text-[10px]">
-                      Muted
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 max-w-lg leading-relaxed">
-                  Receive an automated email alert when a candidate applies to any of your jobs. Mute this if you prefer checking candidates only through the platform.
-                </p>
-              </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={sendingTestEmail}
+              onClick={sendTestEmailHandler}
+              className="rounded-xl text-xs font-semibold cursor-pointer border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 transition-all flex items-center gap-1.5"
+            >
+              {sendingTestEmail ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Send className="w-3.5 h-3.5 text-purple-600" />
+              )}
+              <span>{sendingTestEmail ? "Sending..." : "Send Test Email"}</span>
+            </Button>
+          </div>
 
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-purple-50/50 border border-purple-100 gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-gray-900">
+                  {user?.role === "recruiter" ? "Applicant Email Notifications" : "Job Application Status Alerts"}
+                </span>
+                {user?.profile?.emailNotifications !== false ? (
+                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 text-[10px]">
+                    Active
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="bg-gray-200 text-gray-600 text-[10px]">
+                    Muted
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 max-w-lg leading-relaxed">
+                {user?.role === "recruiter"
+                  ? "Receive automated email alerts when candidates apply to any of your jobs. Mute this if you prefer checking candidates only through the platform."
+                  : "Receive instant updates when your applications are submitted, reviewed, accepted, or rejected by hiring recruiters."}
+              </p>
+              <p className="text-[11px] text-amber-700 font-medium">
+                💡 Tip: Check your Gmail <strong>Spam</strong> or <strong>Promotions</strong> folder if the notification doesn&apos;t land in Primary.
+              </p>
+            </div>
+
+            {user?.role === "recruiter" && (
               <Button
                 type="button"
                 variant="outline"
@@ -435,12 +478,12 @@ export default function Viewprofile() {
                   <Bell className="w-3.5 h-3.5 mr-1 text-purple-600" />
                 )}
                 <span>
-                  {user?.profile?.emailNotifications !== false ? "Mute All Email Alerts" : "Enable Email Alerts"}
+                  {user?.profile?.emailNotifications !== false ? "Mute All Alerts" : "Enable Alerts"}
                 </span>
               </Button>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Dedicated Resume Section with Direct Upload */}
         <div className="mt-6 border-t pt-4">
