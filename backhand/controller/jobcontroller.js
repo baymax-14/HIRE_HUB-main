@@ -3,15 +3,15 @@ import { Company } from "../models/companymodel.js";
 import { Application } from "../models/applicationmodel.js";
 
 //admin post the job
-export const postjob = async (req,res) => {
+export const postjob = async (req, res) => {
     try {
-        const {title,description,requirement,salary,location,jobType,position,experiance,companyId,emailAlerts} = req.body;
+        const { title, description, requirement, salary, location, jobType, position, experiance, companyId, emailAlerts } = req.body;
         const userId = req.id;  //which user post the job
 
-        if(!title || !description || !requirement || !salary || !location || !jobType || !position || !experiance || !companyId){
+        if (!title || !description || !requirement || !salary || !location || !jobType || !position || !experiance || !companyId) {
             return res.status(400).json({
-                message:"Something is missing!",
-                success:false
+                message: "Something is missing!",
+                success: false
             })
         }
 
@@ -48,9 +48,9 @@ export const postjob = async (req,res) => {
         })
 
         return res.status(201).json({
-            message:"New job created successfully",
+            message: "New job created successfully",
             job,
-            success:true
+            success: true
         })
     } catch (error) {
         console.log(error);
@@ -62,7 +62,7 @@ export const postjob = async (req,res) => {
 }
 
 //for student
-export const getAllJob = async (req,res) =>{
+export const getAllJob = async (req, res) => {
     try {
         const keyword = req.query.keyword || "";
         const location = req.query.location || "";
@@ -77,9 +77,9 @@ export const getAllJob = async (req,res) =>{
         // Keyword search on title, description, and location
         if (keyword) {
             query.$or = [
-                {title:{$regex:keyword,$options:"i"}},
-                {description:{$regex:keyword,$options:"i"}},
-                {location:{$regex:keyword,$options:"i"}}
+                { title: { $regex: keyword, $options: "i" } },
+                { description: { $regex: keyword, $options: "i" } },
+                { location: { $regex: keyword, $options: "i" } }
             ];
         }
 
@@ -101,8 +101,8 @@ export const getAllJob = async (req,res) =>{
         }
 
         let jobQuery = Job.find(query).populate({
-            path:"company"
-        }).sort({createdAt:-1});
+            path: "company"
+        }).sort({ createdAt: -1 });
 
         if (limit > 0) {
             jobQuery = jobQuery.skip((page - 1) * limit).limit(limit);
@@ -116,7 +116,7 @@ export const getAllJob = async (req,res) =>{
             totalJobs,
             currentPage: page,
             totalPages: limit > 0 ? Math.ceil(totalJobs / limit) : 1,
-            success:true
+            success: true
         })
     } catch (error) {
         console.log(error);
@@ -128,25 +128,24 @@ export const getAllJob = async (req,res) =>{
 }
 
 // get job by id for student
-export const getjobid = async(req,res) =>{
+export const getjobid = async (req, res) => {
     try {
         const jobid = req.params.id;
 
-        const job  = await Job.findById(jobid).populate({
-            path:"application"
+        const job = await Job.findById(jobid).populate({
+            path: "application"
         })
 
-         if(!job)
-        {
+        if (!job) {
             return res.status(404).json({
-                message:"jobs not found",
-                success:false
+                message: "jobs not found",
+                success: false
             })
         }
 
-         return res.status(200).json({
+        return res.status(200).json({
             job,
-            success:true
+            success: true
         })
     } catch (error) {
         console.log(error);
@@ -159,23 +158,22 @@ export const getjobid = async(req,res) =>{
 
 //now here we have
 
-export const getAdminjob = async (req,res) =>{
+export const getAdminjob = async (req, res) => {
     try {
         const adminId = req.id;
-        const jobs = await Job.find({created_by:adminId}).populate({
-            path:'company'
-        }).sort({createdAt:-1});
+        const jobs = await Job.find({ created_by: adminId }).populate({
+            path: 'company'
+        }).sort({ createdAt: -1 });
 
-        if(!jobs)
-        {
+        if (!jobs) {
             return res.status(404).json({
-                message:"Jobs not found",
-                success:false
+                message: "Jobs not found",
+                success: false
             })
         }
         return res.status(200).json({
             jobs,
-            success:true
+            success: true
         })
     } catch (error) {
         console.log(error);
