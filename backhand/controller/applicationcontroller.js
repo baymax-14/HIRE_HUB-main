@@ -313,3 +313,98 @@ export const reAnalyzeApplicant = async (req, res) => {
   }
 };
 
+// Bulk reject candidates below a certain ATS score for a specific job
+export const bulkRejectApplicants = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { thresholdScore, applicationIds } = req.body;
+
+    // Verify job exists
+    const job = await Job.findById(jobId).populate("company");
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found",
+        success: false,
+      });
+    }
+
+    // Verify that the logged-in user is the recruiter who created the job
+    if (job.created_by.toString() !== req.id) {
+      return res.status(403).json({
+        message: "You are not authorized to update applicants for this job",
+        success: false,
+      });
+    }
+
+    let filter = {
+      job: jobId,
+      status: { $ne: "rejected" },
+    };
+
+    if (Array.isArray(applicationIds) && applicationIds.length > 0) {
+      filter._id = { $in: applicationIds };
+    } else {
+      if (thresholdScore === undefined || thresholdScore === null || isNaN(thresholdScore)) {
+        return res.status(400).json({
+          message: "A valid threshold score is required",
+          success: false,
+        });
+      }
+      const threshold = Number(thresholdScore);
+      filter.$or = [
+        { "aiEvaluation.score": { $lt: threshold } },
+        { "aiEvaluation.score": { $exists: false } },
+        { aiEvaluation: { $exists: false } },
+      ];
+    }
+
+    const applicationsToReject = await Application.find(filter).populate("applicant", "fullname email");
+
+    if (!applicationsToReject || applicationsToReject.length === 0) {
+      return res.status(200).json({
+        message: "No eligible applicants found to reject",
+        rejectedCount: 0,
+        rejectedIds: [],
+        success: true,
+      });
+    }
+
+    const companyName = job?.company?.name || "Unknown Company";
+    const rejectedIds = [];
+
+    for (const app of applicationsToReject) {
+      app.status = "rejected";
+      await app.save();
+      rejectedIds.push(app._id.toString());
+
+      // Send notification & email to applicant (fire and forget)
+      if (app.applicant) {
+        createNotification({
+          recipient: app.applicant._id || app.applicant,
+          type: "status_update",
+          title: "Application Rejected",
+          message: `Your application for ${job.title} has been rejected`,
+          relatedJob: job._id,
+          relatedApplication: app._id,
+        }).catch((err) => console.error("Bulk reject notification error:", err.message));
+
+        sendStatusUpdateEmail(app.applicant, job, companyName, "rejected")
+          .catch((err) => console.error("Bulk reject email error:", err.message));
+      }
+    }
+
+    return res.status(200).json({
+      message: `Successfully rejected ${rejectedIds.length} candidate(s)`,
+      rejectedCount: rejectedIds.length,
+      rejectedIds,
+      success: true,
+    });
+  } catch (error) {
+    console.error("bulkRejectApplicants error:", error);
+    return res.status(500).json({
+      message: error.message || "Internal Server Error",
+      success: false,
+    });
+  }
+};
+

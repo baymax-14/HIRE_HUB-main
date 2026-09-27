@@ -22,16 +22,22 @@ import {
 import { toast } from "sonner"
 import { APPLICATION_API_END_POINT } from "@/util/const"
 import axios from "axios"
+import { useParams } from "react-router-dom"
 import AiEvaluationModal from "./AiEvaluationModal"
+import AtsScoreDistribution, { isScoreInRange, RANGES } from "./AtsScoreDistribution"
 
 const shortlisting = ["Accepted", "Rejected"]
 
 export default function ApplicantsTable() {
   const { applicants } = useSelector((store) => store.application)
+  const { id: paramJobId } = useParams()
   
   // Local state for interactive filtering, sorting, and modal
   const [searchQuery, setSearchQuery] = useState("")
   const [filterVerdict, setFilterVerdict] = useState("all")
+  const [selectedScoreRange, setSelectedScoreRange] = useState("all")
+  const [thresholdScore, setThresholdScore] = useState(40)
+  const [isBulkRejecting, setIsBulkRejecting] = useState(false)
   const [sortBy, setSortBy] = useState("highest_score") // "highest_score", "lowest_score", "newest"
   const [selectedApplicant, setSelectedApplicant] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -60,6 +66,36 @@ export default function ApplicantsTable() {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update status")
+    }
+  }
+
+  const handleBulkReject = async (threshold, eligibleList) => {
+    try {
+      setIsBulkRejecting(true)
+      const targetJobId = paramJobId || applicants?._id
+      const candidateIds = eligibleList.map((c) => c._id)
+
+      axios.defaults.withCredentials = true
+      const res = await axios.post(
+        `${APPLICATION_API_END_POINT}/${targetJobId}/bulk-reject`,
+        { thresholdScore: threshold, applicationIds: candidateIds }
+      )
+
+      if (res.data.success) {
+        toast.success(res.data.message || `Successfully rejected ${candidateIds.length} candidate(s)`)
+        const idSet = new Set(candidateIds)
+        setLocalApplications((prev) =>
+          prev.map((app) => (idSet.has(app._id) ? { ...app, status: "rejected" } : app))
+        )
+        if (selectedApplicant && idSet.has(selectedApplicant._id)) {
+          setSelectedApplicant((prev) => ({ ...prev, status: "rejected" }))
+        }
+      }
+    } catch (error) {
+      console.error("Bulk reject failed:", error)
+      toast.error(error.response?.data?.message || "Failed to bulk-reject candidates")
+    } finally {
+      setIsBulkRejecting(false)
     }
   }
 
@@ -130,6 +166,14 @@ export default function ApplicantsTable() {
       })
     }
 
+    // ATS score range filter (1-20, 20-40, 40-60, 60-80, 80-100)
+    if (selectedScoreRange !== "all") {
+      list = list.filter((item) => {
+        const score = item?.aiEvaluation?.score ?? 0
+        return isScoreInRange(score, selectedScoreRange)
+      })
+    }
+
     // Sorting
     list.sort((a, b) => {
       const scoreA = a?.aiEvaluation?.score ?? 0
@@ -143,10 +187,21 @@ export default function ApplicantsTable() {
     })
 
     return list
-  }, [localApplications, searchQuery, filterVerdict, sortBy])
+  }, [localApplications, searchQuery, filterVerdict, selectedScoreRange, sortBy])
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-5">
+      {/* ── ATS Score Distribution & Adjustable Screening Rejection Section ── */}
+      <AtsScoreDistribution
+        applications={localApplications}
+        selectedScoreRange={selectedScoreRange}
+        onSelectScoreRange={setSelectedScoreRange}
+        thresholdScore={thresholdScore}
+        onThresholdChange={setThresholdScore}
+        onBulkReject={handleBulkReject}
+        isBulkRejecting={isBulkRejecting}
+      />
+
       {/* Top Filter & Sort Bar */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200/80 shadow-xs">
         {/* Search */}
@@ -162,6 +217,37 @@ export default function ApplicantsTable() {
 
         {/* Filter and Sort options */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Active Range Filter Pill */}
+          {selectedScoreRange !== "all" && (
+            <div className="flex items-center gap-1.5 text-xs text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-lg">
+              <span className="font-semibold">Range: {RANGES.find((r) => r.id === selectedScoreRange)?.label}</span>
+              <button
+                onClick={() => setSelectedScoreRange("all")}
+                className="cursor-pointer hover:text-black ml-0.5"
+                title="Clear range filter"
+              >
+                <XCircle className="w-3.5 h-3.5 text-indigo-500 hover:text-indigo-800" />
+              </button>
+            </div>
+          )}
+
+          {/* Score Range Dropdown Filter */}
+          <div className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-lg border border-gray-200">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <select
+              value={selectedScoreRange}
+              onChange={(e) => setSelectedScoreRange(e.target.value)}
+              className="bg-transparent border-none text-xs font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="all">All Score Ranges</option>
+              {RANGES.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.label} ({r.subtitle})
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Verdict Filter */}
           <div className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-lg border border-gray-200">
             <Filter className="w-3.5 h-3.5 text-gray-500" />

@@ -2,7 +2,7 @@ import express from 'express'
 import isauthenticate from '../middleware/isAuthenticate.js';
 import { singleUpload } from '../middleware/multer.js';
 const router = express.Router();
-import{applyjob,getAppliedjob,getApplicants,updateStatus,reAnalyzeApplicant} from "../controller/applicationcontroller.js";
+import{applyjob,getAppliedjob,getApplicants,updateStatus,reAnalyzeApplicant,bulkRejectApplicants} from "../controller/applicationcontroller.js";
 
 
 router.get("/get",isauthenticate,getAppliedjob);
@@ -10,6 +10,7 @@ router.get("/get",isauthenticate,getAppliedjob);
 router.get("/:id/applicants",isauthenticate,getApplicants);
 router.post("/status/:id/update",isauthenticate,updateStatus);
 router.post("/:id/reanalyze",isauthenticate,reAnalyzeApplicant);
+router.post("/:jobId/bulk-reject",isauthenticate,bulkRejectApplicants);
 
 router.post("/apply/:id",isauthenticate,singleUpload,applyjob);
 
