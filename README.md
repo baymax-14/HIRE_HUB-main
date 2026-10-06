@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 HireHub — Smart AI-Powered Job Portal & ATS Platform
+# 🚀 HireHub — AI-Powered Job Portal & ATS Platform
 
 **An enterprise-grade, full-stack recruitment platform with AI-driven ATS resume scoring, automated candidate screening, real-time in-app notifications, and dual-channel email alerts.**
 
@@ -9,6 +9,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_8-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -24,8 +25,7 @@
 - [Environment Variables](#-environment-variables)
 - [API Endpoints](#-api-endpoints)
 - [AI ATS Resume Scoring Engine](#-ai-ats-resume-scoring-engine)
-- [Deployment Guide (Render & Vercel)](#-deployment-guide-render--vercel)
-- [Screenshots](#-screenshots)
+- [Deployment Guide](#-deployment-guide-render--vercel)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -53,9 +53,10 @@
 
 ### 🤖 1. AI-Powered ATS Resume Engine
 - **Standardized 100-Point Scoring Rubric** — 70 points for exact/semantic technical skill overlap + 30 points for verifiable practical evidence (projects, experience, education).
-- **Automated PDF Parsing** — Supports `pdf-parse` (v1 & v2) for robust local and cloud PDF extraction.
-- **Pre-Apply ATS Fit Check** — Candidates can preview their alignment against a job before submitting their resume.
-- **Deep Evaluation Feedback** — Evaluates matching skills, missing skills, strengths, concerns, and on-demand resume re-analysis.
+- **Automated PDF Parsing** — Robust server-side PDF text extraction via `pdf-parse`.
+- **Google Gemini AI Integration** — Optional `GEMINI_API_KEY` enables advanced semantic reasoning on top of the rubric; falls back to a smart local NLP engine if omitted.
+- **Pre-Apply ATS Fit Check** — Candidates can preview their alignment against a job before submitting.
+- **Deep Evaluation Feedback** — Matching skills, missing skills, strengths, concerns, and on-demand re-analysis.
 
 ### 🎯 2. 5-Tier ATS Distribution & Adjustable Bulk Screening
 - **5 Score Performance Tiers** — Automatically partitions candidate pools into `1-20%` *(Low Match)*, `20-40%` *(Partially Qualified)*, `40-60%` *(Moderate Fit)*, `60-80%` *(Qualified)*, and `80-100%` *(Top Match)*.
@@ -79,33 +80,34 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|---|---|
-| **React 19** | Modern reactive component architecture |
-| **Vite 6** | Ultra-fast development server & production bundler |
-| **Tailwind CSS 4** | Utility-first responsive styling and modern design system |
-| **Redux Toolkit** | Centralized application state management |
-| **Redux Persist** | Persistent user authentication across page reloads |
-| **React Router v7** | Client-side routing with role-based `ProtectedRoute` |
-| **Radix UI** | Accessible headless UI primitives (Dialog, Popover, Select, Avatar) |
-| **Framer Motion** | Micro-interactions and smooth page transitions |
-| **Recharts** | Interactive recruiter analytics charts |
-| **Lucide React** | Consistent, modern icon set |
-| **Sonner** | Floating toast notification system |
-| **Axios** | Promised-based HTTP client with credentials |
+| Technology | Version | Purpose |
+|---|:---:|---|
+| **React** | 19 | Modern reactive component architecture |
+| **Vite** | 6 | Ultra-fast dev server & production bundler |
+| **Tailwind CSS** | 4 | Utility-first responsive styling |
+| **Redux Toolkit** | ^2 | Centralized application state management |
+| **Redux Persist** | ^6 | Persistent auth across page reloads |
+| **React Router** | v7 | Client-side routing with `ProtectedRoute` |
+| **Radix UI** | ^1 | Accessible headless UI primitives |
+| **Framer Motion** | ^12 | Micro-interactions & page transitions |
+| **Recharts** | ^3 | Interactive recruiter analytics charts |
+| **Lucide React** | ^0.5 | Consistent, modern icon set |
+| **Sonner** | ^2 | Floating toast notification system |
+| **Axios** | ^1 | Promise-based HTTP client |
 
 ### Backend
-| Technology | Purpose |
-|---|---|
-| **Node.js (ESM)** | JavaScript runtime |
-| **Express 5** | RESTful web framework |
-| **MongoDB + Mongoose 8** | Document database with relational schema population |
-| **JWT (JSON Web Tokens)** | Stateless HTTP-only cookie-based authentication |
-| **bcryptjs** | Salted password hashing |
-| **Multer** | Multi-part form data handling |
-| **Cloudinary** | Cloud-hosted storage for resumes, logos, and avatars |
-| **pdf-parse** | Server-side PDF text extraction |
-| **Nodemailer + Resend / Brevo** | Dual-channel transactional email delivery |
+| Technology | Version | Purpose |
+|---|:---:|---|
+| **Node.js (ESM)** | ≥ 18 | JavaScript runtime |
+| **Express** | 5 | RESTful web framework |
+| **MongoDB + Mongoose** | 8 | Document database with relational population |
+| **JWT** | ^9 | Stateless HTTP-only cookie-based auth |
+| **bcryptjs** | ^3 | Salted password hashing |
+| **Multer** | ^2 | Multipart form-data file handling |
+| **Cloudinary** | ^2 | Cloud storage for resumes, logos & avatars |
+| **pdf-parse** | ^2 | Server-side PDF text extraction |
+| **Nodemailer** | ^10 | SMTP email delivery |
+| **Axios** | ^1 | HTTPS email API fallback (Resend / Brevo) |
 
 ---
 
@@ -174,112 +176,117 @@ HIRE_HUB/
 
 ### Prerequisites
 - **Node.js** ≥ 18.x
-- **MongoDB** (Local or [MongoDB Atlas](https://www.mongodb.com/atlas))
-- **npm** or **yarn**
+- **MongoDB** — Local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) (free tier works)
+- **npm** ≥ 9.x
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/baymax-14/HIRE_HUB-main.git
-cd HIRE_HUB-main
+git clone https://github.com/your-username/HIRE_HUB.git
+cd HIRE_HUB
 ```
 
-### 2. Setup Backend
+### 2. Setup the Backend
 ```bash
 cd backhand
 npm install
 cp .env.example .env
-```
-Edit `backhand/.env` with your credentials, then run:
-```bash
+# Edit .env with your credentials (see Environment Variables section)
 npm run dev
-# Backend runs on http://localhost:8000
+# ✅ Backend running on http://localhost:8000
 ```
 
-### 3. Setup Frontend
-Open a new terminal in the project root:
+### 3. Setup the Frontend
+Open a **new terminal** in the project root:
 ```bash
 npm install
 npm run dev
-# Frontend runs on http://localhost:5173
+# ✅ Frontend running on http://localhost:5173
 ```
+
+> **Tip:** Both servers must be running simultaneously for the app to work.
 
 ---
 
 ## 🔐 Environment Variables
 
-### Backend (`backhand/.env`)
+### Backend — `backhand/.env`
+
+Copy `backhand/.env.example` to `backhand/.env` and fill in your values:
+
 | Variable | Required | Description |
-|---|---|---|
+|---|:---:|---|
 | `PORT` | No | Server port (default: `8000`) |
-| `MONOGOURL` | **Yes** | MongoDB connection string (Atlas or local) |
-| `SECRET_KEY` | **Yes** | JWT signing secret |
-| `CLOUD_NAME` | No | Cloudinary cloud name |
+| `MONOGOURL` | **Yes** | MongoDB connection string (Atlas URI or local) |
+| `SECRET_KEY` | **Yes** | JWT signing secret — use a long random string |
+| `CLOUD_NAME` | No | Cloudinary cloud name (for file uploads) |
 | `API_KEY` | No | Cloudinary API key |
 | `API_SECRET` | No | Cloudinary API secret |
-| `FRONTEND_URL` | No | Frontend URL for CORS (default: `http://localhost:5173`) |
+| `FRONTEND_URL` | No | Frontend origin for CORS (default: `http://localhost:5173`) |
+| `GEMINI_API_KEY` | No | Google Gemini API key for advanced AI resume reasoning |
 | `SMTP_HOST` | No | SMTP host (e.g., `smtp.gmail.com`) |
-| `SMTP_PORT` | No | SMTP port (`465` or `587`) |
+| `SMTP_PORT` | No | SMTP port (`465` for SSL, `587` for TLS) |
 | `SMTP_USER` | No | Sender email address |
-| `SMTP_PASS` | No | SMTP App Password |
-| `RESEND_API_KEY` | No | Resend HTTPS email fallback API key |
-| `BREVO_API_KEY` | No | Brevo HTTPS email fallback API key |
+| `SMTP_PASS` | No | SMTP app password |
+| `SMTP_FROM` | No | Display name/address for outgoing emails |
 
-### Frontend (`frontend/.env`)
+> **Note:** Email (`SMTP_*`) and file upload (`CLOUD_*`) variables are optional for local development but required for full production functionality. The ATS engine works without `GEMINI_API_KEY` using the built-in NLP fallback.
+
+### Frontend — `frontend/.env`
 | Variable | Required | Description |
-|---|---|---|
-| `VITE_API_BASE_URL` | **Yes** | Backend API URL (default: `http://localhost:8000/api/v1`) |
+|---|:---:|---|
+| `VITE_API_BASE_URL` | **Yes** | Backend API base URL (default: `http://localhost:8000/api/v1`) |
 
 ---
 
 ## 📡 API Endpoints
 
 ### Authentication & Users — `/api/v1/user`
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/register` | Register a new user (`student` or `recruiter`) |
-| `POST` | `/login` | Authenticate user & issue HTTP-only JWT cookie |
-| `GET` | `/logout` | Clear auth cookie |
-| `POST` | `/profile/update` | Update profile, bio, skills, and upload resume |
-| `POST` | `/save-job/:jobId` | Bookmark / unbookmark a job |
-| `GET` | `/saved-jobs` | Get all bookmarked jobs |
+| Method | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| `POST` | `/register` | ❌ | Register a new user (`student` or `recruiter`) |
+| `POST` | `/login` | ❌ | Authenticate & issue HTTP-only JWT cookie |
+| `GET` | `/logout` | ✅ | Clear auth cookie |
+| `POST` | `/profile/update` | ✅ | Update profile, bio, skills & upload resume |
+| `POST` | `/save-job/:jobId` | ✅ | Bookmark / unbookmark a job |
+| `GET` | `/saved-jobs` | ✅ | Get all bookmarked jobs |
 
 ### Companies — `/api/v1/company`
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/register` | Register an organization profile |
-| `GET` | `/get` | Get recruiter's registered companies |
-| `GET` | `/get/:id` | Get company details by ID |
-| `PUT` | `/update/:id` | Update company profile, branding & website |
-| `DELETE` | `/delete/:id` | Delete company and associated jobs |
+| Method | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| `POST` | `/register` | ✅ | Register a new company profile |
+| `GET` | `/get` | ✅ | Get recruiter's registered companies |
+| `GET` | `/get/:id` | ✅ | Get company details by ID |
+| `PUT` | `/update/:id` | ✅ | Update company profile, branding & website |
+| `DELETE` | `/delete/:id` | ✅ | Delete company and associated jobs |
 
 ### Jobs — `/api/v1/job`
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/post` | Post a new job listing |
-| `GET` | `/get` | Get all jobs (with search, location, salary & type filters) |
-| `GET` | `/getadminjobs` | Get recruiter's posted jobs with application metadata |
-| `GET` | `/get/:id` | Get job details by ID |
-| `PUT` | `/update/:id` | Update job details, salary & requirements |
-| `PUT` | `/toggle-alerts/:id` | Toggle candidate email notification alerts |
-| `DELETE` | `/delete/:id` | Delete job posting & candidate records |
+| Method | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| `POST` | `/post` | ✅ | Post a new job listing |
+| `GET` | `/get` | ❌ | Get all jobs (search, location, salary & type filters) |
+| `GET` | `/getadminjobs` | ✅ | Get recruiter's posted jobs with application metadata |
+| `GET` | `/get/:id` | ❌ | Get job details by ID |
+| `PUT` | `/update/:id` | ✅ | Update job details, salary & requirements |
+| `PUT` | `/toggle-alerts/:id` | ✅ | Toggle candidate email notification alerts |
+| `DELETE` | `/delete/:id` | ✅ | Delete job posting & associated records |
 
 ### Applications & ATS — `/api/v1/application`
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/apply/:id` | Apply to a job (triggers automated AI ATS resume evaluation) |
-| `GET` | `/get` | Get student's application history & statuses |
-| `GET` | `/:id/applicants` | Get all applicants for a job with ATS scores |
-| `POST` | `/status/:id/update` | Update candidate status (`accepted` / `rejected`) |
-| `POST` | `/:jobId/bulk-reject` | **Bulk-reject candidates below an adjustable ATS threshold score** |
-| `POST` | `/:id/reanalyze` | On-demand resume re-evaluation |
+| Method | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| `POST` | `/apply/:id` | ✅ | Apply to a job (triggers automated AI ATS evaluation) |
+| `GET` | `/get` | ✅ | Get student's application history & statuses |
+| `GET` | `/:id/applicants` | ✅ | Get all applicants for a job with ATS scores |
+| `POST` | `/status/:id/update` | ✅ | Update candidate status (`accepted` / `rejected`) |
+| `POST` | `/:jobId/bulk-reject` | ✅ | Bulk-reject candidates below an ATS threshold score |
+| `POST` | `/:id/reanalyze` | ✅ | On-demand resume re-evaluation |
 
 ### Notifications & Analytics
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/notifications` | Get user notifications |
-| `PATCH` | `/api/v1/notifications/:id/read` | Mark notification as read |
-| `PATCH` | `/api/v1/notifications/read-all` | Mark all notifications as read |
-| `GET` | `/api/v1/analytics/dashboard` | Get recruiter analytics & hiring funnel stats |
+| Method | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| `GET` | `/api/v1/notifications` | ✅ | Get user notifications |
+| `PATCH` | `/api/v1/notifications/:id/read` | ✅ | Mark a notification as read |
+| `PATCH` | `/api/v1/notifications/read-all` | ✅ | Mark all notifications as read |
+| `GET` | `/api/v1/analytics/dashboard` | ✅ | Get recruiter analytics & hiring funnel stats |
 
 ---
 
@@ -291,17 +298,22 @@ $$\text{ATS Score (100 pts)} = \text{Technical Skill Overlap (70 pts)} + \text{P
 
 | Component | Max Points | Evaluation Criteria |
 |---|:---:|---|
-| **Technical Skill Overlap** | **70 pts** | Exact & synonym matching against job requirements (regex word boundary matching) |
-| **Engineering Projects & Portfolio** | **12 pts** | Identifies production verbs & architectures (`developed`, `built`, `deployed`, `frontend`, `backend`, `fullstack`) |
-| **Real-World Experience** | **8 pts** | Identifies internships, work history, hackathons, and certifications |
-| **Role Tenure & Experience Fit** | **5 pts** | Evaluates seniority alignment against the target role |
-| **Verified Resume Text** | **5 pts** | Minimum valid characters extracted from uploaded PDF resume |
+| **Technical Skill Overlap** | **70 pts** | Exact & synonym matching against job requirements (regex word-boundary matching) |
+| **Engineering Projects & Portfolio** | **12 pts** | Identifies production verbs & architectures (`developed`, `built`, `deployed`, `fullstack`, etc.) |
+| **Real-World Experience** | **8 pts** | Internships, work history, hackathons & certifications |
+| **Role Tenure & Seniority Fit** | **5 pts** | Evaluates seniority alignment against the target role |
+| **Verified Resume Text** | **5 pts** | Minimum valid characters extracted from uploaded PDF |
 
-### Verdict Thresholds
-* **80 – 100%**: ✅ **Highly Qualified** *(Top Match — strong skills & verifiable project delivery)*
-* **60 – 79%**: 🟢 **Qualified** *(Solid match — meets core requirements with minor gaps)*
-* **40 – 59%**: 🟡 **Partially Qualified** *(Foundation present — needs further experience)*
-* **0 – 39%**: 🔴 **Not Qualified** *(Significant skill gap for this position)*
+### Score Verdict Thresholds
+
+| Score Range | Verdict | Meaning |
+|:---:|---|---|
+| 80 – 100 | ✅ **Highly Qualified** | Top Match — strong skills & verifiable delivery |
+| 60 – 79 | 🟢 **Qualified** | Solid match — meets core requirements with minor gaps |
+| 40 – 59 | 🟡 **Partially Qualified** | Foundation present — needs further experience |
+| 0 – 39 | 🔴 **Not Qualified** | Significant skill gap for this position |
+
+> When `GEMINI_API_KEY` is set, the engine uses Google Gemini for advanced semantic reasoning on top of the base rubric. Without it, the built-in NLP engine is used automatically.
 
 ---
 
@@ -309,37 +321,51 @@ $$\text{ATS Score (100 pts)} = \text{Technical Skill Overlap (70 pts)} + \text{P
 
 ### Architecture Overview
 ```
-┌────────────────────────────────┐         Cross-Origin Requests (CORS + Cookies)        ┌────────────────────────────────┐
-│         Vercel (Frontend)      │ ─────────────────────────────────────────────────────▶ │         Render (Backend)       │
-│  https://your-app.vercel.app   │ ◀───────────────────────────────────────────────────── │ https://your-app.onrender.com  │
-└────────────────────────────────┘                                                        └───────────────┬────────────────┘
-                                                                                                          │
-                                                                                                          ▼
-                                                                                           ┌──────────────────────────────┐
-                                                                                           │        MongoDB Atlas         │
-                                                                                           │   mongodb+srv://...          │
-                                                                                           └──────────────────────────────┘
+┌──────────────────────────┐    CORS + Cookies    ┌──────────────────────────┐
+│      Vercel (Frontend)   │ ──────────────────▶  │     Render (Backend)     │
+│  https://app.vercel.app  │ ◀──────────────────  │ https://app.onrender.com │
+└──────────────────────────┘                       └────────────┬─────────────┘
+                                                                │
+                                                                ▼
+                                                   ┌────────────────────────┐
+                                                   │      MongoDB Atlas     │
+                                                   │  mongodb+srv://...     │
+                                                   └────────────────────────┘
 ```
 
-1. **Deploy Backend to Render**:
-   - Create a Web Service pointing to `backhand/`.
-   - Build Command: `npm install`, Start Command: `npm start`.
-   - Set environment variables (`MONOGOURL`, `SECRET_KEY`, `FRONTEND_URL`, `NODE_ENV=production`).
-2. **Deploy Frontend to Vercel**:
-   - Import the repository into Vercel.
-   - Build Command: `npm run build`, Output Directory: `frontend/dist`.
-   - Set `VITE_API_BASE_URL` to your Render API URL.
-   - `vercel.json` automatically handles SPA client-side route rewrites.
+### Step 1 — Deploy Backend to Render
+
+1. Create a new **Web Service** on [Render](https://render.com).
+2. Connect your repository and set **Root Directory** to `backhand`.
+3. **Build Command:** `npm install`
+4. **Start Command:** `npm start`
+5. Add all required environment variables from the table above.
+6. Set `NODE_ENV=production` and `FRONTEND_URL` to your Vercel frontend URL.
+
+> A `render.yaml` file is included for one-click blueprint deployment.
+
+### Step 2 — Deploy Frontend to Vercel
+
+1. Import the repository into [Vercel](https://vercel.com).
+2. **Framework Preset:** Vite
+3. **Build Command:** `npm run build`
+4. **Output Directory:** `frontend/dist`
+5. Set `VITE_API_BASE_URL` to your Render backend URL (e.g., `https://your-app.onrender.com/api/v1`).
+6. `vercel.json` automatically handles SPA client-side route rewrites.
 
 ---
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please follow these steps:
+
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Commit** your changes: `git commit -m 'Add amazing feature'`
+3. **Commit** your changes using [Conventional Commits](https://www.conventionalcommits.org): `git commit -m 'feat: add amazing feature'`
 4. **Push** to the branch: `git push origin feature/amazing-feature`
 5. **Open** a Pull Request
+
+Please ensure your code follows the existing style and includes appropriate comments.
 
 ---
 
