@@ -103,7 +103,7 @@ export default function Footer() {
               Explore Platform
             </span>
             <nav className="flex flex-col gap-2">
-              <Link to="/companies" className="text-sm text-[#4a4455] hover:text-[#630ed4] transition-colors">
+              <Link to="/jobs" className="text-sm text-[#4a4455] hover:text-[#630ed4] transition-colors">
                 Vetted Tech Unicorns
               </Link>
               <Link to="/jobs" className="text-sm text-[#4a4455] hover:text-[#630ed4] transition-colors">

@@ -21,6 +21,20 @@ export default function Navbar({ transparent = false }) {
 
   const isTransparent = transparent || location.pathname === "/login" || location.pathname === "/signup"
 
+  const handlePostJobClick = () => {
+    closeMobileMenu()
+    if (!user) {
+      toast.info("Please log in as a recruiter to post jobs")
+      navigate("/login?role=recruiter")
+      return
+    }
+    if (user.role !== "recruiter") {
+      toast.error("Only recruiter accounts can post jobs")
+      return
+    }
+    navigate("/admin/jobs/create")
+  }
+
   const logouthandler = async () => {
     try {
       const res = await axios.get(`${USER_API_END_POINT}/logout`, {
@@ -29,7 +43,6 @@ export default function Navbar({ transparent = false }) {
 
       if (res.data.success) {
         dispatch(setuser(null))
-        dispatch({ type: "auth/logout" })
         navigate("/")
         toast.success(res.data.message || "Logged out successfully")
       }
@@ -94,23 +107,25 @@ export default function Navbar({ transparent = false }) {
             ) : (
               <>
                 <li>
+                  <Link to="/" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Home</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
+                  </Link>
+                </li>
+                <li>
                   <Link to="/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
                     <span>Find Jobs</span>
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
                   </Link>
                 </li>
-                <li>
-                  <Link to="/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
-                    <span>Companies</span>
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
-                    <span>Salaries</span>
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
-                  </Link>
-                </li>
+                {user && user.role === "student" && (
+                  <li>
+                    <Link to="/profile" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                      <span>My Applications</span>
+                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
+                    </Link>
+                  </li>
+                )}
               </>
             )}
           </ul>
@@ -118,13 +133,13 @@ export default function Navbar({ transparent = false }) {
           {/* Desktop User / Auth section */}
           {!user ? (
             <div className="flex items-center gap-3">
-              <Link
-                to="/admin/jobs/create"
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#131b2e] hover:text-[#630ed4] px-4 py-2 rounded-full border border-slate-200/80 hover:border-[#630ed4]/40 transition-all bg-white hover:bg-[#f2f3ff]"
+              <button
+                onClick={handlePostJobClick}
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#131b2e] hover:text-[#630ed4] px-4 py-2 rounded-full border border-slate-200/80 hover:border-[#630ed4]/40 transition-all bg-white hover:bg-[#f2f3ff] cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 text-[#630ed4]" />
                 <span>Post a Job</span>
-              </Link>
+              </button>
               <Link to="/login">
                 <Button
                   variant="ghost"
@@ -293,8 +308,8 @@ export default function Navbar({ transparent = false }) {
                   <Link
                     to="/admin/dashboard"
                     onClick={closeMobileMenu}
-                    className={`block py-2 px-2 rounded-md transition-colors ${
-                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-gray-100 hover:text-[#F83002]"
+                    className={`block py-2 px-3 rounded-xl transition-colors font-semibold ${
+                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-purple-50 hover:text-[#630ed4]"
                     }`}
                   >
                     Dashboard
@@ -304,8 +319,8 @@ export default function Navbar({ transparent = false }) {
                   <Link
                     to="/admin/companies"
                     onClick={closeMobileMenu}
-                    className={`block py-2 px-2 rounded-md transition-colors ${
-                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-gray-100 hover:text-[#F83002]"
+                    className={`block py-2 px-3 rounded-xl transition-colors font-semibold ${
+                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-purple-50 hover:text-[#630ed4]"
                     }`}
                   >
                     Companies
@@ -315,8 +330,8 @@ export default function Navbar({ transparent = false }) {
                   <Link
                     to="/admin/jobs"
                     onClick={closeMobileMenu}
-                    className={`block py-2 px-2 rounded-md transition-colors ${
-                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-gray-100 hover:text-purple-600"
+                    className={`block py-2 px-3 rounded-xl transition-colors font-semibold ${
+                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-purple-50 hover:text-[#630ed4]"
                     }`}
                   >
                     Jobs
@@ -326,7 +341,7 @@ export default function Navbar({ transparent = false }) {
                   <Link
                     to="/admin/jobs/create"
                     onClick={closeMobileMenu}
-                    className="flex items-center gap-1.5 py-2 px-3 rounded-xl bg-purple-600/30 text-purple-200 font-semibold text-sm"
+                    className="flex items-center gap-1.5 py-2 px-3 rounded-xl bg-[#630ed4] text-white font-semibold text-sm"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Post New Job</span>
@@ -339,8 +354,8 @@ export default function Navbar({ transparent = false }) {
                   <Link
                     to="/"
                     onClick={closeMobileMenu}
-                    className={`block py-2 px-2 rounded-md transition-colors ${
-                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-gray-100 hover:text-[#F83002]"
+                    className={`block py-2 px-3 rounded-xl transition-colors font-semibold ${
+                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-purple-50 hover:text-[#630ed4]"
                     }`}
                   >
                     Home
@@ -350,11 +365,11 @@ export default function Navbar({ transparent = false }) {
                   <Link
                     to="/jobs"
                     onClick={closeMobileMenu}
-                    className={`block py-2 px-2 rounded-md transition-colors ${
-                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-gray-100 hover:text-[#F83002]"
+                    className={`block py-2 px-3 rounded-xl transition-colors font-semibold ${
+                      isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-purple-50 hover:text-[#630ed4]"
                     }`}
                   >
-                    Jobs
+                    Find Jobs
                   </Link>
                 </li>
                 {user && user.role === "student" && (
@@ -362,12 +377,23 @@ export default function Navbar({ transparent = false }) {
                     <Link
                       to="/profile"
                       onClick={closeMobileMenu}
-                      className={`block py-2 px-2 rounded-md transition-colors ${
-                        isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-gray-100 hover:text-[#F83002]"
+                      className={`block py-2 px-3 rounded-xl transition-colors font-semibold ${
+                        isTransparent ? "hover:bg-white/10 text-gray-200 hover:text-white" : "hover:bg-purple-50 hover:text-[#630ed4]"
                       }`}
                     >
-                      View Profile
+                      My Applications & Profile
                     </Link>
+                  </li>
+                )}
+                {!user && (
+                  <li>
+                    <button
+                      onClick={handlePostJobClick}
+                      className="w-full text-left flex items-center gap-1.5 py-2 px-3 rounded-xl transition-colors font-semibold hover:bg-purple-50 hover:text-[#630ed4] cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4 text-[#630ed4]" />
+                      <span>Post a Job (Recruiter)</span>
+                    </button>
                   </li>
                 )}
               </>

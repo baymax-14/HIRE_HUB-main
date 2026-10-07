@@ -62,7 +62,7 @@ export default function CtaBanner() {
 
             <div className="relative z-10 mt-8 pt-4 flex flex-wrap items-center gap-4">
               <button
-                onClick={() => navigate(user?.role === "recruiter" ? "/admin/jobs" : "/signup")}
+                onClick={() => navigate(user?.role === "recruiter" ? "/admin/jobs/create" : "/signup")}
                 className="shimmer-fx px-7 py-3.5 bg-slate-950 text-white rounded-full text-sm font-bold shadow-lg hover:bg-slate-900 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-white/10"
               >
                 <span>Post a Job Opening</span>
