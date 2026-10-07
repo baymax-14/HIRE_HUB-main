@@ -1,5 +1,4 @@
-import { Search, MapPin, Sparkles, ArrowRight, TrendingUp, Users, Building2, Briefcase } from "lucide-react"
-import { Button } from "./ui/button"
+import { Search, MapPin, Sparkles, ArrowRight, Flame, CheckCircle, Zap, Briefcase, Building2, UserCheck, Star } from "lucide-react"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { setsearchedQuery } from "@/redux/jobslice"
@@ -23,83 +22,127 @@ export default function Herosection() {
     }
   }
 
-  const trendingTags = ["Remote", "Frontend", "React", "Full Stack", "Data Science", "DevOps"]
+  const trendingTags = [
+    "Remote Worldwide",
+    "Frontend / React",
+    "AI / LLM Engineers",
+    "Full Stack",
+    "Kubernetes & Cloud",
+  ]
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24 bg-radial-gradient">
-      {/* Decorative ambient background glows */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 blur-3xl rounded-full" />
-      
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Smart Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200/60 shadow-xs mb-6 sm:mb-8 animate-fade-in">
-          <span className="flex h-2 w-2 rounded-full bg-purple-600 animate-pulse" />
-          <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-          <span className="text-xs sm:text-sm font-semibold text-purple-900 tracking-wide">
-            AI-Powered Career Matching • 10,000+ Jobs Live
-          </span>
-        </div>
+    <section className="relative w-full pt-8 pb-16 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#faf8ff] via-[#f2f3ff]/70 to-[#faf8ff]">
+      {/* Glowing Animated Mesh Gradient Orbs */}
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[840px] h-[460px] bg-gradient-to-br from-[#eaddff] via-[#7c3aed]/20 to-[#e2dfff] blur-[90px] opacity-60 rounded-full pointer-events-none orb-glow-1" />
+      <div className="absolute top-48 -left-28 w-96 h-96 bg-[#c3c0ff]/50 blur-[90px] opacity-40 rounded-full pointer-events-none orb-glow-2" />
+      <div className="absolute top-36 -right-24 w-[420px] h-[420px] bg-[#ffd9e4]/40 blur-[100px] opacity-35 rounded-full pointer-events-none orb-glow-1" />
 
-        {/* Hero Title */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-950 leading-[1.15] mb-6">
-          Find, Match & Land Your <br />
-          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-            Dream Career
-          </span>
-        </h1>
+      {/* Decorative subtle grid overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e7ff25_1px,transparent_1px),linear-gradient(to_bottom,#e2e7ff25_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
-        {/* Subtitle */}
-        <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8 sm:mb-10 font-normal leading-relaxed">
-          Explore curated opportunities from fast-growing startups and Fortune 500 giants. 
-          Screened with AI and ready for your next big step.
-        </p>
-
-        {/* Combined Dual Search Box */}
-        <div className="max-w-3xl mx-auto bg-white/95 backdrop-blur-md p-2 sm:p-2.5 rounded-2xl sm:rounded-full shadow-xl shadow-purple-500/5 border border-gray-200/80 hover:border-purple-300 transition-all duration-300">
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            {/* Keyword Search */}
-            <div className="flex items-center gap-2.5 px-3 py-2 w-full sm:flex-1">
-              <Search className="w-5 h-5 text-gray-400 shrink-0" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Job title, skills, or company..."
-                className="w-full bg-transparent text-sm sm:text-base text-gray-900 placeholder-gray-400 outline-none border-none font-medium"
-              />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center text-center">
+        {/* FLOATING INTERACTIVE TOAST 1 (Top Left) */}
+        <div className="hidden xl:flex absolute top-16 left-4 z-20 items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/60 shadow-xl shadow-purple-500/5 float-card-1 text-left">
+          <div className="w-8 h-8 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+            <CheckCircle className="w-4 h-4 text-[#10b981]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-heading text-xs font-bold text-[#131b2e]">Ananya S.</span>
+              <span className="text-[10px] text-[#10b981] font-semibold px-1 py-0.5 bg-emerald-500/10 rounded">Offered</span>
             </div>
-
-            <div className="hidden sm:block w-px h-7 bg-gray-200" />
-
-            {/* Location Search */}
-            <div className="flex items-center gap-2.5 px-3 py-2 w-full sm:w-[220px]">
-              <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Location (e.g. Remote, Delhi)"
-                className="w-full bg-transparent text-sm sm:text-base text-gray-900 placeholder-gray-400 outline-none border-none font-medium"
-              />
-            </div>
-
-            {/* Search Submit Button */}
-            <Button
-              onClick={() => searchHandler()}
-              className="w-full sm:w-auto px-6 sm:px-7 py-3 sm:py-6 rounded-xl sm:rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold text-sm sm:text-base shadow-lg shadow-purple-500/25 transition-all duration-200 hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2 shrink-0"
-            >
-              <span>Search Jobs</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            <p className="text-[11px] text-[#64748b]">Staff ML Engineer at Google • 4m ago</p>
           </div>
         </div>
 
-        {/* Trending Tags */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-5 text-xs sm:text-sm text-gray-500">
-          <span className="font-semibold text-gray-700 flex items-center gap-1">
-            <TrendingUp className="w-3.5 h-3.5 text-purple-600" /> Trending:
+        {/* FLOATING INTERACTIVE TOAST 2 (Top Right) */}
+        <div className="hidden xl:flex absolute top-20 right-4 z-20 items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/60 shadow-xl shadow-purple-500/5 float-card-2 text-left">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7c3aed] to-[#4f46e5] flex items-center justify-center shrink-0 text-white">
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-heading text-xs font-bold text-[#131b2e]">Instant ATS Match</span>
+              <span className="text-[10px] text-[#7c3aed] font-bold px-1 py-0.5 bg-purple-500/10 rounded">99.4%</span>
+            </div>
+            <p className="text-[11px] text-[#64748b]">Profile synced with Stripe & Figma</p>
+          </div>
+        </div>
+
+        {/* Live Indicator Pill with glowing ripple dot */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-purple-200/50 shadow-xs backdrop-blur-md mb-6 hover:border-purple-300 transition-colors">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10b981] ring-4 ring-emerald-500/20" />
+          </span>
+          <span className="text-xs sm:text-[13px] text-[#131b2e] flex items-center gap-1.5 font-medium">
+            <span className="text-[#64748b]">Next-Gen AI Career Discovery</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-[#7c3aed] font-bold tracking-tight">14,200+ Verified Openings</span>
+          </span>
+          <Sparkles className="w-4 h-4 text-[#7c3aed] animate-pulse" />
+        </div>
+
+        {/* Editorial High-Contrast Headline */}
+        <h1 className="font-heading text-4xl sm:text-5xl lg:text-[68px] leading-[1.1] tracking-[-0.035em] text-[#131b2e] max-w-4xl mx-auto font-black mb-3">
+          Find, Match & Land Your <br className="hidden sm:inline" />
+          <span className="gradient-animate-text bg-gradient-to-r from-[#630ed4] via-[#7c3aed] via-[#645efb] to-[#4b41e1] bg-clip-text text-transparent drop-shadow-xs">
+            Dream Engineering Role
+          </span>
+        </h1>
+
+        <p className="text-base sm:text-lg lg:text-xl text-[#4a4455] max-w-2xl mt-4 mb-8 font-normal tracking-tight leading-relaxed">
+          Autonomous AI skill screening, instant ATS score calibration, and verified salary transparency across hyper-growth unicorns and Fortune 500 engineering teams.
+        </p>
+
+        {/* Clean & Seamless Unified Search Pill Container */}
+        <div className="w-full max-w-4xl bg-white border border-gray-200/80 shadow-lg rounded-full p-2 flex items-center transition-all duration-300 relative z-20 hover:border-purple-300 focus-within:border-purple-400 focus-within:shadow-xl focus-within:shadow-purple-500/5">
+          {/* Role / Query Input */}
+          <div className="flex-1 flex items-center gap-3 pl-4 pr-3 min-w-0">
+            <Search className="w-5 h-5 text-[#7c3aed] shrink-0" />
+            <input
+              type="text"
+              id="role-query-input"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Role, skills, or company..."
+              className="w-full bg-transparent border-0 p-0 text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 font-medium"
+            />
+          </div>
+
+          {/* Slim Vertical Divider */}
+          <div className="w-px h-8 bg-gray-200 shrink-0" />
+
+          {/* Location Input */}
+          <div className="flex-1 flex items-center gap-3 px-3 sm:px-4 min-w-0">
+            <MapPin className="w-5 h-5 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              id="location-query-input"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Location or Remote"
+              className="w-full bg-transparent border-0 p-0 text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 font-medium"
+            />
+          </div>
+
+          {/* Search CTA Button */}
+          <button
+            onClick={() => searchHandler()}
+            id="search-cta-button"
+            className="px-6 sm:px-7 py-3 bg-gradient-to-r from-[#630ed4] via-[#7c3aed] to-[#4b41e1] text-white rounded-full text-sm sm:text-base font-bold shadow-md shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer shimmer-fx group whitespace-nowrap"
+          >
+            <span>Search Jobs</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
+
+        {/* Interactive Active Filters & Trending Badges */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-5 text-[#64748b]">
+          <span className="text-[#64748b] flex items-center gap-1 text-[11px] uppercase tracking-wider font-semibold font-mono">
+            <Flame className="w-3.5 h-3.5 text-[#7c3aed]" /> Trending:
           </span>
           {trendingTags.map((tag) => (
             <button
@@ -108,45 +151,51 @@ export default function Herosection() {
                 setQuery(tag)
                 searchHandler(tag)
               }}
-              className="px-3 py-1 rounded-full bg-gray-100/90 hover:bg-purple-100 hover:text-purple-700 text-gray-600 transition-colors duration-150 cursor-pointer font-medium"
+              className="px-3 py-1 rounded-full bg-white/80 border border-[#f1f5f9] text-[#131b2e] hover:border-purple-300 hover:text-[#7c3aed] transition-all text-xs font-medium cursor-pointer shadow-xs"
             >
               {tag}
             </button>
           ))}
         </div>
 
-        {/* Live Social Proof & Metrics Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto mt-12 sm:mt-16 pt-8 border-t border-gray-200/70">
-          <div className="flex flex-col items-center p-3 rounded-xl bg-white/50 border border-gray-100 shadow-2xs">
-            <div className="flex items-center gap-1.5 text-purple-600 mb-1">
-              <Briefcase className="w-4 h-4" />
-              <span className="text-xl sm:text-2xl font-extrabold text-gray-900">12,500+</span>
+        {/* 4 Live Metrics Counters with modern borders and gradient badges */}
+        <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12 sm:mt-16 pt-2">
+          {/* Metric 1 */}
+          <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-[#f1f5f9] shadow-xs flex flex-col items-center justify-center text-center card-glow-hover group">
+            <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center mb-2.5 text-[#7c3aed] group-hover:scale-110 transition-transform">
+              <Briefcase className="w-5 h-5" />
             </div>
-            <span className="text-xs sm:text-sm text-gray-500 font-medium">Verified Jobs</span>
+            <span className="font-heading text-2xl lg:text-3xl text-[#131b2e] font-extrabold tracking-tight">14,200+</span>
+            <span className="font-mono text-[11px] text-[#64748b] uppercase tracking-wider font-semibold mt-1">Verified Tech Jobs</span>
           </div>
 
-          <div className="flex flex-col items-center p-3 rounded-xl bg-white/50 border border-gray-100 shadow-2xs">
-            <div className="flex items-center gap-1.5 text-indigo-600 mb-1">
-              <Building2 className="w-4 h-4" />
-              <span className="text-xl sm:text-2xl font-extrabold text-gray-900">850+</span>
+          {/* Metric 2 */}
+          <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-[#f1f5f9] shadow-xs flex flex-col items-center justify-center text-center card-glow-hover group">
+            <div className="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-2.5 text-[#4f46e5] group-hover:scale-110 transition-transform">
+              <Building2 className="w-5 h-5" />
             </div>
-            <span className="text-xs sm:text-sm text-gray-500 font-medium">Top Companies</span>
+            <span className="font-heading text-2xl lg:text-3xl text-[#131b2e] font-extrabold tracking-tight">920+</span>
+            <span className="font-mono text-[11px] text-[#64748b] uppercase tracking-wider font-semibold mt-1">Vetted Tech Unicorns</span>
           </div>
 
-          <div className="flex flex-col items-center p-3 rounded-xl bg-white/50 border border-gray-100 shadow-2xs">
-            <div className="flex items-center gap-1.5 text-pink-600 mb-1">
-              <Users className="w-4 h-4" />
-              <span className="text-xl sm:text-2xl font-extrabold text-gray-900">45,000+</span>
+          {/* Metric 3 */}
+          <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-[#f1f5f9] shadow-xs flex flex-col items-center justify-center text-center card-glow-hover group">
+            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-2.5 text-[#10b981] group-hover:scale-110 transition-transform">
+              <UserCheck className="w-5 h-5" />
             </div>
-            <span className="text-xs sm:text-sm text-gray-500 font-medium">Placed Candidates</span>
+            <span className="font-heading text-2xl lg:text-3xl text-[#131b2e] font-extrabold tracking-tight">52,000+</span>
+            <span className="font-mono text-[11px] text-[#64748b] uppercase tracking-wider font-semibold mt-1">Offers Extended</span>
           </div>
 
-          <div className="flex flex-col items-center p-3 rounded-xl bg-white/50 border border-gray-100 shadow-2xs">
-            <div className="flex items-center gap-1.5 text-amber-500 mb-1">
-              <span className="text-base">⭐</span>
-              <span className="text-xl sm:text-2xl font-extrabold text-gray-900">4.9/5</span>
+          {/* Metric 4 */}
+          <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-[#f1f5f9] shadow-xs flex flex-col items-center justify-center text-center card-glow-hover group">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/15 flex items-center justify-center mb-2.5 text-[#f59e0b] group-hover:scale-110 transition-transform">
+              <Star className="w-5 h-5 fill-amber-400" />
             </div>
-            <span className="text-xs sm:text-sm text-gray-500 font-medium">Candidate Rating</span>
+            <span className="font-heading text-2xl lg:text-3xl text-[#131b2e] font-extrabold tracking-tight flex items-center gap-1">
+              4.9<span className="text-base text-slate-400 font-normal font-sans">/5</span>
+            </span>
+            <span className="font-mono text-[11px] text-[#64748b] uppercase tracking-wider font-semibold mt-1">Candidate Trust Score</span>
           </div>
         </div>
       </div>

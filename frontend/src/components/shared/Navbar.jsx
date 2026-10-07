@@ -51,16 +51,16 @@ export default function Navbar({ transparent = false }) {
     <div className={`sticky top-0 z-50 transition-all duration-300 ${
       isTransparent
         ? "bg-transparent border-transparent shadow-none"
-        : "bg-white/80 backdrop-blur-md shadow-xs border-b border-gray-100/80"
+        : "bg-white/85 backdrop-blur-md shadow-xs border-b border-[#f1f5f9]"
     }`}>
-      <div className="flex items-center justify-between mx-auto h-16 px-4 sm:px-6 lg:px-8 w-full max-w-7xl">
+      <div className="flex items-center justify-between mx-auto h-20 px-4 sm:px-6 lg:px-8 w-full max-w-7xl">
         {/* Logo */}
         <div className="flex-shrink-0">
-          <Link to="/" onClick={closeMobileMenu}>
-            <span className={`text-xl sm:text-2xl font-black tracking-tight ${
-              isTransparent ? "text-white" : "text-gray-900"
+          <Link to="/" onClick={closeMobileMenu} className="flex items-center group py-2">
+            <span className={`font-heading text-2xl font-black tracking-tight transition-transform group-hover:scale-[1.02] ${
+              isTransparent ? "text-white" : "text-[#131b2e]"
             }`}>
-              Hire<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Hub</span>
+              Hire<span className="bg-gradient-to-r from-[#630ed4] via-[#7c3aed] to-[#4b41e1] bg-clip-text text-transparent">Hub</span>
             </span>
           </Link>
         </div>
@@ -68,46 +68,47 @@ export default function Navbar({ transparent = false }) {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6 lg:gap-8">
           <ul className={`flex items-center font-medium gap-1 lg:gap-2 text-sm lg:text-[15px] ${
-            isTransparent ? "text-gray-200" : "text-gray-600"
+            isTransparent ? "text-gray-200" : "text-[#4a4455]"
           }`}>
             {user && user.role === "recruiter" ? (
               <>
                 <li>
-                  <Link to="/admin/dashboard" className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    isTransparent ? "hover:text-white hover:bg-white/10" : "hover:text-purple-600 hover:bg-purple-50/60"
-                  }`}>
-                    Dashboard
+                  <Link to="/admin/dashboard" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Dashboard</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin/companies" className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    isTransparent ? "hover:text-white hover:bg-white/10" : "hover:text-purple-600 hover:bg-purple-50/60"
-                  }`}>
-                    Companies
+                  <Link to="/admin/companies" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Companies</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin/jobs" className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    isTransparent ? "hover:text-white hover:bg-white/10" : "hover:text-purple-600 hover:bg-purple-50/60"
-                  }`}>
-                    Jobs
+                  <Link to="/admin/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Jobs</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
                   </Link>
                 </li>
               </>
             ) : (
               <>
                 <li>
-                  <Link to="/" className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    isTransparent ? "hover:text-white hover:bg-white/10" : "hover:text-purple-600 hover:bg-purple-50/60"
-                  }`}>
-                    Home
+                  <Link to="/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Find Jobs</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/jobs" className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    isTransparent ? "hover:text-white hover:bg-white/10" : "hover:text-purple-600 hover:bg-purple-50/60"
-                  }`}>
-                    Find Jobs
+                  <Link to="/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Companies</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/jobs" className="relative px-3.5 py-2 transition-colors hover:text-[#630ed4] group font-semibold">
+                    <span>Salaries</span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#630ed4] rounded-full transition-all duration-300 group-hover:w-6" />
                   </Link>
                 </li>
               </>
@@ -117,23 +118,28 @@ export default function Navbar({ transparent = false }) {
           {/* Desktop User / Auth section */}
           {!user ? (
             <div className="flex items-center gap-3">
+              <Link
+                to="/admin/jobs/create"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#131b2e] hover:text-[#630ed4] px-4 py-2 rounded-full border border-slate-200/80 hover:border-[#630ed4]/40 transition-all bg-white hover:bg-[#f2f3ff]"
+              >
+                <Plus className="w-3.5 h-3.5 text-[#630ed4]" />
+                <span>Post a Job</span>
+              </Link>
               <Link to="/login">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`text-sm font-medium transition-all ${
-                    isTransparent
-                      ? "text-gray-200 hover:text-white hover:bg-white/15"
-                      : "text-gray-700 hover:text-purple-600 hover:bg-purple-50/60"
-                  }`}
+                  className="text-xs sm:text-sm font-semibold text-[#4a4455] hover:text-[#131b2e] px-3 cursor-pointer"
                 >
                   Log in
                 </Button>
               </Link>
-              <Link to="/signup">
-                <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium text-sm shadow-md shadow-purple-500/20 px-4 rounded-xl cursor-pointer transition-all duration-200 hover:scale-[1.02]" size="sm">
-                  Sign up
-                </Button>
+              <Link
+                to="/signup"
+                className="shimmer-fx inline-flex items-center justify-center px-5 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#630ed4] via-[#7c3aed] to-[#4b41e1] rounded-full shadow-md shadow-purple-500/25 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              >
+                <span>Get Started</span>
+                <span className="ml-1 text-xs">→</span>
               </Link>
             </div>
           ) : (

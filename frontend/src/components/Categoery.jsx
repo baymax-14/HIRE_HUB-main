@@ -1,77 +1,98 @@
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel"
 import { setsearchedQuery } from "@/redux/jobslice"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { 
-  Code2, 
-  Server, 
-  Database, 
+  Code, 
+  Terminal, 
+  Layers, 
+  BrainCircuit, 
   Palette, 
-  Cpu, 
-  Smartphone, 
   Cloud, 
-  LineChart, 
-  ShieldCheck, 
-  Sparkles,
-  ArrowRight
+  Smartphone, 
+  LayoutDashboard, 
+  ArrowRight 
 } from "lucide-react"
 
-const categories = [
+const disciplines = [
   {
-    title: "Frontend Developer",
-    openings: "380+ Openings",
-    icon: Code2,
-    gradient: "from-blue-500/10 to-indigo-500/10",
-    iconColor: "text-blue-600",
+    title: "Frontend Engineering",
+    open: "420+ Open",
+    description: "React 19, Next.js, Vue, WebGL & Design Systems",
+    demandLabel: "96% Very High",
+    demandPercent: "96%",
+    icon: Code,
+    gradient: "from-[#630ed4] to-[#4b41e1]",
+    badgeClass: "bg-[#eaedff] text-[#630ed4]",
   },
   {
-    title: "Backend Developer",
-    openings: "450+ Openings",
-    icon: Server,
-    gradient: "from-purple-500/10 to-pink-500/10",
-    iconColor: "text-purple-600",
+    title: "Backend Architecture",
+    open: "480+ Open",
+    description: "Node.js, Go, Rust, Java & Distributed Microservices",
+    demandLabel: "98% Peak",
+    demandPercent: "98%",
+    icon: Terminal,
+    gradient: "from-[#4b41e1] to-[#7c3aed]",
+    badgeClass: "bg-[#eaedff] text-[#4b41e1]",
   },
   {
-    title: "Full Stack Developer",
-    openings: "520+ Openings",
-    icon: Sparkles,
-    gradient: "from-emerald-500/10 to-teal-500/10",
-    iconColor: "text-emerald-600",
+    title: "Full Stack Systems",
+    open: "590+ Open",
+    description: "End-to-End Scale, GraphQL, PostgreSQL & Redis",
+    demandLabel: "94% High",
+    demandPercent: "94%",
+    icon: Layers,
+    gradient: "from-[#630ed4] to-[#ec4899]",
+    badgeClass: "bg-[#eaedff] text-[#ec4899]",
   },
   {
-    title: "Data Science & AI",
-    openings: "290+ Openings",
-    icon: Cpu,
-    gradient: "from-amber-500/10 to-orange-500/10",
-    iconColor: "text-amber-600",
+    title: "Data Science & AI/ML",
+    open: "340+ Open",
+    description: "LLMs, PyTorch, Vector Search & Production MLOps",
+    demandLabel: "99% Surge",
+    demandPercent: "99%",
+    icon: BrainCircuit,
+    gradient: "from-[#7c3aed] to-[#4b41e1]",
+    badgeClass: "bg-[#eaedff] text-[#7c3aed] font-bold",
   },
   {
-    title: "UI/UX Designer",
-    openings: "180+ Openings",
+    title: "UI/UX & Product Design",
+    open: "210+ Open",
+    description: "Design Systems, Interaction Architecture & Figma",
+    demandLabel: "88% Solid",
+    demandPercent: "88%",
     icon: Palette,
-    gradient: "from-rose-500/10 to-pink-500/10",
-    iconColor: "text-rose-600",
+    gradient: "from-[#4b41e1] to-[#630ed4]",
+    badgeClass: "bg-[#eaedff] text-[#4b41e1]",
   },
   {
-    title: "DevOps & Cloud",
-    openings: "210+ Openings",
+    title: "Cloud & DevOps SRE",
+    open: "260+ Open",
+    description: "Kubernetes, Terraform, AWS, CI/CD Security",
+    demandLabel: "95% High",
+    demandPercent: "95%",
     icon: Cloud,
-    gradient: "from-cyan-500/10 to-blue-500/10",
-    iconColor: "text-cyan-600",
+    gradient: "from-[#630ed4] to-[#7c3aed]",
+    badgeClass: "bg-[#eaedff] text-[#630ed4]",
   },
   {
-    title: "Mobile App Developer",
-    openings: "160+ Openings",
+    title: "Mobile Engineering",
+    open: "190+ Open",
+    description: "Swift, Kotlin Multiplatform, Flutter & React Native",
+    demandLabel: "89% Steady",
+    demandPercent: "89%",
     icon: Smartphone,
-    gradient: "from-violet-500/10 to-purple-500/10",
-    iconColor: "text-violet-600",
+    gradient: "from-[#645efb] to-[#630ed4]",
+    badgeClass: "bg-[#eaedff] text-[#4b41e1]",
   },
   {
-    title: "Data Analyst",
-    openings: "240+ Openings",
-    icon: LineChart,
-    gradient: "from-lime-500/10 to-emerald-500/10",
-    iconColor: "text-lime-600",
+    title: "Technical Product Lead",
+    open: "170+ Open",
+    description: "B2B SaaS, Platform APIs, Metrics & GTM Strategy",
+    demandLabel: "91% High",
+    demandPercent: "91%",
+    icon: LayoutDashboard,
+    gradient: "from-[#630ed4] via-[#ec4899] to-[#4b41e1]",
+    badgeClass: "bg-[#eaedff] text-[#ec4899]",
   },
 ]
 
@@ -85,66 +106,73 @@ export default function Categoery() {
   }
 
   return (
-    <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
-        <div>
-          <span className="text-xs sm:text-sm font-bold tracking-wider text-purple-600 uppercase">
-            Curated Sectors
-          </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 mt-1">
-            Explore Popular Categories
-          </h2>
+    <section className="w-full py-16 sm:py-24 bg-[#faf8ff] relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#630ed4]/10 text-[#630ed4] font-mono text-xs uppercase font-bold tracking-wider mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#630ed4] animate-ping" /> Curated Sectors
+            </div>
+            <h2 className="font-heading text-3xl sm:text-4xl text-[#131b2e] tracking-tight font-extrabold">
+              Explore In-Demand Disciplines
+            </h2>
+            <p className="text-sm sm:text-base text-[#4a4455] mt-1">
+              High-velocity engineering roles verified with transparent compensation benchmarks.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate("/jobs")}
+            className="inline-flex items-center gap-2 text-sm text-[#630ed4] hover:text-[#4b41e1] group transition-colors self-start md:self-end font-bold cursor-pointer"
+          >
+            <span>View all disciplines</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+          </button>
         </div>
-        <button
-          onClick={() => navigate("/jobs")}
-          className="mt-3 sm:mt-0 text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1.5 group cursor-pointer"
-        >
-          <span>View all roles</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
 
-      <Carousel className="w-full relative px-2">
-        <CarouselContent className="-ml-3">
-          {categories.map((cat, index) => {
+        {/* 8 Categories Grid with Density Indicators */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {disciplines.map((cat, index) => {
             const Icon = cat.icon
             return (
-              <CarouselItem
+              <div
                 key={index}
-                className="pl-3 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                onClick={() => searchHandler(cat.title)}
+                className="bg-white p-5 rounded-2xl border border-[#f1f5f9] shadow-xs card-glow-hover flex flex-col justify-between cursor-pointer group"
               >
-                <div
-                  onClick={() => searchHandler(cat.title)}
-                  className="h-full p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs hover:shadow-lg hover:border-purple-300 transition-all duration-200 cursor-pointer flex flex-col justify-between group hover:-translate-y-1"
-                >
-                  <div className="flex items-center gap-3.5 mb-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${cat.gradient} group-hover:scale-110 transition-transform duration-200`}>
-                      <Icon className={`w-6 h-6 ${cat.iconColor}`} />
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-tr ${cat.gradient} flex items-center justify-center text-white shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-6 h-6" />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900 group-hover:text-purple-600 transition-colors text-base leading-snug">
-                        {cat.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 font-medium mt-0.5">
-                        {cat.openings}
-                      </p>
-                    </div>
+                    <span className={`font-mono text-xs font-semibold px-2.5 py-1 rounded-full ${cat.badgeClass}`}>
+                      {cat.open}
+                    </span>
                   </div>
+                  <h3 className="font-heading text-lg text-[#131b2e] font-bold group-hover:text-[#630ed4] transition-colors">
+                    {cat.title}
+                  </h3>
+                  <p className="text-xs text-[#4a4455] mt-1.5 leading-relaxed font-normal">
+                    {cat.description}
+                  </p>
+                </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-xs font-semibold text-gray-500 group-hover:text-purple-600">
-                    <span>Explore opportunities</span>
-                    <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                <div className="mt-5 pt-3 border-t border-[#f1f5f9]">
+                  <div className="flex justify-between items-center text-xs font-mono text-[#4a4455] mb-1.5">
+                    <span>Market Demand</span>
+                    <span className="text-emerald-600 font-bold">{cat.demandLabel}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-[#eaedff] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r ${cat.gradient} rounded-full`}
+                      style={{ width: cat.demandPercent }}
+                    />
                   </div>
                 </div>
-              </CarouselItem>
+              </div>
             )
           })}
-        </CarouselContent>
-        <div className="hidden sm:block">
-          <CarouselPrevious className="-left-4 bg-white shadow-md border-gray-200 hover:bg-purple-50" />
-          <CarouselNext className="-right-4 bg-white shadow-md border-gray-200 hover:bg-purple-50" />
         </div>
-      </Carousel>
+      </div>
     </section>
   )
 }

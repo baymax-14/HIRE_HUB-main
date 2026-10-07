@@ -23,7 +23,7 @@ export default function Home() {
   }, [user, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900 selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#faf8ff] text-[#131b2e] selection:bg-purple-600 selection:text-white">
       <Navbar />
       <main className="flex-1">
         <Herosection />

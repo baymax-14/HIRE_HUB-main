@@ -11,25 +11,25 @@ export default function Latestjob() {
   return (
     <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
         <div>
-          <span className="text-xs sm:text-sm font-bold tracking-wider text-purple-600 uppercase flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-purple-600" /> Handpicked Roles
-          </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 mt-1">
-            Latest Job Openings
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#630ed4]/10 text-[#630ed4] font-mono text-xs uppercase font-bold tracking-wider mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" /> Handpicked & Verified
+          </div>
+          <h2 className="font-heading text-3xl sm:text-4xl text-[#131b2e] tracking-tight font-extrabold">
+            Featured Technical Openings
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Freshly posted opportunities ready for immediate review
+          <p className="text-sm sm:text-base text-[#4a4455] mt-1">
+            Direct from leading technology companies offering competitive global compensation.
           </p>
         </div>
 
         <button
           onClick={() => navigate("/jobs")}
-          className="mt-4 sm:mt-0 inline-flex items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-700 group cursor-pointer"
+          className="inline-flex items-center gap-2 text-sm text-[#630ed4] hover:text-[#4b41e1] group transition-colors self-start md:self-end font-bold cursor-pointer"
         >
-          <span>View all openings</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <span>View all 14,200+ roles</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
         </button>
       </div>
 

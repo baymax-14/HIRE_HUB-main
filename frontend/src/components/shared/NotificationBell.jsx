@@ -136,18 +136,18 @@ export default function NotificationBell() {
         </button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[380px] p-0 mr-4 max-h-[500px] overflow-hidden"
+        className="w-[380px] p-0 mr-4 max-h-[500px] overflow-hidden rounded-2xl border border-[#f1f5f9] shadow-xl"
         align="end"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#f1f5f9] bg-gradient-to-r from-purple-50/80 to-indigo-50/80">
           <div className="flex items-center gap-2">
-            <Bell className="w-4 h-4 text-purple-600" />
-            <h3 className="font-semibold text-sm text-gray-800">
+            <Bell className="w-4 h-4 text-[#7c3aed]" />
+            <h3 className="font-heading font-bold text-sm text-[#131b2e]">
               Notifications
             </h3>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-semibold text-purple-700 bg-purple-100 rounded-full">
+              <span className="px-2 py-0.5 text-[10px] font-bold text-[#7c3aed] bg-[#faf5ff] rounded-full">
                 {unreadCount} new
               </span>
             )}
@@ -155,7 +155,7 @@ export default function NotificationBell() {
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllRead}
-              className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-800 font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-xs text-[#7c3aed] hover:text-[#630ed4] font-semibold transition-colors cursor-pointer"
             >
               <CheckCheck className="w-3.5 h-3.5" />
               Mark all read
