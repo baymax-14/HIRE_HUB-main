@@ -1,14 +1,15 @@
 <div align="center">
 
-# 🚀 HireHub — AI-Powered Job Portal & ATS Platform
+# 🚀 HireHub — AI-Powered Talent Discovery & ATS Platform
 
-**An enterprise-grade, full-stack recruitment platform with AI-driven ATS resume scoring, automated candidate screening, real-time in-app notifications, and dual-channel email alerts.**
+**An enterprise-grade, full-stack recruitment ecosystem featuring autonomous AI ATS resume scoring, real-time competency gap analysis, Google Stitch design architecture, and end-to-end recruiter pipelines.**
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-Express_5-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_8-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev)
+[![Design](https://img.shields.io/badge/Design-Google_Stitch-630ed4?style=for-the-badge&logoColor=white)](https://stitch.google)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 </div>
@@ -19,13 +20,19 @@
 
 - [Overview](#-overview)
 - [Key Features](#-key-features)
+  - [1. Google Stitch Design Architecture](#-1-google-stitch-design-architecture)
+  - [2. Next-Gen Job Profile & ATS Telemetry](#-2-next-gen-job-profile--ats-telemetry)
+  - [3. AI-Powered ATS Resume Engine](#-3-ai-powered-ats-resume-engine)
+  - [4. 5-Tier Applicant Distribution & Bulk Screening](#-4-5-tier-applicant-distribution--bulk-screening)
+  - [5. Recruiter Command Center](#-5-recruiter-command-center)
+  - [6. Multi-Channel Notifications & Resilient Delivery](#-6-multi-channel-notifications--resilient-delivery)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
 - [API Endpoints](#-api-endpoints)
 - [AI ATS Resume Scoring Engine](#-ai-ats-resume-scoring-engine)
-- [Deployment Guide](#-deployment-guide-render--vercel)
+- [Deployment Guide (Render & Vercel)](#-deployment-guide-render--vercel)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -33,47 +40,71 @@
 
 ## 🔍 Overview
 
-**HireHub** is an intelligent, full-stack recruitment ecosystem that connects **Job Seekers (Students/Candidates)** with **Recruiters (Hiring Managers)**. It features an automated **AI-powered ATS (Applicant Tracking System)** that parses candidate resumes, scores them across a standardized 100-point rubric, provides deep skill gap analyses, breaks candidates into 5 score tiers, and equips recruiters with an adjustable bulk-screening tool to instantly reject underqualified applications.
+**HireHub** bridges the gap between ambitious **Candidates (Job Seekers)** and **Recruiting Teams (Hiring Leaders)** through a cutting-edge interface and autonomous evaluation intelligence.
+
+Built on **React 19**, **Node.js/Express 5**, and **MongoDB**, HireHub incorporates the **Google Stitch** design system, delivering micro-animated interactions, glassmorphism telemetry cards, and frictionless mobile-ready workflows.
 
 ### User Roles & Capabilities
 
-| 👨‍💻 Job Seeker (Student) | 🏢 Recruiter (Admin) |
+| 👨‍💻 Job Seeker (Candidate) | 🏢 Recruiter (Hiring Manager) |
 |---|---|
-| Browse, search & filter jobs by title, location, salary & type | Enterprise Company Management with logo branding & HQ tracking |
-| **Interactive ATS Pre-Check** before applying | Post, update, and manage job listings with salary in LPA & openings |
-| One-click apply with PDF resume parsing | **Recruiter Command Center** with 4 KPI cards & Table/Grid views |
-| Real-time application tracker (Pending, Accepted, Rejected) | **5-Tier ATS Score Distribution** (1-20, 20-40, 40-60, 60-80, 80-100) |
-| Bookmark jobs for later | **Adjustable Bulk-Rejection Tool** with score slider & instant email alerts |
-| Profile portfolio with skills, bio & resume preview | Deep **AI Evaluation Modal** with matching/missing skills & feedback |
-| In-app notification bell & transactional email alerts | Real-time recruiter analytics dashboard with Recharts trends |
+| Explore verified openings with live keyword, salary & location filters | Enterprise Company Directory with custom branding & logo uploads |
+| **Autonomous ATS Pre-Flight Check** with donut score meter before applying | Post, edit & manage job listings with CTC/LPA compensation |
+| **Instant 1-Click AI Apply** with saved resume or tailored PDF upload | **Recruiter Command Center** with 4 KPI overview cards & Table/Grid views |
+| Skill alignment gap breakdown (Direct Matched vs Recommended Skills) | **5-Tier ATS Candidate Spectrum** (`1-20%` to `80-100%`) |
+| Real-time application tracking dashboard (Pending, Accepted, Rejected) | **Adjustable Bulk-Screening Slider** with instant candidate rejections |
+| Bookmark jobs to private saved list & copy shareable direct links | Deep **AI Evaluation Dossier** with resume text breakdown & re-analysis |
+| In-app notification bell & automatic transactional email alerts | Real-time candidate analytics pipeline with Recharts visual charts |
 
 ---
 
 ## ✨ Key Features
 
-### 🤖 1. AI-Powered ATS Resume Engine
-- **Standardized 100-Point Scoring Rubric** — 70 points for exact/semantic technical skill overlap + 30 points for verifiable practical evidence (projects, experience, education).
-- **Automated PDF Parsing** — Robust server-side PDF text extraction via `pdf-parse`.
-- **Google Gemini AI Integration** — Optional `GEMINI_API_KEY` enables advanced semantic reasoning on top of the rubric; falls back to a smart local NLP engine if omitted.
-- **Pre-Apply ATS Fit Check** — Candidates can preview their alignment against a job before submitting.
-- **Deep Evaluation Feedback** — Matching skills, missing skills, strengths, concerns, and on-demand re-analysis.
+### 🎨 1. Google Stitch Design Architecture
+- **Curated Color Tokens** — Rich Iris/Violet primary (`#630ed4`), Indigo accents (`#4b41e1`), soft lilac canvas (`#faf8ff`), and emerald indicators (`#10b981`).
+- **Typography Pairing** — *Plus Jakarta Sans* for editorial headlines, *Inter* for body readability, and *JetBrains Mono* for technical badges.
+- **Ambient Lighting Effects** — Floating mesh orbs (`.orb-glow-1/2`), subtle radial grid textures, dynamic shimmer transitions (`.shimmer-fx`), and smooth card lifts.
+- **Continuous Brand Marquee** — 32-second infinite CSS loop showcasing verified enterprise partner hiring badges.
+- **Role-Aware Navigation** — Clean, uncluttered navbar offering role-specific pathways (`Find Jobs`, `My Applications`, `Dashboard`, `Companies`) with integrated recruiter guards.
 
-### 🎯 2. 5-Tier ATS Distribution & Adjustable Bulk Screening
-- **5 Score Performance Tiers** — Automatically partitions candidate pools into `1-20%` *(Low Match)*, `20-40%` *(Partially Qualified)*, `40-60%` *(Moderate Fit)*, `60-80%` *(Qualified)*, and `80-100%` *(Top Match)*.
-- **Interactive Tier Filtering** — Clicking any tier card immediately isolates that cohort in the applicants table.
-- **Applicant Pool Spectrum** — Horizontal stacked progress bar visualizing the overall candidate distribution at a glance.
-- **Adjustable Bulk Rejection** — Recruiters can adjust a minimum ATS cutoff score (slider, numeric input, or quick presets `<30%`, `<40%`, etc.), preview affected candidates, and bulk-reject underqualified applicants with automated email notifications.
+### 🎯 2. Next-Gen Job Profile & ATS Telemetry (`/description/:id`)
+- **Breadcrumb & Context Header** — Live department hierarchy, pulsing *"Actively Interviewing"* signal, and verified employer partner checks.
+- **Role Header Hero Card** — Company logo avatar with gradient accents, compensation badge with formatted LPA/currency, location scope, applicant counters, and one-click bookmarking.
+- **Autonomous ATS Pre-Flight Check**:
+  - **Radial Donut Meter** — SVG circular chart calculating 0–100% fit score with percentile benchmarks.
+  - **Skill Overlap Gauge** — Real-time progress bar computing direct requirement alignment.
+  - **Verified vs. Recommended Skills Grid** — Visual pill badges highlighting matching strengths alongside high-yield keyword advice.
+- **Two-Column Workspace**:
+  - *Left Column (70%)*: Deep-dive role charter, mission & deliverables, candidate qualifications, verified tech stack tags, and a transparent 4-step interview timeline.
+  - *Right Rail (30%)*: Sticky 1-Click Fast-Track application card, hiring manager leadership profile, total rewards overview, and similar role recommendations.
+- **Interactive Application Modal** — One-click submit using saved profile resume or drag-and-drop tailored PDF upload with an optional executive pitch note.
 
-### 🏢 3. Recruiter Command Center (Jobs & Companies)
-- **4 Live KPI Metric Cards for Jobs** — Total Postings, Total Applications Received, Active Pipelines, and Email Alerts status.
+### 🤖 3. AI-Powered ATS Resume Engine
+- **Standardized 100-Point Rubric** — 70 points for exact & semantic skill alignment + 30 points for verifiable practical evidence (projects, certifications, tenure).
+- **Synonym & Alias Awareness** — Matches technical equivalents seamlessly (e.g., `golang` ↔ `go`, `k8s` ↔ `kubernetes`, `react.js` ↔ `react`).
+- **Automated PDF Parsing** — Server-side text extraction using `pdf-parse`.
+- **Google Gemini AI Integration** — Optional `GEMINI_API_KEY` unlocks high-order semantic reasoning; falls back automatically to local NLP heuristics if omitted.
+
+### 📊 4. 5-Tier Applicant Distribution & Bulk Screening
+- **5 Score Performance Tiers** — Classifies candidates into:
+  - `1-20%` *(Low Match)*
+  - `20-40%` *(Partially Qualified)*
+  - `40-60%` *(Moderate Fit)*
+  - `60-80%` *(Qualified)*
+  - `80-100%` *(Top Match)*
+- **Interactive Cohort Filtering** — Click any tier card in the recruiter table to instantly isolate that applicant bracket.
+- **Applicant Pool Spectrum** — Horizontal stacked progress bar visualizing the overall talent distribution.
+- **Adjustable Bulk Rejection** — Cutoff score slider with quick presets (`<30%`, `<40%`) to reject underqualified candidates with automated email feedback.
+
+### 🏢 5. Recruiter Command Center
+- **4 Live KPI Metric Cards for Jobs** — Total Postings, Applications Received, Active Pipelines, and Alerts Status.
 - **4 Live KPI Metric Cards for Companies** — Total Companies, Active Jobs Hosted, Actively Hiring count, and Branding Readiness.
-- **Table vs. Cards Grid Switcher** — Smooth toggle between high-density data tables and interactive card grids.
-- **Direct Applicant Review Buttons** — `👥 X Applicants (Review →)` takes the recruiter directly into the candidate scoring pipeline.
-- **Smart Filtering & Sorting** — Live multi-field search across title, company, location, and requirements; quick status tabs; and sorting by newest, salary, or applicant volume.
+- **Table vs. Cards Grid Switcher** — Instant toggle between dense data tables and card layouts.
+- **Direct Applicant Pipeline** — One-click review buttons navigate straight to candidate dossiers.
 
-### 📧 4. Multi-Channel Notifications & Resilient Email Engine
-- **In-App Notifications** — Bell badge with real-time counter, unread indicators, and mark-all-as-read actions.
-- **Dual Email Transport** — Dispatches candidate confirmations, recruiter alerts, and status changes via standard SMTP or automated HTTPS fallback (Resend / Brevo) to avoid egress port restrictions on cloud platforms like Render.
+### 📧 6. Multi-Channel Notifications & Resilient Delivery
+- **In-App Notification Bell** — Unread count badge, real-time polling, and mark-all-as-read actions.
+- **Dual-Channel Email Engine** — Sends status updates and recruiter confirmations via SMTP with automatic HTTPS fallback (Resend / Brevo) to circumvent cloud outbound port restrictions.
 
 ---
 
@@ -84,30 +115,30 @@
 |---|:---:|---|
 | **React** | 19 | Modern reactive component architecture |
 | **Vite** | 6 | Ultra-fast dev server & production bundler |
-| **Tailwind CSS** | 4 | Utility-first responsive styling |
+| **Tailwind CSS** | 4 | Utility-first styling & design tokens |
 | **Redux Toolkit** | ^2 | Centralized application state management |
-| **Redux Persist** | ^6 | Persistent auth across page reloads |
+| **Redux Persist** | ^6 | Persistent authentication across sessions |
 | **React Router** | v7 | Client-side routing with `ProtectedRoute` |
-| **Radix UI** | ^1 | Accessible headless UI primitives |
-| **Framer Motion** | ^12 | Micro-interactions & page transitions |
-| **Recharts** | ^3 | Interactive recruiter analytics charts |
-| **Lucide React** | ^0.5 | Consistent, modern icon set |
-| **Sonner** | ^2 | Floating toast notification system |
-| **Axios** | ^1 | Promise-based HTTP client |
+| **Radix UI** | ^1 | Accessible headless UI primitives (Dialog, Popover) |
+| **Framer Motion** | ^12 | Fluid micro-interactions & animated reveals |
+| **Recharts** | ^3 | Recruiter hiring funnel analytics |
+| **Lucide React** | ^0.5 | Modern icon library |
+| **Sonner** | ^2 | Toast notification system |
+| **Axios** | ^1 | Promise-based HTTP client with cookie support |
 
 ### Backend
 | Technology | Version | Purpose |
 |---|:---:|---|
-| **Node.js (ESM)** | ≥ 18 | JavaScript runtime |
+| **Node.js (ESM)** | ≥ 18 | Scalable JavaScript runtime |
 | **Express** | 5 | RESTful web framework |
 | **MongoDB + Mongoose** | 8 | Document database with relational population |
-| **JWT** | ^9 | Stateless HTTP-only cookie-based auth |
+| **JWT** | ^9 | Stateless HTTP-only cookie authentication |
 | **bcryptjs** | ^3 | Salted password hashing |
-| **Multer** | ^2 | Multipart form-data file handling |
-| **Cloudinary** | ^2 | Cloud storage for resumes, logos & avatars |
+| **Multer** | ^2 | Multipart form-data file uploads |
+| **Cloudinary** | ^2 | Cloud media storage for logos & avatars |
 | **pdf-parse** | ^2 | Server-side PDF text extraction |
-| **Nodemailer** | ^10 | SMTP email delivery |
-| **Axios** | ^1 | HTTPS email API fallback (Resend / Brevo) |
+| **Nodemailer** | ^10 | SMTP transactional email transport |
+| **Axios** | ^1 | Fallback email dispatch via HTTPS APIs |
 
 ---
 
@@ -119,7 +150,7 @@ HIRE_HUB/
 │   ├── controller/
 │   │   ├── applicationcontroller.js          # Apply, bulk-reject, re-analyze, applicant status
 │   │   ├── companycontro.js                  # Company CRUD, profile setup
-│   │   ├── jobcontroller.js                  # Job CRUD, search, filters, alert toggles
+│   │   ├── jobcontroller.js                  # Job CRUD, search filters, alert toggles, populated company
 │   │   ├── notificationcontroller.js         # In-app notifications
 │   │   └── usercontroller.js                 # Auth, profile, saved jobs
 │   ├── middleware/
@@ -131,7 +162,7 @@ HIRE_HUB/
 │   │   ├── jobmodel.js                       # Job listing schema
 │   │   ├── notificationmodel.js              # Notification schema
 │   │   └── usermodel.js                      # User schema (Student & Recruiter roles)
-│   ├── route/                                # API routes (/user, /job, /company, /application)
+│   ├── route/                                # API routes (/user, /job, /company, /application, /notifications)
 │   ├── utils/
 │   │   ├── resumeAnalyzer.js                 # 100-pt ATS evaluator & PDF text parser
 │   │   ├── emailService.js                   # Dual-transport email delivery engine
@@ -154,20 +185,28 @@ HIRE_HUB/
 │   │   │   │   ├── Dashboard.jsx             # Analytics dashboard with charts
 │   │   │   │   └── Postjobs.jsx              # Job posting & editing form
 │   │   │   ├── auth/                         # Login & Registration views
-│   │   │   ├── shared/                       # Navbar, Footer & notification bell
+│   │   │   ├── shared/                       # Navbar, Footer & NotificationBell
 │   │   │   ├── ui/                           # Reusable UI primitives (dialog, popover, badge)
 │   │   │   ├── Appliedjob.jsx                # Candidate application status tracker
-│   │   │   ├── Jobdexcription.jsx            # Job details & interactive ATS pre-check
-│   │   │   └── Viewprofile.jsx               # Candidate profile & resume preview
-│   │   ├── redux/                            # Redux slices (auth, job, company, notification)
+│   │   │   ├── Categoery.jsx                 # 8-discipline engineering category grid
+│   │   │   ├── CompanyMarquee.jsx            # 32s infinite marquee partner showcase
+│   │   │   ├── CtaBanner.jsx                 # Dual conversion CTA banners (Candidate & Recruiter)
+│   │   │   ├── Herosection.jsx               # Stitch hero with floating live toasts & capsule search
+│   │   │   ├── HowItWorks.jsx                # 3-step Autonomous Match Engine overview
+│   │   │   ├── Jobdexcription.jsx            # Stitch Job Profile, ATS telemetry & 1-Click apply
+│   │   │   ├── Latestjob.jsx                 # Curated latest jobs showcase
+│   │   │   ├── Latestjobcard.jsx             # Modern job cards with tech pills & bookmarking
+│   │   │   ├── Updateprofilejob.jsx          # Profile competencies & resume upload modal
+│   │   │   └── Viewprofile.jsx               # Candidate profile dossier & applied job history
+│   │   ├── redux/                            # Redux Toolkit slices (auth, job, company, notification)
 │   │   ├── hooks/                            # Custom data fetching hooks
-│   │   └── util/const.js                     # Endpoints & formatSalary helper
-│   ├── index.html
+│   │   └── util/const.js                     # API endpoints & formatSalary helper
+│   ├── index.html                            # Plus Jakarta Sans & Inter font loading
 │   └── vite.config.js
 │
-├── PROJECT_WALKTHROUGH.md                    # In-depth architectural documentation
-├── package.json                              # Root scripts & dependencies
-└── vercel.json                               # Vercel deployment configuration
+├── vercel.json                               # Vercel deployment SPA rewrite configuration
+├── render.yaml                               # Render infrastructure-as-code blueprint
+└── package.json                              # Root monorepo scripts & dependencies
 ```
 
 ---
@@ -176,7 +215,7 @@ HIRE_HUB/
 
 ### Prerequisites
 - **Node.js** ≥ 18.x
-- **MongoDB** — Local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) (free tier works)
+- **MongoDB** — Local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) (free tier supported)
 - **npm** ≥ 9.x
 
 ### 1. Clone the Repository
@@ -190,20 +229,19 @@ cd HIRE_HUB
 cd backhand
 npm install
 cp .env.example .env
-# Edit .env with your credentials (see Environment Variables section)
+# Configure your MongoDB URI and secrets in backhand/.env
 npm run dev
 # ✅ Backend running on http://localhost:8000
 ```
 
 ### 3. Setup the Frontend
-Open a **new terminal** in the project root:
+Open a **new terminal window** in the project root:
 ```bash
+cd frontend
 npm install
 npm run dev
 # ✅ Frontend running on http://localhost:5173
 ```
-
-> **Tip:** Both servers must be running simultaneously for the app to work.
 
 ---
 
@@ -211,25 +249,21 @@ npm run dev
 
 ### Backend — `backhand/.env`
 
-Copy `backhand/.env.example` to `backhand/.env` and fill in your values:
-
 | Variable | Required | Description |
 |---|:---:|---|
 | `PORT` | No | Server port (default: `8000`) |
 | `MONOGOURL` | **Yes** | MongoDB connection string (Atlas URI or local) |
-| `SECRET_KEY` | **Yes** | JWT signing secret — use a long random string |
-| `CLOUD_NAME` | No | Cloudinary cloud name (for file uploads) |
+| `SECRET_KEY` | **Yes** | JWT signing secret key |
+| `FRONTEND_URL` | No | Allowed CORS origin (default: `http://localhost:5173`) |
+| `GEMINI_API_KEY` | No | Google Gemini API key for advanced semantic evaluation |
+| `CLOUD_NAME` | No | Cloudinary cloud name for image & resume storage |
 | `API_KEY` | No | Cloudinary API key |
 | `API_SECRET` | No | Cloudinary API secret |
-| `FRONTEND_URL` | No | Frontend origin for CORS (default: `http://localhost:5173`) |
-| `GEMINI_API_KEY` | No | Google Gemini API key for advanced AI resume reasoning |
 | `SMTP_HOST` | No | SMTP host (e.g., `smtp.gmail.com`) |
 | `SMTP_PORT` | No | SMTP port (`465` for SSL, `587` for TLS) |
 | `SMTP_USER` | No | Sender email address |
 | `SMTP_PASS` | No | SMTP app password |
 | `SMTP_FROM` | No | Display name/address for outgoing emails |
-
-> **Note:** Email (`SMTP_*`) and file upload (`CLOUD_*`) variables are optional for local development but required for full production functionality. The ATS engine works without `GEMINI_API_KEY` using the built-in NLP fallback.
 
 ### Frontend — `frontend/.env`
 | Variable | Required | Description |
@@ -243,83 +277,80 @@ Copy `backhand/.env.example` to `backhand/.env` and fill in your values:
 ### Authentication & Users — `/api/v1/user`
 | Method | Endpoint | Auth | Description |
 |---|---|:---:|---|
-| `POST` | `/register` | ❌ | Register a new user (`student` or `recruiter`) |
+| `POST` | `/register` | ❌ | Register new candidate or recruiter |
 | `POST` | `/login` | ❌ | Authenticate & issue HTTP-only JWT cookie |
-| `GET` | `/logout` | ✅ | Clear auth cookie |
-| `POST` | `/profile/update` | ✅ | Update profile, bio, skills & upload resume |
-| `POST` | `/save-job/:jobId` | ✅ | Bookmark / unbookmark a job |
-| `GET` | `/saved-jobs` | ✅ | Get all bookmarked jobs |
+| `GET` | `/logout` | ✅ | Clear authentication cookie |
+| `POST` | `/profile/update` | ✅ | Update bio, skills, profile photo & resume |
+| `POST` | `/saved-jobs/:id` | ✅ | Bookmark / unbookmark a job listing |
+| `GET` | `/saved-jobs` | ✅ | Retrieve all saved jobs for current user |
 
 ### Companies — `/api/v1/company`
 | Method | Endpoint | Auth | Description |
 |---|---|:---:|---|
-| `POST` | `/register` | ✅ | Register a new company profile |
-| `GET` | `/get` | ✅ | Get recruiter's registered companies |
-| `GET` | `/get/:id` | ✅ | Get company details by ID |
+| `POST` | `/register` | ✅ | Register a new enterprise company profile |
+| `GET` | `/get` | ✅ | Fetch companies registered by recruiter |
+| `GET` | `/get/:id` | ✅ | Retrieve company details by ID |
 | `PUT` | `/update/:id` | ✅ | Update company profile, branding & website |
-| `DELETE` | `/delete/:id` | ✅ | Delete company and associated jobs |
+| `DELETE` | `/delete/:id` | ✅ | Delete company and associated listings |
 
 ### Jobs — `/api/v1/job`
 | Method | Endpoint | Auth | Description |
 |---|---|:---:|---|
-| `POST` | `/post` | ✅ | Post a new job listing |
-| `GET` | `/get` | ❌ | Get all jobs (search, location, salary & type filters) |
-| `GET` | `/getadminjobs` | ✅ | Get recruiter's posted jobs with application metadata |
-| `GET` | `/get/:id` | ❌ | Get job details by ID |
-| `PUT` | `/update/:id` | ✅ | Update job details, salary & requirements |
+| `POST` | `/post` | ✅ | Create and publish a new job opening |
+| `GET` | `/get` | ❌ | Fetch all jobs (keyword, location, salary & type filters) |
+| `GET` | `/getadminjobs` | ✅ | Fetch recruiter's listings with application stats |
+| `GET` | `/get/:id` | ❌ | Fetch detailed job opening (populates company & applications) |
+| `PUT` | `/update/:id` | ✅ | Update job requirements, title, or compensation |
 | `PUT` | `/toggle-alerts/:id` | ✅ | Toggle candidate email notification alerts |
-| `DELETE` | `/delete/:id` | ✅ | Delete job posting & associated records |
+| `DELETE` | `/delete/:id` | ✅ | Delete job listing & associated records |
 
 ### Applications & ATS — `/api/v1/application`
 | Method | Endpoint | Auth | Description |
 |---|---|:---:|---|
-| `POST` | `/apply/:id` | ✅ | Apply to a job (triggers automated AI ATS evaluation) |
-| `GET` | `/get` | ✅ | Get student's application history & statuses |
-| `GET` | `/:id/applicants` | ✅ | Get all applicants for a job with ATS scores |
+| `POST` | `/apply/:id` | ✅ | Submit application (triggers automated AI ATS parsing) |
+| `GET` | `/get` | ✅ | Fetch candidate's active application history |
+| `GET` | `/:id/applicants` | ✅ | Retrieve all applicants for a job with ATS scores |
 | `POST` | `/status/:id/update` | ✅ | Update candidate status (`accepted` / `rejected`) |
-| `POST` | `/:jobId/bulk-reject` | ✅ | Bulk-reject candidates below an ATS threshold score |
-| `POST` | `/:id/reanalyze` | ✅ | On-demand resume re-evaluation |
+| `POST` | `/:jobId/bulk-reject` | ✅ | Bulk-reject candidates below ATS score threshold |
+| `POST` | `/:id/reanalyze` | ✅ | Re-run automated resume evaluation |
 
 ### Notifications & Analytics
 | Method | Endpoint | Auth | Description |
 |---|---|:---:|---|
-| `GET` | `/api/v1/notifications` | ✅ | Get user notifications |
-| `PATCH` | `/api/v1/notifications/:id/read` | ✅ | Mark a notification as read |
+| `GET` | `/api/v1/notifications` | ✅ | Fetch in-app notifications |
+| `PATCH` | `/api/v1/notifications/:id/read` | ✅ | Mark specific notification as read |
 | `PATCH` | `/api/v1/notifications/read-all` | ✅ | Mark all notifications as read |
-| `GET` | `/api/v1/analytics/dashboard` | ✅ | Get recruiter analytics & hiring funnel stats |
+| `GET` | `/api/v1/analytics/dashboard` | ✅ | Fetch recruiter analytics & hiring funnel stats |
 
 ---
 
 ## 🤖 AI ATS Resume Scoring Engine
 
-HireHub uses a standardized **100-Point Evaluation Rubric** modeled after enterprise ATS platforms:
+HireHub implements a standardized **100-Point Evaluation Rubric** modeled after enterprise recruiting platforms:
 
 $$\text{ATS Score (100 pts)} = \text{Technical Skill Overlap (70 pts)} + \text{Practical Evidence (30 pts)}$$
 
 | Component | Max Points | Evaluation Criteria |
 |---|:---:|---|
-| **Technical Skill Overlap** | **70 pts** | Exact & synonym matching against job requirements (regex word-boundary matching) |
-| **Engineering Projects & Portfolio** | **12 pts** | Identifies production verbs & architectures (`developed`, `built`, `deployed`, `fullstack`, etc.) |
-| **Real-World Experience** | **8 pts** | Internships, work history, hackathons & certifications |
-| **Role Tenure & Seniority Fit** | **5 pts** | Evaluates seniority alignment against the target role |
-| **Verified Resume Text** | **5 pts** | Minimum valid characters extracted from uploaded PDF |
+| **Technical Skill Overlap** | **70 pts** | Exact & synonym matching against requirements (regex boundary matching) |
+| **Engineering Projects & Portfolio** | **12 pts** | Detection of production verbs (`developed`, `built`, `engineered`, `deployed`) |
+| **Real-World Experience** | **8 pts** | Internships, work history, hackathons, and certifications |
+| **Role Seniority & Tenure Fit** | **5 pts** | Evaluates seniority alignment against the target role requirement |
+| **Verified Resume Text** | **5 pts** | Minimum valid characters extracted from uploaded PDF document |
 
 ### Score Verdict Thresholds
 
-| Score Range | Verdict | Meaning |
+| Score Range | Verdict | Candidate Meaning |
 |:---:|---|---|
-| 80 – 100 | ✅ **Highly Qualified** | Top Match — strong skills & verifiable delivery |
-| 60 – 79 | 🟢 **Qualified** | Solid match — meets core requirements with minor gaps |
-| 40 – 59 | 🟡 **Partially Qualified** | Foundation present — needs further experience |
-| 0 – 39 | 🔴 **Not Qualified** | Significant skill gap for this position |
-
-> When `GEMINI_API_KEY` is set, the engine uses Google Gemini for advanced semantic reasoning on top of the base rubric. Without it, the built-in NLP engine is used automatically.
+| 80 – 100 | ✅ **Highly Qualified** | Top Match — strong skill coverage & verifiable delivery |
+| 60 – 79 | 🟢 **Qualified** | Solid Match — meets core qualifications with minor gaps |
+| 40 – 59 | 🟡 **Partially Qualified** | Foundation present — requires additional domain tenure |
+| 0 – 39 | 🔴 **Not Qualified** | Significant skill gap for target position |
 
 ---
 
 ## 🚢 Deployment Guide (Render & Vercel)
 
-### Architecture Overview
 ```
 ┌──────────────────────────┐    CORS + Cookies    ┌──────────────────────────┐
 │      Vercel (Frontend)   │ ──────────────────▶  │     Render (Backend)     │
@@ -333,25 +364,19 @@ $$\text{ATS Score (100 pts)} = \text{Technical Skill Overlap (70 pts)} + \text{P
                                                    └────────────────────────┘
 ```
 
-### Step 1 — Deploy Backend to Render
-
+### Step 1 — Deploy Backend (Render)
 1. Create a new **Web Service** on [Render](https://render.com).
-2. Connect your repository and set **Root Directory** to `backhand`.
-3. **Build Command:** `npm install`
-4. **Start Command:** `npm start`
-5. Add all required environment variables from the table above.
-6. Set `NODE_ENV=production` and `FRONTEND_URL` to your Vercel frontend URL.
+2. Set **Root Directory** to `backhand`.
+3. Set **Build Command:** `npm install`
+4. Set **Start Command:** `npm start`
+5. Configure environment variables (`MONOGOURL`, `SECRET_KEY`, `FRONTEND_URL`, etc.).
 
-> A `render.yaml` file is included for one-click blueprint deployment.
-
-### Step 2 — Deploy Frontend to Vercel
-
+### Step 2 — Deploy Frontend (Vercel)
 1. Import the repository into [Vercel](https://vercel.com).
-2. **Framework Preset:** Vite
-3. **Build Command:** `npm run build`
-4. **Output Directory:** `frontend/dist`
-5. Set `VITE_API_BASE_URL` to your Render backend URL (e.g., `https://your-app.onrender.com/api/v1`).
-6. `vercel.json` automatically handles SPA client-side route rewrites.
+2. Set **Root Directory** to `frontend`.
+3. Framework Preset: **Vite**.
+4. Set `VITE_API_BASE_URL` to your Render backend API URL (e.g., `https://your-app.onrender.com/api/v1`).
+5. `vercel.json` automatically manages client-side SPA route rewrites.
 
 ---
 
@@ -361,11 +386,9 @@ Contributions are welcome! Please follow these steps:
 
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Commit** your changes using [Conventional Commits](https://www.conventionalcommits.org): `git commit -m 'feat: add amazing feature'`
+3. **Commit** your changes: `git commit -m 'feat: add amazing feature'`
 4. **Push** to the branch: `git push origin feature/amazing-feature`
 5. **Open** a Pull Request
-
-Please ensure your code follows the existing style and includes appropriate comments.
 
 ---
 
@@ -377,7 +400,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 <div align="center">
 
-**Built with ❤️ using React 19, Node.js, Express, MongoDB & AI**
+**Built with ❤️ using React 19, Express 5, MongoDB & Google Stitch Architecture**
 
 ⭐ Star this repository if you find it helpful!
 
