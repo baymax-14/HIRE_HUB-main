@@ -15,9 +15,9 @@ import axios from "axios";
 export const register = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, role, password } = req.body;
-    if (!fullname || !email || !phoneNumber || !role || !password) {
+    if (!fullname || !email || !role || !password) {
       return res.status(400).json({
-        message: "Something is Missing!",
+        message: "Full name, email, password, and role are required",
         success: false,
       });
     }
@@ -40,13 +40,16 @@ export const register = async (req, res) => {
       });
     }
 
-    // Validate phone number (digits only, 10-15 chars)
-    const phoneRegex = /^\d{10,15}$/;
-    if (!phoneRegex.test(phoneNumber.replace(/[\s\-\+]/g, ''))) {
-      return res.status(400).json({
-        message: "Please enter a valid phone number",
-        success: false,
-      });
+    // Validate phone number if provided (digits only, 10-15 chars)
+    let cleanPhone = (phoneNumber || "").trim();
+    if (cleanPhone) {
+      const phoneDigits = cleanPhone.replace(/[\s\-\+()]/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+        return res.status(400).json({
+          message: "Please enter a valid phone number (10-15 digits)",
+          success: false,
+        });
+      }
     }
 
     if (mongoose.connection.readyState !== 1) {
@@ -67,17 +70,21 @@ export const register = async (req, res) => {
       });
     }
 
-    // optional file upload via Cloudinary or local disk
+    // optional profile photo upload via Cloudinary or local disk
     let profilephoto = "";
     const file = req.file;
     if (file) {
-      try {
-        const uploadedPhoto = await saveUploadedImage(file, req, "profiles");
-        if (uploadedPhoto?.url) {
-          profilephoto = uploadedPhoto.url;
+      if (file.mimetype && file.mimetype.startsWith("image/")) {
+        try {
+          const uploadedPhoto = await saveUploadedImage(file, req, "profiles");
+          if (uploadedPhoto?.url) {
+            profilephoto = uploadedPhoto.url;
+          }
+        } catch (cloudErr) {
+          console.log("Profile photo upload skipped/failed:", cloudErr.message);
         }
-      } catch (cloudErr) {
-        console.log("Profile photo upload skipped/failed:", cloudErr.message);
+      } else {
+        console.warn("Non-image file provided for profile photo during registration, ignoring.");
       }
     }
 

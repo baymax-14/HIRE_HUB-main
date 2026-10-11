@@ -13,7 +13,7 @@ export default function UsegetAllcompanies ()
                  const res =  await axios.get(`${COMPANY_API_END_POINT}/get`,{withCredentials:true})
                  if(res.data.success)
                  {
-                  dispatch(setCompanies(res.data.comapnies))
+                  dispatch(setCompanies(res.data.companies || res.data.comapnies || []))
                  }
                } catch (error) {
                 console.log(error);

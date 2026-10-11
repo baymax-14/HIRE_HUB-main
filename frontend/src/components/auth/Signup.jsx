@@ -26,6 +26,7 @@ import {
   Briefcase,
   Sparkles,
   UserPlus,
+  Camera,
 } from "lucide-react"
 
 export default function Signup() {
@@ -37,6 +38,7 @@ export default function Signup() {
     role: "student",
     file: null,
   })
+  const [photoPreview, setPhotoPreview] = useState(null)
   const [showPassword, setShowPassword] = useState(false)
   const [agreedTerms, setAgreedTerms] = useState(true)
 
@@ -55,7 +57,12 @@ export default function Signup() {
   const fileHandler = (e) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
+      if (!selectedFile.type.startsWith("image/")) {
+        toast.error("Please select a valid image file (PNG, JPG, WEBP) for your profile picture. Resumes can be uploaded in your profile or when applying.")
+        return
+      }
       setInput((prev) => ({ ...prev, file: selectedFile }))
+      setPhotoPreview(URL.createObjectURL(selectedFile))
     }
   }
 
@@ -294,33 +301,46 @@ export default function Signup() {
                 </div>
               </div>
 
-              {/* Optional File Upload (Compact 1-line Row) */}
-              <div
-                onClick={() => document.getElementById("profileAssetInput")?.click()}
-                className="py-2.5 px-3 rounded-xl border border-dashed border-slate-200 hover:border-[#630ed4] hover:bg-purple-50/40 bg-white/70 shadow-2xs transition-all flex items-center justify-between cursor-pointer"
-              >
-                <input
-                  id="profileAssetInput"
-                  type="file"
-                  accept=".pdf,.docx,image/*"
-                  onChange={fileHandler}
-                  className="hidden"
-                />
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-6 h-6 rounded-lg bg-purple-50 text-[#630ed4] flex items-center justify-center shrink-0">
-                    <Upload className="w-3.5 h-3.5" />
-                  </div>
-                  <span className="text-xs text-slate-600 truncate">
-                    {input.file ? (
-                      <strong className="text-emerald-700">{input.file.name}</strong>
+              {/* Optional Profile Picture Upload */}
+              <div className="space-y-1">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-600">
+                  Profile Picture <span className="text-slate-400 font-normal lowercase">(optional)</span>
+                </label>
+                <div
+                  onClick={() => document.getElementById("profilePictureInput")?.click()}
+                  className="py-2.5 px-3 rounded-xl border border-dashed border-slate-200 hover:border-[#630ed4] hover:bg-purple-50/40 bg-white/70 shadow-2xs transition-all flex items-center justify-between cursor-pointer"
+                >
+                  <input
+                    id="profilePictureInput"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    onChange={fileHandler}
+                    className="hidden"
+                  />
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {photoPreview ? (
+                      <img
+                        src={photoPreview}
+                        alt="Profile preview"
+                        className="w-7 h-7 rounded-full object-cover border border-purple-200 shrink-0"
+                      />
                     ) : (
-                      "Upload resume or picture (PDF, PNG, JPG) — optional"
+                      <div className="w-7 h-7 rounded-lg bg-purple-50 text-[#630ed4] flex items-center justify-center shrink-0">
+                        <Camera className="w-3.5 h-3.5" />
+                      </div>
                     )}
+                    <span className="text-xs text-slate-600 truncate">
+                      {input.file ? (
+                        <strong className="text-emerald-700">{input.file.name}</strong>
+                      ) : (
+                        "Upload profile photo (PNG, JPG, WEBP)"
+                      )}
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-[#630ed4] hover:underline shrink-0 ml-2">
+                    {input.file ? "Change" : "Browse"}
                   </span>
                 </div>
-                <span className="text-[11px] font-semibold text-[#630ed4] hover:underline shrink-0 ml-2">
-                  {input.file ? "Change" : "Browse"}
-                </span>
               </div>
 
               {/* Terms Checkbox */}

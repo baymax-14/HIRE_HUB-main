@@ -167,15 +167,15 @@ export default function Updateprofile({ open, setOpen }) {
 
             <div className="grid gap-1.5">
               <Label htmlFor="number" className="text-sm sm:text-base">
-                Phone Number
+                Phone Number <span className="text-xs text-gray-400 font-normal">(optional)</span>
               </Label>
               <Input
                 id="number"
                 name="PhoneNumber"
+                placeholder="e.g. +91 9876543210"
                 className="w-full h-10 sm:h-11"
                 value={input.PhoneNumber}
                 onChange={changeEventHandler}
-                required
               />
             </div>
 
