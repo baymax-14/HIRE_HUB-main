@@ -1,18 +1,28 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilters, clearFilters } from "@/redux/jobslice";
-import { Search, X, ChevronDown, SlidersHorizontal } from "lucide-react";
-import { Button } from "../ui/button";
+import {
+  Search,
+  X,
+  SlidersHorizontal,
+  MapPin,
+  Briefcase,
+  TrendingUp,
+  Banknote,
+  Sparkles,
+  Check,
+} from "lucide-react";
 
-const LOCATIONS = [
-  "Delhi",
+const POPULAR_LOCATIONS = [
+  "Remote",
+  "Bengaluru",
+  "Delhi / NCR",
   "Mumbai",
   "Pune",
-  "Bangalore",
   "Hyderabad",
   "Chennai",
-  "Kolkata",
-  "Remote",
+  "San Francisco",
+  "London",
 ];
 
 const JOB_TYPES = [
@@ -23,43 +33,67 @@ const JOB_TYPES = [
   "Freelance",
 ];
 
-const SALARY_RANGES = [
-  { label: "Any", min: 0, max: 0 },
-  { label: "₹0 - 3 LPA", min: 0, max: 300000 },
-  { label: "₹3 - 6 LPA", min: 300000, max: 600000 },
-  { label: "₹6 - 10 LPA", min: 600000, max: 1000000 },
-  { label: "₹10 - 20 LPA", min: 1000000, max: 2000000 },
-  { label: "₹20 LPA+", min: 2000000, max: 0 },
+const SENIORITY_LEVELS = [
+  "Entry / Junior",
+  "Mid-Level",
+  "Senior (5+ yrs)",
+  "Staff / Lead",
+];
+
+const COMPENSATION_TIERS = [
+  { label: "Any Compensation", min: 0, max: 0 },
+  { label: "₹0 – ₹6 LPA (Entry)", min: 0, max: 600000 },
+  { label: "₹6L – ₹15 LPA (Mid)", min: 600000, max: 1500000 },
+  { label: "₹15L – ₹30 LPA (Senior)", min: 1500000, max: 3000000 },
+  { label: "₹30L+ LPA (Top Tier)", min: 3000000, max: 0 },
 ];
 
 export default function FilterCard() {
   const dispatch = useDispatch();
   const jobState = useSelector((store) => store.job) || {};
-  const filters = jobState.filters || {
-    keyword: "",
-    location: "",
-    jobType: "",
-    salaryMin: 0,
-    salaryMax: 0,
-  };
+  const { user } = useSelector((store) => store.auth) || {};
+
+  const filters = useMemo(
+    () =>
+      jobState.filters || {
+        keyword: "",
+        location: "",
+        jobType: "",
+        salaryMin: 0,
+        salaryMax: 0,
+      },
+    [jobState.filters]
+  );
+
   const [keyword, setKeyword] = useState(filters?.keyword || "");
   const [selectedLocation, setSelectedLocation] = useState(filters?.location || "");
   const [selectedJobType, setSelectedJobType] = useState(filters?.jobType || "");
-  const [selectedSalary, setSelectedSalary] = useState(0); // index into SALARY_RANGES
-  const [expandedSections, setExpandedSections] = useState({
-    location: true,
-    jobType: true,
-    salary: true,
-  });
+  const [selectedSeniority, setSelectedSeniority] = useState("");
+  const [selectedCompTier, setSelectedCompTier] = useState(0);
 
   const debounceRef = useRef(null);
 
-  // Count active filters
-  const activeFilterCount =
+  // Sync internal state when Redux filters change (e.g. from Hero pills or Clear)
+  useEffect(() => {
+    setKeyword(filters?.keyword || "");
+    setSelectedLocation(filters?.location || "");
+    setSelectedJobType(filters?.jobType || "");
+
+    const tierIndex = COMPENSATION_TIERS.findIndex(
+      (tier) =>
+        tier.min === (filters?.salaryMin || 0) &&
+        tier.max === (filters?.salaryMax || 0)
+    );
+    setSelectedCompTier(tierIndex >= 0 ? tierIndex : 0);
+  }, [filters]);
+
+  // Active filter count
+  const activeCount =
+    (keyword ? 1 : 0) +
     (selectedLocation ? 1 : 0) +
     (selectedJobType ? 1 : 0) +
-    (selectedSalary > 0 ? 1 : 0) +
-    (keyword ? 1 : 0);
+    (selectedSeniority ? 1 : 0) +
+    (selectedCompTier > 0 ? 1 : 0);
 
   // Debounced keyword search
   const debouncedSearch = useCallback(
@@ -67,7 +101,7 @@ export default function FilterCard() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => {
         dispatch(setFilters({ keyword: value }));
-      }, 400);
+      }, 350);
     },
     [dispatch]
   );
@@ -78,40 +112,45 @@ export default function FilterCard() {
     debouncedSearch(value);
   };
 
-  const handleLocationChange = (loc) => {
-    const newLoc = selectedLocation === loc ? "" : loc;
-    setSelectedLocation(newLoc);
-    dispatch(setFilters({ location: newLoc }));
+  const handleClearKeyword = () => {
+    setKeyword("");
+    dispatch(setFilters({ keyword: "" }));
   };
 
-  const handleJobTypeChange = (type) => {
-    const newType = selectedJobType === type ? "" : type;
-    setSelectedJobType(newType);
-    dispatch(setFilters({ jobType: newType }));
+  const handleLocationToggle = (loc) => {
+    const next = selectedLocation.toLowerCase() === loc.toLowerCase() ? "" : loc;
+    setSelectedLocation(next);
+    dispatch(setFilters({ location: next }));
   };
 
-  const handleSalaryChange = (index) => {
-    setSelectedSalary(index);
-    const range = SALARY_RANGES[index];
-    dispatch(setFilters({ salaryMin: range.min, salaryMax: range.max }));
+  const handleJobTypeToggle = (type) => {
+    const next = selectedJobType.toLowerCase() === type.toLowerCase() ? "" : type;
+    setSelectedJobType(next);
+    dispatch(setFilters({ jobType: next }));
+  };
+
+  const handleSeniorityToggle = (lvl) => {
+    const next = selectedSeniority === lvl ? "" : lvl;
+    setSelectedSeniority(next);
+    // Dispatches keyword adjustment or general filter
+    dispatch(setFilters({ keyword: next ? `${keyword} ${next}`.trim() : keyword }));
+  };
+
+  const handleCompChange = (idx) => {
+    setSelectedCompTier(idx);
+    const tier = COMPENSATION_TIERS[idx];
+    dispatch(setFilters({ salaryMin: tier.min, salaryMax: tier.max }));
   };
 
   const handleClearAll = () => {
     setKeyword("");
     setSelectedLocation("");
     setSelectedJobType("");
-    setSelectedSalary(0);
+    setSelectedSeniority("");
+    setSelectedCompTier(0);
     dispatch(clearFilters());
   };
 
-  const toggleSection = (section) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
-
-  // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -119,48 +158,52 @@ export default function FilterCard() {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50/50 to-blue-50/50">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-purple-600" />
-          <h2 className="font-semibold text-sm sm:text-base text-gray-800">
-            Filters
+    <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-7">
+      {/* Filter Top Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-purple-100/70 flex items-center justify-center text-[#630ed4]">
+            <SlidersHorizontal className="w-4 h-4" />
+          </div>
+          <h2 className="text-base text-[#131b2e] font-extrabold tracking-tight">
+            Refine Roles
           </h2>
-          {activeFilterCount > 0 && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold text-purple-700 bg-purple-100 rounded-full">
-              {activeFilterCount}
+          {activeCount > 0 && (
+            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-[#630ed4] text-xs font-bold">
+              {activeCount} Active
             </span>
           )}
         </div>
-        {activeFilterCount > 0 && (
+        {activeCount > 0 && (
           <button
             onClick={handleClearAll}
-            className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer"
+            type="button"
+            className="text-xs font-bold text-slate-400 hover:text-[#630ed4] transition-colors cursor-pointer"
           >
             Clear all
           </button>
         )}
       </div>
 
-      {/* Search Input */}
-      <div className="px-4 sm:px-5 pt-4 pb-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      {/* Keywords & Stack Search */}
+      <div className="space-y-2">
+        <label className="text-[11px] uppercase tracking-wider text-slate-400 font-bold block">
+          Keywords &amp; Stack
+        </label>
+        <div className="relative flex items-center">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
           <input
             type="text"
-            placeholder="Search jobs..."
             value={keyword}
             onChange={handleKeywordChange}
-            className="w-full pl-9 pr-9 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-all"
+            placeholder="Search roles, tech stack..."
+            className="w-full pl-10 pr-9 py-2.5 bg-[#f2f3ff]/50 hover:bg-[#f2f3ff] focus:bg-white rounded-2xl text-sm text-[#131b2e] placeholder-slate-400 border border-transparent focus:border-[#630ed4]/40 focus:outline-none transition-all"
           />
           {keyword && (
             <button
-              onClick={() => {
-                setKeyword("");
-                dispatch(setFilters({ keyword: "" }));
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+              onClick={handleClearKeyword}
+              type="button"
+              className="absolute right-3 text-slate-400 hover:text-[#131b2e] cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -168,106 +211,171 @@ export default function FilterCard() {
         </div>
       </div>
 
-      {/* Location Section */}
-      <div className="border-t border-gray-50">
-        <button
-          onClick={() => toggleSection("location")}
-          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          <span className="text-sm font-semibold text-gray-700">
-            📍 Location
-          </span>
-          <ChevronDown
-            className={`w-4 h-4 text-gray-400 transition-transform ${
-              expandedSections.location ? "rotate-180" : ""
+      {/* Location Filter Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm font-bold text-[#131b2e]">
+            <MapPin className="w-4 h-4 text-[#630ed4]" />
+            <span>Location</span>
+          </div>
+          {selectedLocation && (
+            <span className="text-xs text-[#630ed4] font-semibold">
+              1 Selected
+            </span>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => handleLocationToggle("")}
+            className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
+              !selectedLocation
+                ? "bg-[#630ed4] text-white font-bold shadow-xs"
+                : "bg-[#f2f3ff]/80 text-[#4a4455] hover:bg-[#eaedff]"
             }`}
-          />
-        </button>
-        {expandedSections.location && (
-          <div className="px-4 sm:px-5 pb-4 flex flex-wrap gap-2">
-            {LOCATIONS.map((loc) => (
+          >
+            All Locations
+          </button>
+          {POPULAR_LOCATIONS.map((loc) => {
+            const isSelected =
+              selectedLocation.toLowerCase() === loc.toLowerCase();
+            return (
               <button
                 key={loc}
-                onClick={() => handleLocationChange(loc)}
-                className={`px-3 py-1.5 text-xs rounded-full border transition-all cursor-pointer ${
-                  selectedLocation === loc
-                    ? "bg-purple-100 border-purple-300 text-purple-700 font-medium"
-                    : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300"
+                type="button"
+                onClick={() => handleLocationToggle(loc)}
+                className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isSelected
+                    ? "bg-[#630ed4] text-white font-bold shadow-xs"
+                    : "bg-[#f2f3ff]/80 text-[#4a4455] hover:bg-[#eaedff]"
                 }`}
               >
-                {loc}
+                <span>{loc}</span>
+                {isSelected && <Check className="w-3 h-3" />}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Job Type Section */}
-      <div className="border-t border-gray-50">
-        <button
-          onClick={() => toggleSection("jobType")}
-          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          <span className="text-sm font-semibold text-gray-700">
-            💼 Job Type
-          </span>
-          <ChevronDown
-            className={`w-4 h-4 text-gray-400 transition-transform ${
-              expandedSections.jobType ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-        {expandedSections.jobType && (
-          <div className="px-4 sm:px-5 pb-4 flex flex-wrap gap-2">
-            {JOB_TYPES.map((type) => (
+      {/* Job Type Filter Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm font-bold text-[#131b2e]">
+            <Briefcase className="w-4 h-4 text-[#630ed4]" />
+            <span>Job Type</span>
+          </div>
+          {selectedJobType && (
+            <span className="text-xs text-[#630ed4] font-semibold">
+              1 Selected
+            </span>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {JOB_TYPES.map((type) => {
+            const isSelected =
+              selectedJobType.toLowerCase() === type.toLowerCase();
+            return (
               <button
                 key={type}
-                onClick={() => handleJobTypeChange(type)}
-                className={`px-3 py-1.5 text-xs rounded-full border transition-all cursor-pointer ${
-                  selectedJobType === type
-                    ? "bg-blue-100 border-blue-300 text-blue-700 font-medium"
-                    : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300"
+                type="button"
+                onClick={() => handleJobTypeToggle(type)}
+                className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isSelected
+                    ? "bg-[#630ed4] text-white font-bold shadow-xs"
+                    : "bg-[#f2f3ff]/80 text-[#4a4455] hover:bg-[#eaedff]"
                 }`}
               >
-                {type}
+                <span>{type}</span>
+                {isSelected && <Check className="w-3 h-3" />}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Salary Range Section */}
-      <div className="border-t border-gray-50">
-        <button
-          onClick={() => toggleSection("salary")}
-          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          <span className="text-sm font-semibold text-gray-700">
-            💰 Salary Range
-          </span>
-          <ChevronDown
-            className={`w-4 h-4 text-gray-400 transition-transform ${
-              expandedSections.salary ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-        {expandedSections.salary && (
-          <div className="px-4 sm:px-5 pb-4 space-y-1.5">
-            {SALARY_RANGES.map((range, idx) => (
+      {/* Seniority / Experience Section */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-sm font-bold text-[#131b2e]">
+          <TrendingUp className="w-4 h-4 text-[#630ed4]" />
+          <span>Seniority Level</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {SENIORITY_LEVELS.map((lvl) => {
+            const isSelected = selectedSeniority === lvl;
+            return (
               <button
-                key={idx}
-                onClick={() => handleSalaryChange(idx)}
-                className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-all cursor-pointer ${
-                  selectedSalary === idx
-                    ? "bg-green-100 text-green-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50"
+                key={lvl}
+                type="button"
+                onClick={() => handleSeniorityToggle(lvl)}
+                className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-[#630ed4]/10 border border-[#630ed4]/40 text-[#630ed4] font-bold"
+                    : "bg-[#f2f3ff]/80 text-[#4a4455] hover:bg-[#eaedff]"
                 }`}
               >
-                {range.label}
+                {lvl}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Compensation Tiers */}
+      <div className="space-y-2.5">
+        <div className="flex items-center gap-2 text-sm font-bold text-[#131b2e]">
+          <Banknote className="w-4 h-4 text-[#630ed4]" />
+          <span>Compensation Tiers</span>
+        </div>
+        <div className="space-y-2 pt-1">
+          {COMPENSATION_TIERS.map((tier, idx) => {
+            const isChecked = selectedCompTier === idx;
+            return (
+              <label
+                key={idx}
+                className={`flex items-center gap-3 p-2.5 rounded-2xl cursor-pointer transition-all ${
+                  isChecked
+                    ? "bg-[#630ed4]/5 border border-[#630ed4]/30 shadow-xs"
+                    : "bg-[#f2f3ff]/40 hover:bg-[#f2f3ff] border border-transparent"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="comp_tier"
+                  checked={isChecked}
+                  onChange={() => handleCompChange(idx)}
+                  className="accent-[#630ed4] w-4 h-4"
+                />
+                <span
+                  className={`text-xs sm:text-sm ${
+                    isChecked
+                      ? "font-bold text-[#630ed4]"
+                      : "text-[#131b2e]"
+                  }`}
+                >
+                  {tier.label}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* AI Calibration Card */}
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-50 via-indigo-50/50 to-white border border-purple-100 space-y-2">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-[#630ed4]" />
+          <span className="text-xs text-[#630ed4] font-bold tracking-wide uppercase">
+            AI Calibration Active
+          </span>
+        </div>
+        <p className="text-xs text-slate-600 leading-relaxed font-normal">
+          Roles are ranked dynamically against your{" "}
+          <strong className="text-[#131b2e]">
+            {user?.fullname ? `${user.fullname} Profile` : "Live Candidate Profile"}
+          </strong>{" "}
+          with automated ATS scoring.
+        </p>
       </div>
     </div>
   );
