@@ -1,20 +1,37 @@
-﻿import { Link, useNavigate } from "react-router-dom"
-import Navbar from "../shared/Navbar"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+"use client"
+
+import { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import axios from "axios"
 import { USER_API_END_POINT } from "@/util/const"
-import { useDispatch, useSelector } from "react-redux"
 import { setLoading, setuser } from "@/redux/authSlice"
-import { Loader2 } from "lucide-react"
-import GradientWaves from "../ui/GradientWaves"
+import { toast } from "sonner"
+import { CrowdCanvas } from "../ui/skiper39"
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ArrowLeft,
+  ShieldCheck,
+  CheckCircle2,
+  Info,
+  Loader2,
+  UserCheck,
+  Briefcase,
+  Sparkles,
+} from "lucide-react"
 
 export default function Login() {
   const [input, setInput] = useState({
     email: "",
     password: "",
-    role: "student", // Default role so users don't get blocked
+    role: "student",
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [keepSignedIn, setKeepSignedIn] = useState(true)
 
   const { loading, user } = useSelector((store) => store.auth)
   const navigate = useNavigate()
@@ -22,6 +39,10 @@ export default function Login() {
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value })
+  }
+
+  const handleRoleChange = (selectedRole) => {
+    setInput((prev) => ({ ...prev, role: selectedRole }))
   }
 
   const submitHandler = async (e) => {
@@ -55,7 +76,12 @@ export default function Login() {
         }
         dispatch(setuser(res.data.user))
         toast.success(res.data.message || "Logged in successfully!")
-        navigate("/")
+
+        if (res.data.user?.role === "recruiter") {
+          navigate("/admin/dashboard")
+        } else {
+          navigate("/")
+        }
       }
     } catch (error) {
       console.error("Login error:", error)
@@ -73,180 +99,259 @@ export default function Login() {
   }, [user, navigate, dispatch])
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-[#0b081d] overflow-x-hidden selection:bg-purple-500 selection:text-white">
-      {/* Interactive 3D Gradient Waves matching HireHub purple & pink theme */}
-      <div className="absolute inset-0 z-0">
-        <GradientWaves
-          horizonColor="#0b081d"
-          waveColor="#6A38C2"
-          crestColor="#ec4899"
-          speed={0.35}
-          amplitude={2.3}
-          waveScale={0.65}
-          waveRatio={0.9}
-          tilt={1.12}
-          fogDepth={16}
-          brightness={1.05}
-          opacity={0.92}
-          mouseInteraction={true}
-          parallaxStrength={0.55}
-          className="w-full h-full"
-        />
-      </div>
+    <div className="bg-gradient-to-b from-white via-[#faf9fe] to-[#f4f1fa] text-[#131b2e] min-h-screen flex flex-col justify-between relative overflow-x-hidden selection:bg-[#630ed4]/10 selection:text-[#630ed4]">
+      {/* CrowdCanvas Background Animation Layer */}
+      <CrowdCanvas className="fixed bottom-0 left-0 right-0 h-[85vh] w-full pointer-events-none z-0 opacity-70" />
 
-      {/* Ambient background glow accents */}
-      <div className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-purple-700/20 blur-[120px] rounded-full z-[1]" />
+      {/* Ambient Light Gradients */}
+      <div className="fixed top-[-10vw] left-1/2 -translate-x-1/2 w-[70vw] h-[35vw] bg-gradient-to-b from-[#630ed4]/10 via-[#4b41e1]/5 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white/90 via-white/40 to-transparent pointer-events-none z-0" />
 
-      {/* Navigation */}
-      <div className="relative z-20">
-        <Navbar transparent />
-      </div>
+      {/* Top Navigation Header */}
+      <header className="relative z-20 w-full py-5 px-6 lg:px-12 backdrop-blur-sm bg-white/40 border-b border-slate-100/60">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link to="/" className="flex items-center group py-1">
+            <span className="font-heading text-2xl sm:text-[26px] font-black tracking-tight text-[#131b2e] transition-transform group-hover:scale-[1.02]">
+              Hire<span className="bg-gradient-to-r from-[#630ed4] via-[#7c3aed] to-[#4b41e1] bg-clip-text text-transparent">Hub</span>
+            </span>
+          </Link>
 
-      {/* Main Form Content */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-10">
-        <div className="w-full max-w-sm">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 border border-slate-200/70 shadow-xs">
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">
+                SSL • SOC2 Type II
+              </span>
+            </div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/80 border border-slate-200/80 text-[#131b2e] hover:border-[#630ed4]/40 hover:text-[#630ed4] transition-all shadow-xs text-sm font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Home</span>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-          {/* Glass card */}
-          <div className="rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/15 shadow-2xl shadow-purple-950/60 p-8 flex flex-col items-center">
-
-            {/* Logo mark */}
-            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 shadow-lg shadow-purple-700/40 mb-5">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
+      {/* Central Spacious Floating Card Section */}
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-12">
+        <div className="w-full max-w-[490px] mx-auto">
+          {/* Elevated Frosted Card */}
+          <div className="bg-white/85 backdrop-blur-2xl rounded-3xl p-7 sm:p-10 shadow-[0_20px_60px_-15px_rgba(99,14,212,0.08),0_1px_3px_rgba(0,0,0,0.04)] border border-white/90 ring-1 ring-slate-100">
+            {/* Header Text */}
+            <div className="text-center mb-7">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-[#630ed4] font-semibold text-xs tracking-wide uppercase mb-3 border border-purple-100">
+                <Lock className="w-3.5 h-3.5" />
+                <span>Welcome back</span>
+              </div>
+              <h1 className="text-[28px] sm:text-[34px] font-extrabold tracking-tight text-[#131b2e] leading-tight">
+                Sign in to HireHub
+              </h1>
+              <p className="text-slate-500 text-sm mt-2 max-w-sm mx-auto leading-relaxed">
+                Find your place among <span className="font-semibold text-[#131b2e]">45,000+ ambitious</span>{" "}
+                engineers, designers &amp; tech leaders.
+              </p>
             </div>
 
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-white mb-1 tracking-tight">
-              Welcome Back
-            </h1>
-            <p className="text-sm text-gray-400 mb-7 text-center">
-              Sign in to your <span className="text-purple-400 font-semibold">HireHub</span> account
-            </p>
+            {/* Role Selector Pill */}
+            <div className="bg-slate-100/90 p-1 rounded-2xl flex items-center mb-6 shadow-inner ring-1 ring-slate-200/60">
+              <button
+                type="button"
+                onClick={() => handleRoleChange("student")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                  input.role === "student"
+                    ? "bg-white text-[#131b2e] font-semibold shadow-sm"
+                    : "text-slate-500 font-medium hover:text-[#131b2e] hover:bg-white/50"
+                }`}
+              >
+                <UserCheck className="w-4 h-4 text-[#630ed4]" />
+                <span>Job Seeker</span>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-100 text-[#630ed4] font-bold">
+                  Candidate
+                </span>
+              </button>
 
-            {/* Form */}
-            <form onSubmit={submitHandler} className="flex flex-col w-full gap-3">
+              <button
+                type="button"
+                onClick={() => handleRoleChange("recruiter")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                  input.role === "recruiter"
+                    ? "bg-white text-[#131b2e] font-semibold shadow-sm"
+                    : "text-slate-500 font-medium hover:text-[#131b2e] hover:bg-white/50"
+                }`}
+              >
+                <Briefcase className="w-4 h-4 text-[#4b41e1]" />
+                <span>Recruiter</span>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">
+                  Hiring
+                </span>
+              </button>
+            </div>
 
-              {/* Email */}
-              <div className="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <input
-                  type="email"
-                  name="email"
-                  value={input.email}
-                  onChange={changeEventHandler}
-                  placeholder="Email address"
-                  required
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/70 focus:border-purple-500/50 transition-all"
-                />
-              </div>
-
-              {/* Password */}
-              <div className="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <input
-                  type="password"
-                  name="password"
-                  value={input.password}
-                  onChange={changeEventHandler}
-                  placeholder="Password"
-                  required
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/70 focus:border-purple-500/50 transition-all"
-                />
-              </div>
-
-              {/* Role selector */}
-              <div className="flex flex-wrap items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-3 mt-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-purple-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span className="text-xs text-gray-400 font-medium mr-1">Login as:</span>
-                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="student"
-                    checked={input.role === "student"}
-                    onChange={changeEventHandler}
-                    className="accent-purple-500 w-3.5 h-3.5 cursor-pointer"
-                  />
-                  Student
+            {/* Credentials Form */}
+            <form onSubmit={submitHandler} className="space-y-4">
+              {/* Email Input */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Work or Personal Email
                 </label>
-                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors ml-2">
+                <div className="relative rounded-xl border border-slate-200 bg-white shadow-xs transition-all focus-within:border-[#630ed4] focus-within:ring-4 focus-within:ring-purple-500/10">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <Mail className="w-4 h-4" />
+                  </span>
                   <input
-                    type="radio"
-                    name="role"
-                    value="recruiter"
-                    checked={input.role === "recruiter"}
+                    type="email"
+                    name="email"
+                    value={input.email}
                     onChange={changeEventHandler}
-                    className="accent-purple-500 w-3.5 h-3.5 cursor-pointer"
+                    placeholder="you@domain.com"
+                    required
+                    className="w-full pl-10 pr-4 py-3 bg-transparent rounded-xl text-[#131b2e] text-sm placeholder:text-slate-400 focus:outline-none"
                   />
-                  Recruiter
-                </label>
+                </div>
               </div>
 
-              <hr className="border-white/10 my-1" />
-
-              {/* Submit */}
-              {loading ? (
-                <button
-                  disabled
-                  className="w-full py-3 rounded-full bg-purple-700/70 text-white font-semibold text-sm flex items-center justify-center gap-2 cursor-not-allowed"
-                >
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Logging in...
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-purple-700/30 transition-all active:scale-[0.98] cursor-pointer"
-                >
-                  Sign In
-                </button>
-              )}
-
-              {/* Sign up link */}
-              <div className="text-center mt-1">
-                <span className="text-xs text-gray-400">
-                  {"Don't have an account? "}
-                  <Link
-                    to="/signup"
-                    className="text-purple-400 hover:text-purple-300 font-semibold underline underline-offset-2 transition-colors"
+              {/* Password Input */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
+                    Password
+                  </label>
+                  <a
+                    href="#forgot"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      toast.info("Password reset link will be sent to your email.")
+                    }}
+                    className="text-xs text-[#630ed4] font-semibold hover:underline"
                   >
-                    {"Create one, it's free!"}
-                  </Link>
+                    Forgot password?
+                  </a>
+                </div>
+                <div className="relative rounded-xl border border-slate-200 bg-white shadow-xs transition-all focus-within:border-[#630ed4] focus-within:ring-4 focus-within:ring-purple-500/10">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <Lock className="w-4 h-4" />
+                  </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={input.password}
+                    onChange={changeEventHandler}
+                    placeholder="••••••••••••"
+                    required
+                    className="w-full pl-10 pr-11 py-3 bg-transparent rounded-xl text-[#131b2e] text-sm placeholder:text-slate-400 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={keepSignedIn}
+                    onChange={(e) => setKeepSignedIn(e.target.checked)}
+                    className="w-4 h-4 rounded text-[#630ed4] border-slate-300 accent-[#630ed4] cursor-pointer"
+                  />
+                  <span className="text-xs sm:text-sm text-slate-600 font-medium">
+                    Keep me signed in
+                  </span>
+                </label>
+                <span className="text-[11px] text-slate-400 font-medium bg-slate-100 px-2 py-0.5 rounded-full">
+                  30-day session
                 </span>
               </div>
+
+              {/* Primary Sign In Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full mt-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#630ed4] via-purple-700 to-[#4b41e1] text-white font-semibold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg shadow-purple-600/25 hover:shadow-xl hover:shadow-purple-600/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In to HireHub</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </form>
+
+            {/* Role Context Toast / Notice */}
+            <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 text-slate-600 text-xs flex items-center gap-2.5">
+              <Info className="w-4 h-4 text-[#630ed4] shrink-0" />
+              <span>
+                {input.role === "student" ? (
+                  <>
+                    Signing in as <strong className="text-[#131b2e]">Job Seeker</strong>. You&apos;ll be redirected to calibrated job matches.
+                  </>
+                ) : (
+                  <>
+                    Signing in as <strong className="text-[#131b2e]">Recruiter</strong>. You&apos;ll be redirected to your talent pipeline.
+                  </>
+                )}
+              </span>
+            </div>
+
+            {/* Sign Up Link */}
+            <div className="mt-6 text-center text-sm text-slate-500">
+              Don&apos;t have an account yet?
+              <Link to="/signup" className="text-[#630ed4] font-bold hover:underline ml-1">
+                Sign up free
+              </Link>
+            </div>
           </div>
 
-          {/* Social proof */}
-          <div className="mt-8 flex flex-col items-center text-center">
-            <p className="text-gray-500 text-xs mb-2">
-              Trusted by <span className="text-white font-medium">thousands</span> of job seekers &amp; recruiters
-            </p>
-            <div className="flex -space-x-2">
-              {[
-                "https://cdn.21st.dev/assets/mirror/a6/a634d4f02fe5b77804943c1d74b8d70e35ffe26454e0e9af9717432a2c72bfde.jpg",
-                "https://cdn.21st.dev/assets/mirror/d8/d8dab29a5736d5c2b0084d720d3db02c785560071609be501541922928fdf831.jpg",
-                "https://cdn.21st.dev/assets/mirror/d1/d1a3e08d4e37d6ee2b7de1db8df87c1dc7acd8ffb004caaf980917de518a60c9.jpg",
-                "https://cdn.21st.dev/assets/mirror/f0/f07b84f12ef125cbb837a7bd64da401992f5f62bd55fee10d01cd3dcc8abae80.jpg",
-              ].map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt="user"
-                  className="w-8 h-8 rounded-full border-2 border-[#0b081d] object-cover"
-                />
-              ))}
+          {/* Trust Badges Under Central Card */}
+          <div className="flex items-center justify-center gap-6 mt-6 text-xs text-slate-400 font-medium">
+            <div className="flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-emerald-500" />
+              <span>256-bit TLS</span>
+            </div>
+            <span>•</span>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#630ed4]" />
+              <span>SOC2 Type II</span>
+            </div>
+            <span>•</span>
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>99.99% Uptime</span>
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* Clean Floating Minimal Footer */}
+      <footer className="relative z-10 w-full py-5 px-6 backdrop-blur-xs text-slate-400 text-xs">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div>© 2025 HireHub Inc. High-Signal Tech Career Infrastructure.</div>
+          <div className="flex items-center gap-5">
+            <Link to="/" className="hover:text-slate-600 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/" className="hover:text-slate-600 transition-colors">
+              Terms of Service
+            </Link>
+            <Link to="/" className="hover:text-slate-600 transition-colors">
+              Security
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

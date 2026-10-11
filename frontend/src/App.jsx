@@ -4,6 +4,7 @@ import Login from "./components/auth/Login"
 import Signup from "./components/auth/Signup"
 import Home from "./components/Home"
 import Jobs from "./components/jobscard/Jobs"
+import Skiper39Demo from "./components/ui/demo"
 import Viewprofile from "./components/Viewprofile"
 import Jobdescription from "./components/Jobdexcription"
 import Companies from "./components/admin/Companies"
@@ -18,6 +19,10 @@ const appROuter = createBrowserRouter([
   {
     path:"/",
     element:<Home />
+  },
+  {
+    path:"/demo",
+    element:<Skiper39Demo />
   },
   {
     path:"/login",

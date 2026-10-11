@@ -9,6 +9,7 @@ import getDaturi from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import { saveUploadedResume, saveUploadedImage } from "../utils/fileHandler.js";
 import { sendWelcomeEmail, sendTestEmail } from "../utils/emailService.js";
+import axios from "axios";
 
 //sign up
 export const register = async (req, res) => {
@@ -461,6 +462,359 @@ export const sendTestNotificationEmail = async (req, res) => {
     });
   }
 };
+
+// ==========================================
+// OAuth 2.0 (Google & GitHub) Handlers
+// ==========================================
+
+export const getOAuthStatus = (req, res) => {
+  const hasGoogle = Boolean(process.env.GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_ID.includes("your_google_client_id"));
+  const hasGithub = Boolean(process.env.GITHUB_CLIENT_ID && !process.env.GITHUB_CLIENT_ID.includes("your_github_client_id"));
+
+  return res.status(200).json({
+    google: hasGoogle,
+    github: hasGithub,
+    success: true,
+  });
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+    return res.status(200).json({ user, success: true });
+  } catch (error) {
+    console.error("getMe error:", error);
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+// Google OAuth Initiation
+export const googleAuth = (req, res) => {
+  const role = req.query.role || "student";
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
+  if (!googleClientId || googleClientId.trim() === "" || googleClientId.includes("your_google_client_id")) {
+    return res.redirect(
+      `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+        "Google OAuth is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to backhand/.env"
+      )}&provider=google&need_config=true&role=${encodeURIComponent(role)}`
+    );
+  }
+
+  const redirectUri = `${backendUrl}/api/v1/user/auth/google/callback`;
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(
+    redirectUri
+  )}&response_type=code&scope=${encodeURIComponent(
+    "openid email profile"
+  )}&state=${encodeURIComponent(role)}&access_type=offline&prompt=consent`;
+
+  return res.redirect(googleAuthUrl);
+};
+
+// Google OAuth Callback
+export const googleCallback = async (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  try {
+    const { code, state: requestedRole, error } = req.query;
+
+    if (error || !code) {
+      return res.redirect(
+        `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+          error || "Google authorization was cancelled"
+        )}`
+      );
+    }
+
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
+    const redirectUri = `${backendUrl}/api/v1/user/auth/google/callback`;
+
+    // Exchange authorization code for tokens
+    const tokenResponse = await axios.post("https://oauth2.googleapis.com/token", {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: redirectUri,
+      grant_type: "authorization_code",
+    });
+
+    const { access_token } = tokenResponse.data;
+
+    // Fetch user info from Google
+    const profileResponse = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    const { sub: googleId, email, name, picture } = profileResponse.data;
+    if (!email) {
+      return res.redirect(
+        `${frontendUrl}/login?oauth_error=${encodeURIComponent("No email received from Google profile")}`
+      );
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    let user = await User.findOne({ email: cleanEmail });
+
+    if (!user) {
+      const assignedRole = requestedRole === "recruiter" ? "recruiter" : "student";
+      const randomPassword = await bcrypt.hash(Math.random().toString(36).substring(2) + Date.now(), 10);
+      user = await User.create({
+        fullname: name || "Google User",
+        email: cleanEmail,
+        role: assignedRole,
+        password: randomPassword,
+        phoneNumber: "",
+        authProvider: "google",
+        googleId,
+        profile: {
+          profilephoto: picture || "",
+        },
+      });
+
+      sendWelcomeEmail({ fullname: user.fullname, email: cleanEmail, role: user.role })
+        .catch((err) => console.error("Welcome email error:", err.message));
+    } else {
+      if (!user.googleId) user.googleId = googleId;
+      if (!user.profile?.profilephoto && picture) {
+        if (!user.profile) user.profile = {};
+        user.profile.profilephoto = picture;
+      }
+      await user.save();
+    }
+
+    // Generate JWT
+    const secretKey = process.env.SECRET_KEY || process.env.SECREATE_KEY || "hirehub_secret_key_2026";
+    const token = await jwt.sign({ userid: user._id }, secretKey, { expiresIn: "1d" });
+
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("token", token, {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    });
+
+    return res.redirect(`${frontendUrl}/oauth-success?token=${token}&role=${user.role}&provider=google`);
+  } catch (err) {
+    console.error("Google OAuth error:", err.response?.data || err.message);
+    return res.redirect(
+      `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+        err.response?.data?.error_description || err.message || "Failed to authenticate with Google"
+      )}`
+    );
+  }
+};
+
+// GitHub OAuth Initiation
+export const githubAuth = (req, res) => {
+  const role = req.query.role || "student";
+  const githubClientId = process.env.GITHUB_CLIENT_ID;
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
+  if (!githubClientId || githubClientId.trim() === "" || githubClientId.includes("your_github_client_id")) {
+    return res.redirect(
+      `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+        "GitHub OAuth is not configured yet. Add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET to backhand/.env"
+      )}&provider=github&need_config=true&role=${encodeURIComponent(role)}`
+    );
+  }
+
+  const redirectUri = `${backendUrl}/api/v1/user/auth/github/callback`;
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&redirect_uri=${encodeURIComponent(
+    redirectUri
+  )}&scope=${encodeURIComponent("user:email")}&state=${encodeURIComponent(role)}`;
+
+  return res.redirect(githubAuthUrl);
+};
+
+// GitHub OAuth Callback
+export const githubCallback = async (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  try {
+    const { code, state: requestedRole, error } = req.query;
+
+    if (error || !code) {
+      return res.redirect(
+        `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+          error || "GitHub authorization was cancelled"
+        )}`
+      );
+    }
+
+    // Exchange code for token
+    const tokenResponse = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code,
+      },
+      { headers: { Accept: "application/json" } }
+    );
+
+    const { access_token } = tokenResponse.data;
+    if (!access_token) {
+      return res.redirect(
+        `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+          tokenResponse.data.error_description || "Failed to retrieve access token from GitHub"
+        )}`
+      );
+    }
+
+    // Get GitHub profile
+    const profileResponse = await axios.get("https://api.github.com/user", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    const githubUser = profileResponse.data;
+    let email = githubUser.email;
+
+    // Fetch primary verified email if not public in profile
+    if (!email) {
+      try {
+        const emailsResponse = await axios.get("https://api.github.com/user/emails", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        const primary = emailsResponse.data.find((e) => e.primary && e.verified) || emailsResponse.data[0];
+        if (primary) email = primary.email;
+      } catch (e) {
+        console.error("Failed to fetch GitHub emails:", e.message);
+      }
+    }
+
+    if (!email) {
+      email = `${githubUser.login}@users.noreply.github.com`;
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    let user = await User.findOne({ email: cleanEmail });
+
+    if (!user) {
+      const assignedRole = requestedRole === "recruiter" ? "recruiter" : "student";
+      const randomPassword = await bcrypt.hash(Math.random().toString(36).substring(2) + Date.now(), 10);
+      user = await User.create({
+        fullname: githubUser.name || githubUser.login || "GitHub User",
+        email: cleanEmail,
+        role: assignedRole,
+        password: randomPassword,
+        phoneNumber: "",
+        authProvider: "github",
+        githubId: String(githubUser.id),
+        profile: {
+          profilephoto: githubUser.avatar_url || "",
+          bio: githubUser.bio || "",
+        },
+      });
+
+      sendWelcomeEmail({ fullname: user.fullname, email: cleanEmail, role: user.role })
+        .catch((err) => console.error("Welcome email error:", err.message));
+    } else {
+      if (!user.githubId) user.githubId = String(githubUser.id);
+      if (!user.profile?.profilephoto && githubUser.avatar_url) {
+        if (!user.profile) user.profile = {};
+        user.profile.profilephoto = githubUser.avatar_url;
+      }
+      await user.save();
+    }
+
+    // Generate JWT
+    const secretKey = process.env.SECRET_KEY || process.env.SECREATE_KEY || "hirehub_secret_key_2026";
+    const token = await jwt.sign({ userid: user._id }, secretKey, { expiresIn: "1d" });
+
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("token", token, {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    });
+
+    return res.redirect(`${frontendUrl}/oauth-success?token=${token}&role=${user.role}&provider=github`);
+  } catch (err) {
+    console.error("GitHub OAuth error:", err.response?.data || err.message);
+    return res.redirect(
+      `${frontendUrl}/login?oauth_error=${encodeURIComponent(
+        err.response?.data?.error_description || err.message || "Failed to authenticate with GitHub"
+      )}`
+    );
+  }
+};
+
+// Demo/Test 1-Click OAuth Sign-in (Useful for instant testing without waiting for developer console keys)
+export const demoOAuthLogin = async (req, res) => {
+  try {
+    const { provider = "google", role = "student", email, name, avatar } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required", success: false });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    let user = await User.findOne({ email: cleanEmail });
+
+    if (!user) {
+      const assignedRole = role === "recruiter" ? "recruiter" : "student";
+      const randomPassword = await bcrypt.hash(Math.random().toString(36).substring(2) + Date.now(), 10);
+      user = await User.create({
+        fullname: name || `${provider === "github" ? "GitHub" : "Google"} User`,
+        email: cleanEmail,
+        role: assignedRole,
+        password: randomPassword,
+        phoneNumber: "",
+        authProvider: provider,
+        profile: {
+          profilephoto: avatar || (provider === "github" ? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" : "https://lh3.googleusercontent.com/a/default-user"),
+        },
+      });
+
+      sendWelcomeEmail({ fullname: user.fullname, email: cleanEmail, role: user.role })
+        .catch((err) => console.error("Welcome email error:", err.message));
+    } else {
+      if (!user.profile?.profilephoto && avatar) {
+        if (!user.profile) user.profile = {};
+        user.profile.profilephoto = avatar;
+        await user.save();
+      }
+    }
+
+    const secretKey = process.env.SECRET_KEY || process.env.SECREATE_KEY || "hirehub_secret_key_2026";
+    const token = await jwt.sign({ userid: user._id }, secretKey, { expiresIn: "1d" });
+
+    const userResponse = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      profile: user.profile,
+      savedJobs: user.savedJobs || [],
+    };
+
+    const isProduction = process.env.NODE_ENV === "production";
+    return res
+      .status(200)
+      .cookie("token", token, {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
+      })
+      .json({
+        message: `Signed in with ${provider === "github" ? "GitHub" : "Google"} as ${user.fullname}`,
+        user: userResponse,
+        token,
+        success: true,
+      });
+  } catch (err) {
+    console.error("demoOAuthLogin error:", err);
+    return res.status(500).json({ message: err.message, success: false });
+  }
+};
+
 
 
 
