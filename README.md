@@ -2,14 +2,14 @@
 
 # 🚀 HireHub — AI-Powered Talent Discovery & ATS Platform
 
-**An enterprise-grade, full-stack recruitment ecosystem featuring autonomous AI ATS resume scoring, real-time competency gap analysis, Google Stitch design architecture, and end-to-end recruiter pipelines.**
+**An enterprise-grade, full-stack recruitment ecosystem featuring autonomous AI ATS resume scoring, real-time competency gap analysis, modern reactive design architecture, and end-to-end recruiter pipelines.**
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-Express_5-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_8-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev)
-[![Design](https://img.shields.io/badge/Design-Google_Stitch-630ed4?style=for-the-badge&logoColor=white)](https://stitch.google)
+[![UI](https://img.shields.io/badge/Design-Modern_Reactive_UI-630ed4?style=for-the-badge&logoColor=white)](https://tailwindcss.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 </div>
@@ -20,7 +20,7 @@
 
 - [Overview](#-overview)
 - [Key Features](#-key-features)
-  - [1. Google Stitch Design Architecture](#-1-google-stitch-design-architecture)
+  - [1. Modern Reactive UI & Crowd Canvas Architecture](#-1-modern-reactive-ui--crowd-canvas-architecture)
   - [2. Next-Gen Job Profile & ATS Telemetry](#-2-next-gen-job-profile--ats-telemetry)
   - [3. AI-Powered ATS Resume Engine](#-3-ai-powered-ats-resume-engine)
   - [4. 5-Tier Applicant Distribution & Bulk Screening](#-4-5-tier-applicant-distribution--bulk-screening)
@@ -42,7 +42,7 @@
 
 **HireHub** bridges the gap between ambitious **Candidates (Job Seekers)** and **Recruiting Teams (Hiring Leaders)** through a cutting-edge interface and autonomous evaluation intelligence.
 
-Built on **React 19**, **Node.js/Express 5**, and **MongoDB**, HireHub incorporates the **Google Stitch** design system, delivering micro-animated interactions, glassmorphism telemetry cards, and frictionless mobile-ready workflows.
+Built on **React 19**, **Node.js/Express 5**, and **MongoDB**, HireHub delivers modern micro-animated interactions, interactive canvas graphics, glassmorphism telemetry cards, and frictionless mobile-ready workflows.
 
 ### User Roles & Capabilities
 
@@ -60,9 +60,10 @@ Built on **React 19**, **Node.js/Express 5**, and **MongoDB**, HireHub incorpora
 
 ## ✨ Key Features
 
-### 🎨 1. Google Stitch Design Architecture
+### 🎨 1. Modern Reactive UI & Crowd Canvas Architecture
 - **Curated Color Tokens** — Rich Iris/Violet primary (`#630ed4`), Indigo accents (`#4b41e1`), soft lilac canvas (`#faf8ff`), and emerald indicators (`#10b981`).
 - **Typography Pairing** — *Plus Jakarta Sans* for editorial headlines, *Inter* for body readability, and *JetBrains Mono* for technical badges.
+- **Dynamic Crowd Canvas Background** — Interactive ambient particle canvas creating an open, airy, animated atmosphere across Login and Signup portals.
 - **Ambient Lighting Effects** — Floating mesh orbs (`.orb-glow-1/2`), subtle radial grid textures, dynamic shimmer transitions (`.shimmer-fx`), and smooth card lifts.
 - **Continuous Brand Marquee** — 32-second infinite CSS loop showcasing verified enterprise partner hiring badges.
 - **Role-Aware Navigation** — Clean, uncluttered navbar offering role-specific pathways (`Find Jobs`, `My Applications`, `Dashboard`, `Companies`) with integrated recruiter guards.
@@ -191,9 +192,9 @@ HIRE_HUB/
 │   │   │   ├── Categoery.jsx                 # 8-discipline engineering category grid
 │   │   │   ├── CompanyMarquee.jsx            # 32s infinite marquee partner showcase
 │   │   │   ├── CtaBanner.jsx                 # Dual conversion CTA banners (Candidate & Recruiter)
-│   │   │   ├── Herosection.jsx               # Stitch hero with floating live toasts & capsule search
+│   │   │   ├── Herosection.jsx               # Hero section with floating live toasts & capsule search
 │   │   │   ├── HowItWorks.jsx                # 3-step Autonomous Match Engine overview
-│   │   │   ├── Jobdexcription.jsx            # Stitch Job Profile, ATS telemetry & 1-Click apply
+│   │   │   ├── Jobdexcription.jsx            # Modern Job Profile, ATS telemetry & 1-Click apply
 │   │   │   ├── Latestjob.jsx                 # Curated latest jobs showcase
 │   │   │   ├── Latestjobcard.jsx             # Modern job cards with tech pills & bookmarking
 │   │   │   ├── Updateprofilejob.jsx          # Profile competencies & resume upload modal
@@ -400,7 +401,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 <div align="center">
 
-**Built with ❤️ using React 19, Express 5, MongoDB & Google Stitch Architecture**
+**Built with ❤️ using React 19, Express 5 & MongoDB**
 
 ⭐ Star this repository if you find it helpful!
 

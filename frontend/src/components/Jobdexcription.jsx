@@ -1348,7 +1348,7 @@ export default function Jobdexcription() {
       {/* Edit Profile Modal */}
       <Updateprofile open={editProfileOpen} setOpen={setEditProfileOpen} />
 
-      {/* Modern Stitch Footer */}
+      {/* Modern Footer */}
       <Footer />
     </div>
   )
