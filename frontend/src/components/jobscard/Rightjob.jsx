@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import axios from "axios"
 import { USER_API_END_POINT, formatSalary } from "@/util/const"
+import { calculateAtsScore } from "@/util/atsUtils"
 import { updateUserSavedJobs } from "@/redux/authSlice"
 import { toast } from "sonner"
 
@@ -39,12 +40,10 @@ export default function Rightjob({ job, viewMode = "grid" }) {
       : []
   const skills = rawReqs.slice(0, 4)
 
-  // Generate deterministic ATS affinity match score (85% - 98%) based on job ID
-  const atsMatch = (() => {
-    if (!job?._id) return 92
-    const code = job._id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0)
-    return 86 + (code % 12)
-  })()
+  // Dynamically evaluate candidate ATS match score based on skills, resume and requirements
+  const atsResult = calculateAtsScore(job, user)
+  const atsMatch = atsResult.score
+  const atsVerdict = atsResult.verdict
 
   const handleToggleSave = async (e) => {
     e?.stopPropagation()
@@ -204,15 +203,22 @@ export default function Rightjob({ job, viewMode = "grid" }) {
         </div>
 
         {/* ATS AI Affinity Match Indicator */}
-        <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50/60 border border-purple-100/70">
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            navigate(`/description/${job?._id}`)
+          }}
+          title={`Click to view full ATS telemetry & matched skills (${atsMatch}% match)`}
+          className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50/60 border border-purple-100/70 hover:border-purple-300 hover:shadow-xs transition-all cursor-pointer group/ats"
+        >
           <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#630ed4]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#630ed4] group-hover/ats:scale-110 transition-transform" />
             <span className="text-xs text-[#630ed4] font-extrabold">
               {atsMatch}% ATS Match
             </span>
           </div>
           <span className="text-[10px] text-[#4b41e1] font-bold uppercase tracking-wider">
-            {atsMatch >= 92 ? "Top 5% Fit" : "Strong Fit"}
+            {atsVerdict}
           </span>
         </div>
 

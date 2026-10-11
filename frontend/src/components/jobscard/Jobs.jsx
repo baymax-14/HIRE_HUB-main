@@ -9,6 +9,8 @@ import { useEffect, useState, useMemo, useRef } from "react"
 import { setCurrentPage, setFilters, clearFilters } from "@/redux/jobslice"
 import Usegetalljobs from "@/hooks/usegetAlljobs"
 import SkeletonCard from "../ui/SkeletonCard"
+import { calculateAtsScore } from "@/util/atsUtils"
+import { toast } from "sonner"
 import {
   Search,
   MapPin,
@@ -58,7 +60,7 @@ export default function Jobs() {
     setHeroLocation(filters?.location || "")
   }, [filters?.keyword, filters?.location])
 
-  // Client-side sorting on loaded jobs
+  // Client-side sorting on loaded jobs with dynamic ATS matching
   const sortedJobs = useMemo(() => {
     const list = [...alljobs]
     if (sortBy === "Highest Compensation") {
@@ -67,8 +69,15 @@ export default function Jobs() {
     if (sortBy === "Most Recent") {
       return list.sort((a, b) => new Date(b?.createdAt) - new Date(a?.createdAt))
     }
+    if (sortBy === "Best AI Match") {
+      return list.sort((a, b) => {
+        const scoreA = calculateAtsScore(a, user).score
+        const scoreB = calculateAtsScore(b, user).score
+        return scoreB - scoreA
+      })
+    }
     return list
-  }, [alljobs, sortBy])
+  }, [alljobs, sortBy, user, aiMatchingActive])
 
   // Scroll to results when searching from Hero
   const handleHeroSearch = (e) => {
@@ -155,10 +164,18 @@ export default function Jobs() {
     })
   }
 
-  // Curated or dynamic spotlight roles
+  // Curated or dynamic spotlight roles with real ATS match scores
   const spotlightRoles = useMemo(() => {
     if (alljobs.length >= 3) {
-      return alljobs.slice(0, 3)
+      const scored = alljobs.map((job) => ({
+        ...job,
+        calculatedAts: calculateAtsScore(job, user),
+      }))
+      // When aiMatching is active, highlight the highest ATS matches for this candidate
+      if (aiMatchingActive) {
+        return [...scored].sort((a, b) => b.calculatedAts.score - a.calculatedAts.score).slice(0, 3)
+      }
+      return scored.slice(0, 3)
     }
     return [
       {
@@ -167,7 +184,7 @@ export default function Jobs() {
         company: { name: "Stripe" },
         location: "Remote / India",
         salary: 3200000,
-        ats: 96,
+        calculatedAts: { score: 96 },
       },
       {
         _id: "spotlight-2",
@@ -175,7 +192,7 @@ export default function Jobs() {
         company: { name: "Google DeepMind" },
         location: "Bengaluru, India",
         salary: 4500000,
-        ats: 94,
+        calculatedAts: { score: 94 },
       },
       {
         _id: "spotlight-3",
@@ -183,10 +200,10 @@ export default function Jobs() {
         company: { name: "Figma" },
         location: "Remote Worldwide",
         salary: 2800000,
-        ats: 98,
+        calculatedAts: { score: 98 },
       },
     ]
-  }, [alljobs])
+  }, [alljobs, user, aiMatchingActive])
 
   return (
     <div className="min-h-screen bg-[#faf8ff] text-[#131b2e] flex flex-col font-sans selection:bg-[#630ed4] selection:text-white">
@@ -337,7 +354,16 @@ export default function Jobs() {
 
                   <button
                     type="button"
-                    onClick={() => setAiMatchingActive(!aiMatchingActive)}
+                    onClick={() => {
+                      const next = !aiMatchingActive
+                      setAiMatchingActive(next)
+                      if (next) {
+                        toast.success("AI Profile Matching active: Jobs calibrated to your profile skills!")
+                        setSortBy("Best AI Match")
+                      } else {
+                        toast.info("AI Profile Matching paused: Showing default listings")
+                      }
+                    }}
                     className={`w-11 h-6 rounded-full p-0.5 flex items-center transition-all shadow-inner cursor-pointer ${
                       aiMatchingActive ? "bg-[#7c3aed] justify-end" : "bg-slate-300 justify-start"
                     }`}
@@ -493,7 +519,7 @@ export default function Jobs() {
                       </div>
                     </div>
                     <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold shrink-0 ml-2">
-                      {role.ats || 94}% ATS
+                      {role.calculatedAts?.score ?? calculateAtsScore(role, user).score}% ATS
                     </span>
                   </div>
                 ))}
